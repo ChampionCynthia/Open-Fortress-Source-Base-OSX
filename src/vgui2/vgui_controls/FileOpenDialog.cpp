@@ -4,6 +4,8 @@
 //
 // $NoKeywords: $
 //===========================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Use (void)! trick to silence unused return value from ::system()
 
 
 #define PROTECTED_THINGS_DISABLE
@@ -863,11 +865,11 @@ void FileOpenDialog::OnOpenInExplorer()
 #elif defined( OSX )
 	char szCmd[ MAX_PATH * 2];
 	Q_snprintf( szCmd, sizeof(szCmd), "/usr/bin/open \"%s\"", pCurrentDirectory );
-	::system( szCmd );
+	(void)! ::system( szCmd );
 #elif defined( LINUX )
 	char szCmd[ MAX_PATH * 2 ];	
 	Q_snprintf( szCmd, sizeof(szCmd), "xdg-open \"%s\" &", pCurrentDirectory );
-	::system( szCmd );
+	(void)! ::system( szCmd );
 #endif
 }
 

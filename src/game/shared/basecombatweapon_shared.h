@@ -3,6 +3,8 @@
 // Purpose: 
 //
 //===========================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Replace OVERRIDE macro with override, as defining override to nothing is prettier.
 
 #ifndef COMBATWEAPON_SHARED_H
 #define COMBATWEAPON_SHARED_H
@@ -55,7 +57,7 @@ class CUserCmd;
 // Put this in your derived class definition to declare it's activity table
 // UNDONE: Cascade these?
 #define DECLARE_ACTTABLE()		static acttable_t m_acttable[];\
-	virtual acttable_t *ActivityList( int &iActivityCount ) OVERRIDE;
+	virtual acttable_t *ActivityList( int &iActivityCount ) override;
 
 // You also need to include the activity table itself in your class' implementation:
 // e.g.
@@ -274,7 +276,7 @@ public:
 
 #ifdef CLIENT_DLL
 	virtual void			CreateMove( float flInputSampleTime, CUserCmd *pCmd, const QAngle &vecOldViewAngles ) {}
-	virtual int				CalcOverrideModelIndex() OVERRIDE;
+	virtual int				CalcOverrideModelIndex() override;
 #endif
 
 	virtual bool			IsWeaponZoomed() { return false; }		// Is this weapon in its 'zoomed in' mode?

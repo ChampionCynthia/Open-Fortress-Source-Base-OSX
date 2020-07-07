@@ -4,6 +4,8 @@
 //
 // $NoKeywords: $
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Replace OVERRIDE macro with override, as defining override to nothing is prettier.
 
 #ifndef C_AI_BASENPC_H
 #define C_AI_BASENPC_H
@@ -29,7 +31,7 @@ public:
 	bool					ShouldAvoidObstacle( void ){ return m_bPerformAvoidance; }
 	virtual bool			AddRagdollToFadeQueue( void ) { return m_bFadeCorpse; }
 
-	virtual bool			GetRagdollInitBoneArrays( matrix3x4_t *pDeltaBones0, matrix3x4_t *pDeltaBones1, matrix3x4_t *pCurrentBones, float boneDt ) OVERRIDE;
+	virtual bool			GetRagdollInitBoneArrays( matrix3x4_t *pDeltaBones0, matrix3x4_t *pDeltaBones1, matrix3x4_t *pCurrentBones, float boneDt ) override;
 
 	int						GetDeathPose( void ) { return m_iDeathPose; }
 

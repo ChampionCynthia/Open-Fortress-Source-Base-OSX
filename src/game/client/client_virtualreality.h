@@ -5,6 +5,8 @@
 //			rendering information, and distortion
 //
 //=============================================================================
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Replace OVERRIDE macro with override, as defining override to nothing is prettier.
 
 #ifndef CLIENTVIRTUALREALITY_H
 #define CLIENTVIRTUALREALITY_H
@@ -70,7 +72,7 @@ public:
 	//---------------------------------------------------------
 	// IClientVirtualReality implementation
 	//---------------------------------------------------------
-	virtual void DrawMainMenu() OVERRIDE;
+	virtual void DrawMainMenu() override;
 
 
 	//---------------------------------------------------------

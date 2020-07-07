@@ -4,6 +4,8 @@
 //
 // $NoKeywords: $
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Replace OVERRIDE macro with override, as defining override to nothing is prettier.
 
 #ifndef VGUITEXTWINDOW_H
 #define VGUITEXTWINDOW_H
@@ -92,7 +94,7 @@ protected:
 	
 	public:
 		CMOTDHTML( Panel *parent, const char *pchName ) : vgui::HTML( parent, pchName ) {}
-		virtual bool OnStartRequest( const char *url, const char *target, const char *pchPostData, bool bIsRedirect ) OVERRIDE;
+		virtual bool OnStartRequest( const char *url, const char *target, const char *pchPostData, bool bIsRedirect ) override;
 	};
 	CMOTDHTML		*m_pHTMLMessage;
 	

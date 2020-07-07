@@ -5,6 +5,8 @@
 // $NoKeywords: $
 //
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Use MAYBE_UNUSED macro to silence unused warning on currentRecvDTClass
 
 #ifndef DATATABLE_RECV_H
 #define DATATABLE_RECV_H
@@ -271,7 +273,7 @@ inline bool RecvTable::IsInMainList() const
 	} \
 	template <> int ClientClassInit<tableName::ignored>(tableName::ignored *) \
 	{ \
-		typedef className currentRecvDTClass; \
+		typedef className currentRecvDTClass MAYBE_UNUSED; \
 		const char *pRecvTableName = #tableName; \
 		RecvTable &RecvTable = tableName::g_RecvTable; \
 		static RecvProp RecvProps[] = { \

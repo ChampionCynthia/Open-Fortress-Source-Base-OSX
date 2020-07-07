@@ -3,6 +3,9 @@
 // Purpose: 
 //
 //===========================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Use (void)! trick to dispose of _getcwd's return value w/o warning
+
 #if defined( _WIN32 ) && !defined( _X360 )
 #include <windows.h>
 #endif
@@ -278,7 +281,7 @@ CSysModule *Sys_LoadModule( const char *pModuleName, Sys_Flags flags /* = SYS_NO
 	if ( !Q_IsAbsolutePath( pModuleName ) )
 	{
 		// full path wasn't passed in, using the current working dir
-		_getcwd( szCwd, sizeof( szCwd ) );
+		(void)! _getcwd( szCwd, sizeof( szCwd ) );
 		if ( IsX360() )
 		{
 			int i = CommandLine()->FindParm( "-basedir" );

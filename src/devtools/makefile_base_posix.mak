@@ -1,6 +1,7 @@
 # //========= Copyright Valve Corporation, All rights reserved. ============//
 # Open Fortress Modifications (CC-BY-NC-CA)
 # * QUIET_YOU flag
+# * Disable COPY_DLL_TO_SRV, as it's file bloat.
 #
 # Base makefile for Linux.
 #
@@ -214,7 +215,10 @@ VSIGN ?= true
 
 ifeq ($(SOURCE_SDK), 1)
 	Srv_GAMEOUTPUTFILE := $(GAMEOUTPUTFILE:.so=_srv.so)
-	COPY_DLL_TO_SRV := 1
+	# Normal:
+	# COPY_DLL_TO_SRV := 1
+	# Better, because file bloat:
+	COPY_DLL_TO_SRV := 0
 endif
 
 LINK_MAP_FLAGS = -Wl,-Map,$(@:.so=).map

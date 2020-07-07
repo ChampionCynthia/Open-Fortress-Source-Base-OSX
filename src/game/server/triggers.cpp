@@ -3,6 +3,8 @@
 // Purpose: Spawn and use functions for editor-placed triggers.
 //
 //===========================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Replace OVERRIDE macro with override, as defining override to nothing is prettier.
 
 #include "cbase.h"
 #include "ai_basenpc.h"
@@ -2343,8 +2345,8 @@ class CTriggerTeleport : public CBaseTrigger
 public:
 	DECLARE_CLASS( CTriggerTeleport, CBaseTrigger );
 
-	virtual void Spawn( void ) OVERRIDE;
-	virtual void Touch( CBaseEntity *pOther ) OVERRIDE;
+	virtual void Spawn( void ) override;
+	virtual void Touch( CBaseEntity *pOther ) override;
 
 	string_t m_iLandmark;
 
@@ -2453,8 +2455,8 @@ class CTriggerTeleportRelative : public CBaseTrigger
 public:
 	DECLARE_CLASS(CTriggerTeleportRelative, CBaseTrigger);
 
-	virtual void Spawn( void ) OVERRIDE;
-	virtual void Touch( CBaseEntity *pOther ) OVERRIDE;
+	virtual void Spawn( void ) override;
+	virtual void Touch( CBaseEntity *pOther ) override;
 
 	Vector m_TeleportOffset;
 

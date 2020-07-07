@@ -3,6 +3,8 @@
 // Purpose: Teamplay game rules that manage a round based structure for you
 //
 //=============================================================================
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Replace OVERRIDE macro with override, as defining override to nothing is prettier.
 
 #ifndef TEAMPLAYROUNDBASED_GAMERULES_H
 #define TEAMPLAYROUNDBASED_GAMERULES_H
@@ -338,7 +340,7 @@ public:
 	bool IsPreviouslyPlayedRound ( string_t strName );
 	string_t GetLastPlayedRound( void );
 
-	virtual void SetWinningTeam( int team, int iWinReason, bool bForceMapReset = true, bool bSwitchTeams = false, bool bDontAddScore = false, bool bFinal = false ) OVERRIDE;
+	virtual void SetWinningTeam( int team, int iWinReason, bool bForceMapReset = true, bool bSwitchTeams = false, bool bDontAddScore = false, bool bFinal = false ) override;
 	virtual void SetStalemate( int iReason, bool bForceMapReset = true, bool bSwitchTeams = false );
 
 	virtual void SetRoundOverlayDetails( void ){ return; }
@@ -487,7 +489,7 @@ protected:
 	bool MapHasActiveTimer( void );
 	void CreateTimeLimitTimer( void );
 
-	virtual float GetLastMajorEventTime( void ) OVERRIDE { return m_flLastTeamWin; }
+	virtual float GetLastMajorEventTime( void ) override { return m_flLastTeamWin; }
 
 protected:
 	CGameRulesRoundStateInfo	*m_pCurStateInfo;			// Per-state data 

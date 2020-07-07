@@ -5,6 +5,8 @@
 // $NoKeywords: $
 //
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Use MAYBE_UNUSED macro to silence unused warning on currentSendDTClass
 
 #ifndef DATATABLE_SEND_H
 #define DATATABLE_SEND_H
@@ -564,7 +566,7 @@ inline void SendTable::SetHasPropsEncodedAgainstTickcount( bool bState )
 	} \
 	template <> int ServerClassInit<tableName::ignored>(tableName::ignored *) \
 	{ \
-		typedef className currentSendDTClass; \
+		typedef className currentSendDTClass MAYBE_UNUSED; \
 		static const char *g_pSendTableName = #tableName; \
 		SendTable &sendTable = tableName::g_SendTable; \
 		static SendProp g_SendProps[] = { \

@@ -5,6 +5,8 @@
 // $NoKeywords: $
 //
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * static_assert for gcc versions >= 4.8
 #ifndef DBG_H
 #define DBG_H
 
@@ -567,7 +569,13 @@ public:
 // of our complicated templates properly.  Use some preprocessor trickery
 // to workaround this
 #ifdef __GNUC__
+	#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)
+	// We trust that 4.8 and on have static_assert
+	#define COMPILE_TIME_ASSERT( pred ) static_assert( pred, "Compile time assert constraint is not true: " #pred )
+	#else
+	// for old versions of g++, like 4.6.0, we do this ugly hack.
 	#define COMPILE_TIME_ASSERT( pred ) typedef int UNIQUE_ID[ (pred) ? 1 : -1 ]
+	#endif
 #else
 	#if _MSC_VER >= 1600
 	// If available use static_assert instead of weird language tricks. This

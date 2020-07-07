@@ -3,6 +3,8 @@
 // Purpose: Implementation of SHA-1
 //
 //=============================================================================
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Use (void)! trick to silence unused return value from fread()
 
 /*
 	100% free public domain implementation of the SHA-1
@@ -192,13 +194,13 @@ bool CSHA1::HashFile(char *szFileName)
 
 	for(i = 0; i < ulBlocks; i++)
 	{
-		fread(uData, 1, MAX_FILE_READ_BUFFER, fIn);
+		(void)! fread(uData, 1, MAX_FILE_READ_BUFFER, fIn);
 		Update(uData, MAX_FILE_READ_BUFFER);
 	}
 
 	if(ulRest != 0)
 	{
-		fread(uData, 1, ulRest, fIn);
+		(void)! fread(uData, 1, ulRest, fIn);
 		Update(uData, ulRest);
 	}
 

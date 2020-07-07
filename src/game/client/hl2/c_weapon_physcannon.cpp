@@ -3,6 +3,8 @@
 // Purpose: 
 //
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Replace OVERRIDE macro with override, as defining override to nothing is prettier.
 
 #include "cbase.h"
 #include "c_weapon__stubs.h"
@@ -25,7 +27,7 @@ public:
 	virtual int DrawModel( int flags );
 	virtual void ClientThink( void );
 
-	virtual bool ShouldUseLargeViewModelVROverride() OVERRIDE { return true; }
+	virtual bool ShouldUseLargeViewModelVROverride() override { return true; }
 
 private:
 

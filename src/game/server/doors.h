@@ -4,6 +4,8 @@
 //
 // $NoKeywords: $
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Replace OVERRIDE macro with override, as defining override to nothing is prettier.
 
 #ifndef DOORS_H
 #define DOORS_H
@@ -150,7 +152,7 @@ public:
 	bool		ShouldLoopMoveSound( void ) { return m_bLoopMoveSound; }
 	bool		m_bLoopMoveSound;			// Move sound loops until stopped
 
-	virtual bool ShouldBlockNav() const OVERRIDE { return false; }
+	virtual bool ShouldBlockNav() const override { return false; }
 
 private:
 	void ChainUse( void );	///< Chains +use on through to m_ChainTarget

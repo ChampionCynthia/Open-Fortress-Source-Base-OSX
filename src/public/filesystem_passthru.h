@@ -3,7 +3,11 @@
 // Purpose: 
 //
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Replace OVERRIDE macro with override, as defining override to nothing is prettier.
+// * Disable the entire file, as it's unused and we like fast compilation
 
+#if 0 // DISABLE WHOLE FILE
 #ifndef FILESYSTEM_PASSTHRU_H
 #define FILESYSTEM_PASSTHRU_H
 #ifdef _WIN32
@@ -217,7 +221,7 @@ public:
 
 	virtual void EnableWhitelistFileTracking( bool bEnable, bool bCacheAllVPKHashes, bool bRecalculateAndCheckHashes )
 		{ m_pFileSystemPassThru->EnableWhitelistFileTracking( bEnable, bCacheAllVPKHashes, bRecalculateAndCheckHashes ); }
-	virtual void RegisterFileWhitelist( IPureServerWhitelist *pWhiteList, IFileList **ppFilesToReload ) OVERRIDE
+	virtual void RegisterFileWhitelist( IPureServerWhitelist *pWhiteList, IFileList **ppFilesToReload ) override
 		{ m_pFileSystemPassThru->RegisterFileWhitelist( pWhiteList, ppFilesToReload ); }
 	virtual void MarkAllCRCsUnverified()
 		{ m_pFileSystemPassThru->MarkAllCRCsUnverified(); }
@@ -245,7 +249,7 @@ public:
 		{ return m_pFileSystemPassThru->CacheAllVPKFileHashes( bCacheAllVPKHashes, bRecalculateAndCheckHashes ); }
 	virtual bool			CheckVPKFileHash( int PackFileID, int nPackFileNumber, int nFileFraction, MD5Value_t &md5Value )
 		{ return m_pFileSystemPassThru->CheckVPKFileHash( PackFileID, nPackFileNumber, nFileFraction, md5Value ); }
-	virtual void			NotifyFileUnloaded( const char *pszFilename, const char *pPathId ) OVERRIDE
+	virtual void			NotifyFileUnloaded( const char *pszFilename, const char *pPathId ) override
 		{ m_pFileSystemPassThru->NotifyFileUnloaded( pszFilename, pPathId ); }
 
 protected:
@@ -262,3 +266,4 @@ inline void GiveMeACompileError()
 
 
 #endif // FILESYSTEM_PASSTHRU_H
+#endif // DISABLE WHOLE FILE

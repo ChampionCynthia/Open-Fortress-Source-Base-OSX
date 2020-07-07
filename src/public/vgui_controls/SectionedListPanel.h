@@ -4,6 +4,8 @@
 //
 // $NoKeywords: $
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Replace OVERRIDE macro with override, as defining override to nothing is prettier.
 
 #ifndef SECTIONEDLISTPANEL_H
 #define SECTIONEDLISTPANEL_H
@@ -301,9 +303,9 @@ public:
 	SectionedListPanelHeader(SectionedListPanel *parent, const char *name, int sectionID);
 	SectionedListPanelHeader(SectionedListPanel *parent, const wchar_t *name, int sectionID);
 
-	virtual void ApplySchemeSettings(IScheme *pScheme) OVERRIDE;
-	virtual void Paint() OVERRIDE;
-	virtual void PerformLayout() OVERRIDE;
+	virtual void ApplySchemeSettings(IScheme *pScheme) override;
+	virtual void Paint() override;
+	virtual void PerformLayout() override;
 
 	void SetColor(Color col);
 	void SetDividerColor(Color col );

@@ -5,6 +5,8 @@
 // $Workfile: $
 // $NoKeywords: $
 //===========================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Replace OVERRIDE macro with override, as defining override to nothing is prettier.
 
 #ifndef VSTDLIB_RANDOM_H
 #define VSTDLIB_RANDOM_H
@@ -103,10 +105,10 @@ VSTDLIB_INTERFACE float	RandomGaussianFloat( float flMean = 0.0f, float flStdDev
 class VSTDLIB_CLASS CDefaultUniformRandomStream : public IUniformRandomStream
 {
 public:
-	virtual void	SetSeed( int iSeed ) OVERRIDE												{ RandomSeed( iSeed ); }
-	virtual float	RandomFloat( float flMinVal, float flMaxVal ) OVERRIDE						{ return ::RandomFloat( flMinVal, flMaxVal ); }
-	virtual int		RandomInt( int iMinVal, int iMaxVal ) OVERRIDE								{ return ::RandomInt( iMinVal, iMaxVal ); }
-	virtual float	RandomFloatExp( float flMinVal, float flMaxVal, float flExponent ) OVERRIDE	{ return ::RandomFloatExp( flMinVal, flMaxVal, flExponent ); }
+	virtual void	SetSeed( int iSeed ) override												{ RandomSeed( iSeed ); }
+	virtual float	RandomFloat( float flMinVal, float flMaxVal ) override						{ return ::RandomFloat( flMinVal, flMaxVal ); }
+	virtual int		RandomInt( int iMinVal, int iMaxVal ) override								{ return ::RandomInt( iMinVal, iMaxVal ); }
+	virtual float	RandomFloatExp( float flMinVal, float flMaxVal, float flExponent ) override	{ return ::RandomFloatExp( flMinVal, flMaxVal, flExponent ); }
 };
 
 //-----------------------------------------------------------------------------

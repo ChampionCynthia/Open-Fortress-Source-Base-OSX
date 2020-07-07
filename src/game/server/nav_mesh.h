@@ -15,6 +15,8 @@
 // NOTE: The Navigation code uses Doxygen-style comments. If you run Doxygen over this code, it will 
 // auto-generate documentation.  Visit www.doxygen.org to download the system for free.
 //
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Add braces to integer cast in CVisPairHashFuncs::operator(), fixes warning
 
 #ifndef _NAV_MESH_H_
 #define _NAV_MESH_H_
@@ -199,7 +201,7 @@ public:
 	unsigned int operator()( const NavVisPair_t &item ) const
 	{
 		COMPILE_TIME_ASSERT( sizeof(CNavArea *) == 4 );
-		int key[2] = { (int)item.pAreas[0] + item.pAreas[1]->GetID(), (int)item.pAreas[1] + item.pAreas[0]->GetID() };
+		int key[2] = { (int)(item.pAreas[0] + item.pAreas[1]->GetID()), (int)(item.pAreas[1] + item.pAreas[0]->GetID()) };
 		return Hash8( key );	
 	}
 };

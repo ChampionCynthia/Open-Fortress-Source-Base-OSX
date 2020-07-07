@@ -3,6 +3,8 @@
 // Purpose: 
 //
 //=============================================================================
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Replace OVERRIDE macro with override, as defining override to nothing is prettier.
 
 #ifndef MDLPANEL_H
 #define MDLPANEL_H
@@ -106,7 +108,7 @@ public:
 
 protected:
 
-	virtual void SetupRenderState( int nDisplayWidth, int nDisplayHeight ) OVERRIDE;
+	virtual void SetupRenderState( int nDisplayWidth, int nDisplayHeight ) override;
 
 	struct MDLData_t
 	{

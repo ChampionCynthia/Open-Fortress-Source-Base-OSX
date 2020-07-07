@@ -6,6 +6,9 @@
 // $Date:         $
 // $NoKeywords: $
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Replace OVERRIDE macro with override, as defining override to nothing is prettier.
+
 #if !defined( CLIENTMODE_NORMAL_H )
 #define CLIENTMODE_NORMAL_H
 #ifdef _WIN32
@@ -74,8 +77,8 @@ public:
 	virtual bool	ShouldDrawViewModel();
 	virtual bool	ShouldDrawParticles( );
 	virtual bool	ShouldDrawCrosshair( void );
-	virtual bool	ShouldBlackoutAroundHUD() OVERRIDE;
-	virtual HeadtrackMovementMode_t ShouldOverrideHeadtrackControl() OVERRIDE;
+	virtual bool	ShouldBlackoutAroundHUD() override;
+	virtual HeadtrackMovementMode_t ShouldOverrideHeadtrackControl() override;
 	virtual void	AdjustEngineViewport( int& x, int& y, int& width, int& height );
 	virtual void	PreRender(CViewSetup *pSetup);
 	virtual void	PostRender();
@@ -109,7 +112,7 @@ public:
 
 	virtual int HandleSpectatorKeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBinding );
 
-	virtual void	ComputeVguiResConditions( KeyValues *pkvConditions ) OVERRIDE;
+	virtual void	ComputeVguiResConditions( KeyValues *pkvConditions ) override;
 
 	//=============================================================================
 	// HPE_BEGIN:
@@ -130,9 +133,9 @@ public:
 	virtual void	DisplayReplayMessage( const char *pLocalizeName, float flDuration, bool bUrgent,
 										  const char *pSound, bool bDlg );
 
-	virtual bool	IsInfoPanelAllowed() OVERRIDE { return true; }
-	virtual void	InfoPanelDisplayed() OVERRIDE { }
-	virtual bool	IsHTMLInfoPanelAllowed() OVERRIDE { return true; }
+	virtual bool	IsInfoPanelAllowed() override { return true; }
+	virtual void	InfoPanelDisplayed() override { }
+	virtual bool	IsHTMLInfoPanelAllowed() override { return true; }
 
 protected:
 	CBaseViewport			*m_pViewport;

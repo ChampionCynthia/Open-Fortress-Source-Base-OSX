@@ -5,6 +5,8 @@
 // $NoKeywords: $
 //
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Fix a double-free bug from the `#include` macro
 
 #if defined( _WIN32 ) && !defined( _X360 )
 #include <windows.h>		// for WideCharToMultiByte and MultiByteToWideChar
@@ -2324,13 +2326,9 @@ bool KeyValues::LoadFromBuffer( char const *resourceName, CUtlBuffer &buf, IBase
 
 	AppendIncludedKeys( includedKeys );
 	{
-		// delete included keys!
-		int i;
-		for ( i = includedKeys.Count() - 1; i > 0; i-- )
-		{
-			KeyValues *kv = includedKeys[ i ];
-			kv->deleteThis();
-		}
+		// DO NOT delete included keys!
+		// It causes a double free.
+		// They are appended without any reallocation!
 	}
 
 	MergeBaseKeys( baseKeys );

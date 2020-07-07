@@ -5,7 +5,10 @@
 // $NoKeywords: $
 //
 //===========================================================================//
-
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Add MAYBE_UNUSED macro which expands to __attribute__((unused)) for gcc
+//		and clang, could also expand to [[maybe_unused]] in C++17
+// * Remove OVERRIDE macro, as defining override to nothing is prettier.
 #ifndef PLATFORM_H
 #define PLATFORM_H
 
@@ -183,13 +186,6 @@ typedef signed char int8;
 		#define __m128				__vector4
 	#endif
 
-	// Use this to specify that a function is an override of a virtual function.
-	// This lets the compiler catch cases where you meant to override a virtual
-	// function but you accidentally changed the function signature and created
-	// an overloaded function. Usage in function declarations is like this:
-	// int GetData() const OVERRIDE;
-	#define OVERRIDE override
-
 #else // _WIN32
 
 	typedef short					int16;
@@ -207,20 +203,23 @@ typedef signed char int8;
 	#endif
 	typedef void *HWND;
 
-	// Avoid redefinition warnings if a previous header defines this.
-	#undef OVERRIDE
 	#if __cplusplus >= 201103L
-		#define OVERRIDE override
 		#if defined(__clang__)
 			// warning: 'override' keyword is a C++11 extension [-Wc++11-extensions]
 			// Disabling this warning is less intrusive than enabling C++11 extensions
 			#pragma GCC diagnostic ignored "-Wc++11-extensions"
 		#endif
 	#else
-		#define OVERRIDE
+		#define override
 	#endif
 
 #endif // else _WIN32
+
+#if COMPILER_GCC || COMPILER_CLANG
+// Useful for macros where a typedef may or may not be used
+// (such as BEGIN_NETWORK_TABLE's currentRecvDTClass)
+#define MAYBE_UNUSED __attribute__((unused))
+#endif // COMPILER_GCC || COMPILER_CLANG
 
 //-----------------------------------------------------------------------------
 // Set up platform type defines.

@@ -3,6 +3,8 @@
 // Purpose: Shared util code between client and server.
 //
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Replace OVERRIDE macro with override, as defining override to nothing is prettier.
 
 #ifndef UTIL_SHARED_H
 #define UTIL_SHARED_H
@@ -598,7 +600,7 @@ private:
 
 class RealTimeCountdownTimer : public CountdownTimer
 {
-	virtual float Now( void ) const OVERRIDE
+	virtual float Now( void ) const override
 	{
 		return Plat_FloatTime();
 	}

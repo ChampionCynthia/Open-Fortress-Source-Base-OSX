@@ -3,6 +3,8 @@
 // Purpose: 
 //
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Replace OVERRIDE macro with override, as defining override to nothing is prettier.
 
 #ifndef MULTIPLAY_GAMERULES_H
 #define MULTIPLAY_GAMERULES_H
@@ -247,7 +249,7 @@ public:
 
 	bool IsMapInMapCycle( const char *pszName );
 
-	virtual bool IsManualMapChangeOkay( const char **pszReason ) OVERRIDE;
+	virtual bool IsManualMapChangeOkay( const char **pszReason ) override;
 
 protected:
 	virtual bool UseSuicidePenalty() { return true; }		// apply point penalty for suicide?

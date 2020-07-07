@@ -3,6 +3,9 @@
 // Purpose: 
 //
 //=============================================================================
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Replace OVERRIDE macro with override, as defining override to nothing is prettier.
+
 #ifndef BASEMODEL_PANEL_H
 #define BASEMODEL_PANEL_H
 #ifdef _WIN32
@@ -239,8 +242,8 @@ protected:
 	particle_data_t *CreateParticleData( const char *pszParticleName );
 	bool SafeDeleteParticleData( particle_data_t **pData );
 
-	virtual void PrePaint3D( IMatRenderContext *pRenderContext ) OVERRIDE;
-	virtual void PostPaint3D( IMatRenderContext *pRenderContext ) OVERRIDE;
+	virtual void PrePaint3D( IMatRenderContext *pRenderContext ) override;
+	virtual void PostPaint3D( IMatRenderContext *pRenderContext ) override;
 };
 
 #endif // BASEMODEL_PANEL_H

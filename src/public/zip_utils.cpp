@@ -3,6 +3,8 @@
 // Purpose: 
 //
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Replace OVERRIDE macro with override, as defining override to nothing is prettier.
 
 // If we are going to include windows.h then we need to disable protected_things.h
 // or else we get many warnings.
@@ -1655,57 +1657,57 @@ public:
 	CZip( const char *pDiskCacheWritePath, bool bSortByName );
 	virtual ~CZip();
 
-	virtual void			Reset() OVERRIDE;
+	virtual void			Reset() override;
 
 	// Add a single file to a zip - maintains the zip's previous alignment state
-	virtual void			AddFileToZip( const char *relativename, const char *fullpath, eCompressionType compressionType ) OVERRIDE;
+	virtual void			AddFileToZip( const char *relativename, const char *fullpath, eCompressionType compressionType ) override;
 
 	// Whether a file is contained in a zip - maintains alignment
-	virtual bool			FileExistsInZip( const char *pRelativeName ) OVERRIDE;
+	virtual bool			FileExistsInZip( const char *pRelativeName ) override;
 
 	// Reads a file from the zip - maintains alignement
-	virtual bool			ReadFileFromZip( const char *pRelativeName, bool bTextMode, CUtlBuffer &buf ) OVERRIDE;
-	virtual bool			ReadFileFromZip( HANDLE hZipFile, const char *relativename, bool bTextMode, CUtlBuffer &buf ) OVERRIDE;
+	virtual bool			ReadFileFromZip( const char *pRelativeName, bool bTextMode, CUtlBuffer &buf ) override;
+	virtual bool			ReadFileFromZip( HANDLE hZipFile, const char *relativename, bool bTextMode, CUtlBuffer &buf ) override;
 
 	// Removes a single file from the zip - maintains alignment
-	virtual void			RemoveFileFromZip( const char *relativename ) OVERRIDE;
+	virtual void			RemoveFileFromZip( const char *relativename ) override;
 
 	// Gets next filename in zip, for walking the directory - maintains alignment
-	virtual int				GetNextFilename( int id, char *pBuffer, int bufferSize, int &fileSize ) OVERRIDE;
+	virtual int				GetNextFilename( int id, char *pBuffer, int bufferSize, int &fileSize ) override;
 
 	// Prints the zip's contents - maintains alignment
-	virtual void			PrintDirectory( void ) OVERRIDE;
+	virtual void			PrintDirectory( void ) override;
 
 	// Estimate the size of the Zip (including header, padding, etc.)
-	virtual unsigned int	EstimateSize( void ) OVERRIDE;
+	virtual unsigned int	EstimateSize( void ) override;
 
 	// Add buffer to zip as a file with given name - uses current alignment size, default 0 (no alignment)
 	virtual void			AddBufferToZip( const char *relativename, void *data, int length,
-											bool bTextMode, eCompressionType compressionType ) OVERRIDE;
+											bool bTextMode, eCompressionType compressionType ) override;
 
 	// Writes out zip file to a buffer - uses current alignment size
 	// (set by file's previous alignment, or a call to ForceAlignment)
-	virtual void			SaveToBuffer( CUtlBuffer& outbuf ) OVERRIDE;
+	virtual void			SaveToBuffer( CUtlBuffer& outbuf ) override;
 
 	// Writes out zip file to a filestream - uses current alignment size
 	// (set by file's previous alignment, or a call to ForceAlignment)
-	virtual void			SaveToDisk( FILE *fout ) OVERRIDE;
-	virtual void			SaveToDisk( HANDLE hOutFile ) OVERRIDE;
+	virtual void			SaveToDisk( FILE *fout ) override;
+	virtual void			SaveToDisk( HANDLE hOutFile ) override;
 
 	// Reads a zip file from a buffer into memory - sets current alignment size to
 	// the file's alignment size, unless overridden by a ForceAlignment call)
-	virtual void			ParseFromBuffer( void *buffer, int bufferlength ) OVERRIDE;
-	virtual HANDLE			ParseFromDisk( const char *pFilename ) OVERRIDE;
+	virtual void			ParseFromBuffer( void *buffer, int bufferlength ) override;
+	virtual HANDLE			ParseFromDisk( const char *pFilename ) override;
 
 	// Forces a specific alignment size for all subsequent file operations, overriding files' previous alignment size.
 	// Return to using files' individual alignment sizes by passing FALSE.
-	virtual void			ForceAlignment( bool aligned, bool bCompatibleFormat, unsigned int alignmentSize ) OVERRIDE;
+	virtual void			ForceAlignment( bool aligned, bool bCompatibleFormat, unsigned int alignmentSize ) override;
 
 	// Sets the endianess of the zip
-	virtual void			SetBigEndian( bool bigEndian ) OVERRIDE;
-	virtual void			ActivateByteSwapping( bool bActivate ) OVERRIDE;
+	virtual void			SetBigEndian( bool bigEndian ) override;
+	virtual void			ActivateByteSwapping( bool bActivate ) override;
 
-	virtual unsigned int	GetAlignment() OVERRIDE;
+	virtual unsigned int	GetAlignment() override;
 
 private:
 	CZipFile				m_ZipFile;

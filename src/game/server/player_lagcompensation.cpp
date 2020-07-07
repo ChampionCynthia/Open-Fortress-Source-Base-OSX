@@ -4,6 +4,8 @@
 //
 // $NoKeywords: $
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Replace OVERRIDE macro with override, as defining override to nothing is prettier.
 
 #include "cbase.h"
 #include "usercmd.h"
@@ -195,7 +197,7 @@ public:
 	void			StartLagCompensation( CBasePlayer *player, CUserCmd *cmd );
 	void			FinishLagCompensation( CBasePlayer *player );
 
-	bool			IsCurrentlyDoingLagCompensation() const OVERRIDE { return m_isCurrentlyDoingCompensation; }
+	bool			IsCurrentlyDoingLagCompensation() const override { return m_isCurrentlyDoingCompensation; }
 
 private:
 	void			BacktrackPlayer( CBasePlayer *player, float flTargetTime );
