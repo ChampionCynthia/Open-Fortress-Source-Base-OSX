@@ -6,7 +6,7 @@ Sourcefiles under this license will have a Valve copyright header similar to the
 ```
 
 # Creative Commons
-LICENSE_CC-BY-NC-SA contains the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International license, which covers all files written or reverse engineered by independant developers.
+LICENSE_CC-BY-NC-SA contains the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International license, which covers all files written or reverse engineered by Open Fortress developers.
 Sourcefiles under this license will have the following header.
 ```cpp
 //========= Copyright Open Fortress Developers, CC-BY-NC-SA ============//
