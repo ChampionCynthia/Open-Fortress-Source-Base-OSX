@@ -1,3 +1,6 @@
+# //========= Copyright Valve Corporation, All rights reserved. ============//
+# Open Fortress Modifications (CC-BY-NC-CA)
+# * QUIET_YOU flag
 #
 # Base makefile for Linux.
 #
@@ -151,6 +154,16 @@ ifeq ($(CLANG_BUILD),1)
 endif
 LINK ?= $(CC)
 
+#OPEN FORTRESS QUIET TIME (QUIET_YOU)
+# Build without any ---- bogus.cpp ---- messages
+# helps you see GCC Warnings.
+ifdef QUIET_YOU
+        # true as in, do nothing
+        HEARTBEAT := true
+else
+        HEARTBEAT := echo
+endif # QUIET YOU
+
 ifeq ($(STEAM_BRANCH),1)
 	WARN_FLAGS = -Wall -Wextra -Wshadow -Wno-invalid-offsetof
 else
@@ -280,14 +293,14 @@ ifeq ($(BUILDING_MULTI_ARCH),1)
 	SINGLE_ARCH_CXXFLAGS=$(subst -arch x86_64,,$(CXXFLAGS))
 	COMPILE_FILE = \
 		$(QUIET_PREFIX) \
-		echo "---- $(lastword $(subst /, ,$<)) as MULTIARCH----";\
+		$(HEARTBEAT) "---- $(lastword $(subst /, ,$<)) as MULTIARCH----";\
 		mkdir -p $(OBJ_DIR) && \
 		$(CXX) $(SINGLE_ARCH_CXXFLAGS) $(GENDEP_CXXFLAGS) -o $@ -c $< && \
 		$(CXX) $(CXXFLAGS) -o $@ -c $<
 else
 	COMPILE_FILE = \
 		$(QUIET_PREFIX) \
-		echo "---- $(lastword $(subst /, ,$<)) ----";\
+		$(HEARTBEAT) "---- $(lastword $(subst /, ,$<)) ----";\
 		mkdir -p $(OBJ_DIR) && \
 		$(CXX) $(CXXFLAGS) $(GENDEP_CXXFLAGS) -o $@ -c $<
 endif
