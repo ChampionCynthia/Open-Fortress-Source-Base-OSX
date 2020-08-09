@@ -96,6 +96,7 @@ static void PhysicsCheckSweep( CBaseEntity *pEntity, const Vector& vecAbsStart, 
 }
 
 CPhysicsPushedEntities s_PushedEntities;
+// OFTODO: Implement this
 #ifndef TF_DLL
 CPhysicsPushedEntities *g_pPushedEntities = &s_PushedEntities;
 #endif
@@ -295,7 +296,7 @@ bool CPhysicsPushedEntities::SpeculativelyCheckPush( PhysicsPushedInfo_t &info, 
 		}
 		pBlocker->SetAbsOrigin( pushDestPosition );
 
-#ifndef TF_DLL
+#if !defined( TF_DLL ) && !defined( OF_DLL )
 		DevMsg(1, "Ignoring player blocking train!\n");
 #endif
 		return true;

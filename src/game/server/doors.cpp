@@ -343,6 +343,8 @@ void CBaseDoor::Spawn()
 		// Never block doors in TF2 - to prevent various exploits.
 		m_bIgnoreNonPlayerEntsOnBlock = true;
 	}
+#elif defined( OF_DLL )
+	m_bIgnoreNonPlayerEntsOnBlock = true;
 #else
 	m_bIgnoreNonPlayerEntsOnBlock = false;
 #endif // TF_DLL

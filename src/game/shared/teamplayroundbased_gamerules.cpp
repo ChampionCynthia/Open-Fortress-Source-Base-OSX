@@ -1051,7 +1051,7 @@ void CTeamplayRoundBasedRules::CheckRestartRound( void )
 				{
 					pFormat = ( iRestartDelay > 1 ) ? "#game_scramble_in_secs" : "#game_scramble_in_sec";
 
-#ifdef TF_DLL
+#if defined ( TF_DLL ) || defined ( OF_DLL )
 					IGameEvent *event = gameeventmanager->CreateEvent( "teamplay_alert" );
 					if ( event )
 					{
@@ -1829,7 +1829,7 @@ void CTeamplayRoundBasedRules::State_Think_TEAM_WIN( void )
 {
 	if ( gpGlobals->curtime > m_flStateTransitionTime )
 	{
-#ifdef TF_DLL
+#if defined ( TF_DLL ) || defined ( OF_DLL )
 		IGameEvent *event = gameeventmanager->CreateEvent( "scorestats_accumulated_update" );
 		if ( event )
 		{
@@ -2404,7 +2404,7 @@ void CTeamplayRoundBasedRules::SetWinningTeam( int team, int iWinReason, bool bF
 		if ( nWinDelta >= mp_scrambleteams_auto_windifference.GetInt() )
 		{
 			// Let the server know we're going to scramble on round restart
-#ifdef TF_DLL
+#if defined ( TF_DLL ) || defined ( OF_DLL )
 			IGameEvent *event = gameeventmanager->CreateEvent( "teamplay_alert" );
 			if ( event )
 			{
@@ -3201,7 +3201,7 @@ void CTeamplayRoundBasedRules::ResetScores( void )
 	m_bResetRoundsPlayed = true;
 	//m_flStopWatchTime = -1.0f;
 
-#ifdef TF_DLL
+#if defined ( TF_DLL ) || defined ( OF_DLL )
 	IGameEvent *event = gameeventmanager->CreateEvent( "scorestats_accumulated_reset" );
 	if ( event )
 	{
@@ -3252,6 +3252,11 @@ void CTeamplayRoundBasedRules::PlayWinSong( int team )
 		if ( TFGameRules() && TFGameRules()->IsPlayingSpecialDeliveryMode() )
 			return;
 #endif // TF_DLL
+
+#if defined ( OF_DLL ) || defined ( OF_CLIENT_DLL )
+		if ( OFGameRules() && OFGameRules()->IsPlayingSpecialDeliveryMode() )
+			return;
+#endif // OF_DLL
 
 		BroadcastSound( TEAM_UNASSIGNED, UTIL_VarArgs("Game.TeamWin%d", team ) );
 
@@ -3369,7 +3374,7 @@ string_t CTeamplayRoundBasedRules::GetLastPlayedRound( void )
 //-----------------------------------------------------------------------------
 CTeamRoundTimer *CTeamplayRoundBasedRules::GetActiveRoundTimer( void )
 {
-#ifdef TF_DLL
+#if defined ( TF_DLL ) || defined ( OF_DLL )
 	int iTimerEntIndex = ObjectiveResource()->GetTimerInHUD();
 	return ( dynamic_cast<CTeamRoundTimer *>( UTIL_EntityByIndex( iTimerEntIndex ) ) );
 #else

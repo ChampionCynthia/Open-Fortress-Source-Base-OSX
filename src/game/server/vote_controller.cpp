@@ -12,6 +12,8 @@
 #include "gameinterface.h"
 #include "fmtstr.h"
 
+// OFTODO: Untangle the TF define mess in this file
+
 #ifdef TF_DLL
 #include "tf/tf_gamerules.h"
 #include "tf/tf_voteissues.h"

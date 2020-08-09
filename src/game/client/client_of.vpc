@@ -1,0 +1,51 @@
+//-----------------------------------------------------------------------------
+//	CLIENT_OF.VPC
+//
+//	Project Script
+//-----------------------------------------------------------------------------
+
+$Macro SRCDIR		"..\.."
+$Macro GAMENAME 	"open_fortress"
+
+$Include "$SRCDIR\game\client\client_base.vpc"
+
+$Configuration
+{
+	$Compiler
+	{
+		$AdditionalIncludeDirectories		"$BASE;of\ui,.\of,$SRCDIR\game\shared\of,.\hl2,.\hl2\elements,$SRCDIR\game\shared\hl2"
+		$PreprocessorDefinitions			"$BASE;OF_CLIENT_DLL"
+	}
+}
+
+$Project "Client (Open Fortress)"
+{
+	$Folder	"Source Files"
+	{
+		$File	"c_team_objectiveresource.cpp"
+		$File	"c_team_objectiveresource.h"
+		$File	"c_team_train_watcher.cpp"
+		$File	"c_team_train_watcher.h"
+		
+		$File	"of/of_clientmode.cpp"
+		$File	"of/of_clientmode.h"
+		$File	"of/of_in_main.cpp"
+		$File	"of/of_prediction.cpp"	
+		
+		$File	"$SRCDIR\game\shared\predicted_viewmodel.cpp"
+		$File	"$SRCDIR\game\shared\predicted_viewmodel.h"
+		$File	"$SRCDIR\game\shared\teamplay_round_timer.cpp"
+		$File	"$SRCDIR\game\shared\teamplay_round_timer.h"
+
+		$File	"$SRCDIR\game\shared\of\of_gamemovement.cpp"
+		$File	"$SRCDIR\game\shared\of\of_gamemovement.h"
+		
+		$Folder "VGUI"
+		{
+			$File	"of/vgui/of_rootpanel.cpp"
+			$File	"of/vgui/of_rootpanel.h"
+			$File	"of/vgui/of_viewport.cpp"
+			$File	"of/vgui/of_viewport.h"			
+		}
+	}
+}

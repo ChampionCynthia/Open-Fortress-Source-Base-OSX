@@ -567,7 +567,7 @@ void CPathTrack::InputPass( inputdata_t &inputdata )
 {
 	m_OnPass.FireOutput( inputdata.pActivator, this );
 
-#ifdef TF_DLL
+#if defined( TF_DLL ) || defined ( OF_DLL )
 	IGameEvent * event = gameeventmanager->CreateEvent( "path_track_passed" );
 	if ( event )
 	{

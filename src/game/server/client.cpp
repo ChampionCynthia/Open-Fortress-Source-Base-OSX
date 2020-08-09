@@ -63,6 +63,8 @@ enum eAllowPointServerCommand {
 	eAllowAlways
 };
 
+// OFTODO: Add support for these server command checks
+
 #ifdef TF_DLL
 // The default value here should match the default of the convar
 eAllowPointServerCommand sAllowPointServerCommand = eAllowOfficial;
@@ -1365,7 +1367,7 @@ CON_COMMAND_F( setang_exact, "Snap player eyes and orientation to specified pitc
 	pPlayer->Teleport( NULL, &newang, NULL );
 	pPlayer->SnapEyeAngles( newang );
 
-#ifdef TF_DLL
+#if defined ( TF_DLL ) || defined ( OF_DLL )
 	static_cast<CTFPlayer*>( pPlayer )->DoAnimationEvent( PLAYERANIMEVENT_SNAP_YAW );
 #endif
 }

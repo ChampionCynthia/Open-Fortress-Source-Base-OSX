@@ -219,6 +219,8 @@ typedef signed char int8;
 // Useful for macros where a typedef may or may not be used
 // (such as BEGIN_NETWORK_TABLE's currentRecvDTClass)
 #define MAYBE_UNUSED __attribute__((unused))
+#else
+#define MAYBE_UNUSED
 #endif // COMPILER_GCC || COMPILER_CLANG
 
 //-----------------------------------------------------------------------------

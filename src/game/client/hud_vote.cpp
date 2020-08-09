@@ -2,6 +2,7 @@
 //
 //===========================================================================//
 
+// OFTODO: Untangle the TF define mess in this file
 
 #include "cbase.h"
 #include "hud.h"

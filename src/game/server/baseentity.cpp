@@ -1563,6 +1563,7 @@ int CBaseEntity::VPhysicsTakeDamage( const CTakeDamageInfo &info )
 		// setup the damage force & position inside the CTakeDamageInfo (Utility functions for this are in
 		// takedamageinfo.cpp. If you think the damage shouldn't cause force (unlikely!) then you can set the 
 		// damage type to DMG_GENERIC, or | DMG_CRUSH if you need to preserve the damage type for purposes of HUD display.
+#ifndef ( OF_DLL )
 #if !defined( TF_DLL )
 		Assert( force != vec3_origin && offset != vec3_origin );
 #else
@@ -1572,7 +1573,7 @@ int CBaseEntity::VPhysicsTakeDamage( const CTakeDamageInfo &info )
 			Assert( force != vec3_origin && offset != vec3_origin );
 		}
 #endif
-
+#endif
 		unsigned short gameFlags = VPhysicsGetObject()->GetGameFlags();
 		if ( gameFlags & FVPHYSICS_PLAYER_HELD )
 		{
