@@ -1721,7 +1721,7 @@ void CHLClient::LevelShutdown( void )
 
 	messagechars->Clear();
 
-#if !defined( TF_CLIENT_DLL || OF_CLIENT_DLL )
+#if !defined( TF_CLIENT_DLL) && !defined( OF_CLIENT_DLL )
 	// don't want to do this for TF2 because we have particle systems in our
 	// character loadout screen that can be viewed when we're not connected to a server
 	g_pParticleSystemMgr->UncacheAllParticleSystems();

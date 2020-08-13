@@ -314,6 +314,7 @@ public:
 			soundemitterbase->AddSoundOverrides( scriptfile );
 		}
 #endif
+#endif
 
 #if !defined( CLIENT_DLL )
 		for ( int i=soundemitterbase->First(); i != soundemitterbase->InvalidIndex(); i=soundemitterbase->Next( i ) )
