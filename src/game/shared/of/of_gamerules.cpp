@@ -1,6 +1,6 @@
 // ========= Copyright Open Fortress Developers, CC-BY-NC-SA ============
 // Purpose: Game logic manager
-// Author(s): ficool2
+// Author(s): ficool2, Fenteale
 //
 
 #include "cbase.h"
@@ -324,6 +324,12 @@ bool COFGameRules::ClientCommand( CBaseEntity *pEdict, const CCommand &args )
 		return true;
 #endif
 
+	return false;
+}
+
+//OFSTATUS: INCOMPLETE
+//do we want to handle this?
+bool COFGameRules::IsPlayingSpecialDeliveryMode( void ) {
 	return false;
 }
 

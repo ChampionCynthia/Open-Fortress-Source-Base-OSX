@@ -43,4 +43,5 @@ const char *g_aAmmoNames[] =
 	"TF_AMMO_GRENADES3"
 };
 
-#define TF_DAMAGE_CRIT_MULTIPLIER 3
+#define TF_DAMAGE_CRIT_MULTIPLIER	3
+#define TF_GAMETYPE_ESCORT			3

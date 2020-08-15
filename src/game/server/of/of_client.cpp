@@ -1,6 +1,6 @@
 // ========= Copyright Open Fortress Developers, CC-BY-NC-SA ============
 // Purpose: General functions related to clients
-// Author(s): ficool2
+// Author(s): ficool2, Fenteale
 //
 
 #include "cbase.h"
@@ -12,6 +12,7 @@
 #include "physics.h"
 #include "game.h"
 #include "player_resource.h"
+#include "filesystem.h"
 
 #include "tier0/vprof.h"
 
@@ -24,7 +25,7 @@ extern CBaseEntity*	FindPickerEntityClass( CBasePlayer *pPlayer, char *classname
 extern bool			g_fGameOver;
 
 // OFSTATUS: INCOMPLETE
-void FinishClientPutInServer( COF_Player *pPlayer )
+void FinishClientPutInServer( COFPlayer *pPlayer )
 {
 	pPlayer->InitialSpawn();
 	pPlayer->Spawn();
@@ -48,7 +49,7 @@ void FinishClientPutInServer( COF_Player *pPlayer )
 // Called each time a player is spawned into the game
 void ClientPutInServer( edict_t *pEdict, const char *playername )
 {
-	COF_Player *pPlayer = COF_Player::CreatePlayer( "player", pEdict );
+	COFPlayer *pPlayer = COFPlayer::CreatePlayer( "player", pEdict );
 	pPlayer->SetPlayerName( playername );
 }
 
@@ -58,7 +59,7 @@ void ClientActive( edict_t *pEdict, bool bLoadGame )
 	if ( bLoadGame )
 		return;
 
-	COF_Player *pPlayer = ToOFPlayer( CBaseEntity::Instance( pEdict ) );
+	COFPlayer *pPlayer = ToOFPlayer( CBaseEntity::Instance( pEdict ) );
 	FinishClientPutInServer( pPlayer );
 }
 
@@ -91,7 +92,7 @@ void ClientGamePrecache( void )
 {
 	KeyValues *pKeys = new KeyValues( "ClientPrecache" );
 	
-	if ( pKeys->LoadFromFile( filesystem, CLIENT_PRECACHE_FILE, "GAME" ) )
+	if ( pKeys->LoadFromFile( g_pFullFileSystem, CLIENT_PRECACHE_FILE, "GAME" ) )
 	{
 		for ( KeyValues *pSubKey = pKeys->GetFirstSubKey(); pSubKey != NULL; pSubKey = pSubKey->GetNextKey() )
 		{
@@ -125,7 +126,7 @@ void ClientGamePrecache( void )
 // Called by ClientKill and DeadThink
 void respawn( CBaseEntity *pEdict, bool fCopyCorpse )
 {
-	COF_Player *pPlayer = ToOFPlayer( pEdict );
+	COFPlayer *pPlayer = ToOFPlayer( pEdict );
 
 	if ( pPlayer )
 	{

@@ -39,6 +39,7 @@ $Project "Server (Open Fortress)"
 		$File	"trigger_area_capture.h"
 		
 		$File	"of/of_client.cpp"
+		$File	"of/of_player.cpp"
 		
 		$File   "$SRCDIR\game\shared\teamplay_round_timer.cpp"
 		$File   "$SRCDIR\game\shared\teamplay_round_timer.h"

@@ -1,6 +1,6 @@
 // ========= Copyright Open Fortress Developers, CC-BY-NC-SA ============
 // Purpose: Game logic manager
-// Author(s): ficool2
+// Author(s): ficool2, Fenteale
 //
 
 #ifndef OF_GAMERULES_H
@@ -19,6 +19,8 @@
 	#define COFGameRules C_OFGameRules
 	#define COFGameRulesProxy C_OFGameRulesProxy
 #endif
+
+#define HUD_ALERT_SCRAMBLE_TEAMS	0
 
 class COFGameRulesProxy : public CGameRulesProxy
 {
@@ -54,6 +56,8 @@ public:
 	virtual const unsigned char *GetEncryptionKey( void ) { return (unsigned char *)"E2NcUkG2"; }
 	virtual void ClientDisconnected( edict_t *pClient );
 	virtual bool IsConnectedUserInfoChangeAllowed( CBasePlayer *pPlayer );
+
+	virtual bool IsPlayingSpecialDeliveryMode( void );
 };
 
 inline COFGameRules* OFGameRules()

@@ -96,7 +96,7 @@ void ParseParticleEffects( bool bLoadSheets, bool bPrecache )
 	int nCount = files.Count();
 	for ( int i = 0; i < nCount; ++i )
 	{
-#ifdef defined( OF_CLIENT )
+#if defined( OF_CLIENT )
 		if(!Q_strstr(files[i], "weapon_unusual"))
 #endif
 			g_pParticleSystemMgr->ReadParticleConfigFile( files[i], bPrecache, false );

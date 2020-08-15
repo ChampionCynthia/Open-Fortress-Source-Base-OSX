@@ -20,6 +20,11 @@
 #include "tf_gamerules.h"
 #endif
 
+#if defined( OF_DLL )
+#include "of_shareddefs.h"
+#include "of_gamerules.h"
+#endif
+
 #define CONTROL_POINT_UNLOCK_THINK			"UnlockThink"
 
 BEGIN_DATADESC(CTeamControlPoint)

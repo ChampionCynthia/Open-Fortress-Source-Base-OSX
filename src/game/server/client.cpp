@@ -41,6 +41,11 @@
 #include "tf_gamerules.h"
 #endif
 
+#ifdef OF_DLL
+#include "of_player.h"
+#include "of_gamerules.h"
+#endif
+
 #ifdef HL2_DLL
 #include "weapon_physcannon.h"
 #endif
@@ -1367,8 +1372,11 @@ CON_COMMAND_F( setang_exact, "Snap player eyes and orientation to specified pitc
 	pPlayer->Teleport( NULL, &newang, NULL );
 	pPlayer->SnapEyeAngles( newang );
 
-#if defined ( TF_DLL ) || defined ( OF_DLL )
+#if defined ( TF_DLL )
 	static_cast<CTFPlayer*>( pPlayer )->DoAnimationEvent( PLAYERANIMEVENT_SNAP_YAW );
+#endif
+#if defined ( OF_DLL )
+	static_cast<COFPlayer*>( pPlayer )->DoAnimationEvent( PLAYERANIMEVENT_SNAP_YAW );
 #endif
 }
 

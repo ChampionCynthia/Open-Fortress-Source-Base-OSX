@@ -46,6 +46,10 @@
 	#endif // GAME_DLL
 #endif
 
+#if defined(OF_CLIENT_DLL) || defined(OF_DLL)
+	#include "of_gamerules.h"
+#endif
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
