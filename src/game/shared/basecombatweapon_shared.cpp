@@ -24,6 +24,10 @@
 #include "tf_shareddefs.h"
 #endif
 
+#if defined ( OF_DLL ) || defined ( OF_CLIENT_DLL )
+#include "of_shareddefs.h"
+#endif
+
 #if !defined( CLIENT_DLL )
 
 // Game DLL Headers

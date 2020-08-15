@@ -18,6 +18,10 @@
 #include "tf_shareddefs.h"
 #endif
 
+#if defined( OF_CLIENT_DLL )
+#include "of_shareddefs.h"
+#endif
+
 #ifdef GAME_DLL
 #include "ai_utils.h"
 #endif

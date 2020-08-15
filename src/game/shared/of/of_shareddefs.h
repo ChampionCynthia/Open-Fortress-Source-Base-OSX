@@ -1,6 +1,6 @@
 // ========= Copyright Open Fortress Developers, CC-BY-NC-SA ============
 // Purpose: General definitions
-// Author(s): ficool2
+// Author(s): ficool2, Fenteale
 //
 
 // OFSTATUS: INCOMPLETE  ( labeling )
@@ -16,7 +16,7 @@ enum OF_Collision_Group_t
 	OF_COLLISION_GROUP_PUMPKIN_BOMB,
 	// OFINFO: this is called in FireRocket + FireArrow in CPointWeaponMimic, guessing its for projectiles?
 	OF_COLLISION_GROUP_PROJECTILE,
-];
+};
 
 
 // Sourced from sourcemod API
@@ -42,3 +42,5 @@ const char *g_aAmmoNames[] =
 	"TF_AMMO_GRENADES2",
 	"TF_AMMO_GRENADES3"
 };
+
+#define TF_DAMAGE_CRIT_MULTIPLIER 3

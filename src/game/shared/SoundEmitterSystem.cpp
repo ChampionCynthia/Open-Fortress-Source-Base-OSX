@@ -295,6 +295,7 @@ public:
 			// OFTODO: Add support for this?
 #if !defined( OF_CLIENT_DLL ) || !defined( OF_DLL )
 			g_pTFPlayerClassDataMgr->AddAdditionalPlayerDeathSounds();
+#endif
 		}
 		else
 		{
@@ -313,7 +314,6 @@ public:
 		{
 			soundemitterbase->AddSoundOverrides( scriptfile );
 		}
-#endif
 #endif
 
 #if !defined( CLIENT_DLL )
