@@ -21,6 +21,7 @@ public:
 
 	C_OFPlayer();
 	static C_OFPlayer* CreatePlayer( const char * name, edict_t* pEdict);
+	void DoAnimationEvent( PlayerAnimEvent_t event, int nData = 0 );
 };
 
 #endif

@@ -19,3 +19,8 @@ COF_Player* COF_Player::CreatePlayer( const char * name, edict_t* pEdict)
 	C_BasePlayer::s_PlayerEdict = pEdict;
 	return (COF_Player *)CreateEntityByName(name, -1);
 }
+
+void C_OFPlayer::DoAnimationEvent( PlayerAnimEvent_t event, int nData )
+{
+	m_PlayerAnimState->DoAnimationEvent( event, nData );
+}

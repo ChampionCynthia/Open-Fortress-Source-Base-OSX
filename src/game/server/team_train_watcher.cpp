@@ -22,6 +22,10 @@
 #include "tf_shareddefs.h"
 #endif
 
+#ifdef OF_DLL
+#include "of_shareddefs.h"
+#endif
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 /*

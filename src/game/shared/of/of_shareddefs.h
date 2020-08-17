@@ -45,3 +45,6 @@ const char *g_aAmmoNames[] =
 
 #define TF_DAMAGE_CRIT_MULTIPLIER	3
 #define TF_GAMETYPE_ESCORT			3
+
+#define TF_TEAM_RED 				2
+#define TF_TEAM_BLUE				3
