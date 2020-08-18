@@ -1,1 +1,2 @@
-devtools\bin\vpc.exe /hl2mp +game /mksln games.sln
+devtools\bin\vpc.exe /openfortress +game /mksln openfortress_gamedlls.sln
+@pause

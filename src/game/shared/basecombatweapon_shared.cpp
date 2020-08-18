@@ -24,6 +24,10 @@
 #include "tf_shareddefs.h"
 #endif
 
+#if defined ( OF_DLL ) || defined ( OF_CLIENT_DLL )
+#include "of_shareddefs.h"
+#endif
+
 #if !defined( CLIENT_DLL )
 
 // Game DLL Headers
@@ -53,7 +57,7 @@
 
 extern bool UTIL_ItemCanBeTouchedByPlayer( CBaseEntity *pItem, CBasePlayer *pPlayer );
 
-#if defined ( TF_CLIENT_DLL ) || defined ( TF_DLL )
+#if defined ( TF_CLIENT_DLL ) || defined ( TF_DLL ) || defined( OF_DLL ) || defined ( OF_CLIENT_DLL )
 #ifdef _DEBUG
 ConVar tf_weapon_criticals_force_random( "tf_weapon_criticals_force_random", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 #endif // _DEBUG
@@ -95,7 +99,7 @@ CBaseCombatWeapon::CBaseCombatWeapon()
 
 	m_hWeaponFileInfo = GetInvalidWeaponInfoHandle();
 
-#if defined( TF_DLL )
+#if defined( TF_DLL ) || defined ( OF_DLL )
 	UseClientSideAnimation();
 #endif
 
@@ -1573,7 +1577,7 @@ bool CBaseCombatWeapon::CanReload( void )
 	return true;
 }
 
-#if defined ( TF_CLIENT_DLL ) || defined ( TF_DLL )
+#if defined ( TF_CLIENT_DLL ) || defined ( TF_DLL ) || defined( OF_DLL ) || defined ( OF_CLIENT_DLL )
 //-----------------------------------------------------------------------------
 // Purpose: Anti-hack
 //-----------------------------------------------------------------------------
@@ -2807,7 +2811,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CBaseCombatWeapon, DT_LocalActiveWeaponData )
 	SendPropInt( SENDINFO( m_nNextThinkTick ) ),
 	SendPropTime( SENDINFO( m_flTimeWeaponIdle ) ),
 
-#if defined( TF_DLL )
+#if defined( TF_DLL ) || defined( OF_DLL )
 	SendPropExclude( "DT_AnimTimeMustBeFirst" , "m_flAnimTime" ),
 #endif
 
@@ -2833,7 +2837,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CBaseCombatWeapon, DT_LocalWeaponData )
 
 	SendPropInt( SENDINFO( m_bFlipViewModel ) ),
 
-#if defined( TF_DLL )
+#if defined( TF_DLL ) || defined( OF_DLL )
 	SendPropExclude( "DT_AnimTimeMustBeFirst" , "m_flAnimTime" ),
 #endif
 

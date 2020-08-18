@@ -20,6 +20,11 @@
 #include "tf_gamerules.h"
 #endif
 
+#if defined( OF_DLL )
+#include "of_shareddefs.h"
+#include "of_gamerules.h"
+#endif
+
 #define CONTROL_POINT_UNLOCK_THINK			"UnlockThink"
 
 BEGIN_DATADESC(CTeamControlPoint)
@@ -84,7 +89,7 @@ CTeamControlPoint::CTeamControlPoint()
 	m_bLocked = false;
 	m_flUnlockTime = -1;
 
-#ifdef  TF_DLL
+#if defined( TF_DLL ) || defined( OF_DLL )
 	UseClientSideAnimation();
 #endif
 }
@@ -101,7 +106,7 @@ void CTeamControlPoint::Spawn( void )
 		m_iDefaultOwner = TEAM_UNASSIGNED;
 	}
 
-#ifdef TF_DLL
+#if defined( TF_DLL ) || defined( OF_DLL )
 	if ( m_iszCaptureStartSound == NULL_STRING )
 	{
 		m_iszCaptureStartSound = AllocPooledString( "Hologram.Start" );
@@ -268,7 +273,7 @@ void CTeamControlPoint::Precache( void )
 		PrecacheScriptSound( STRING( m_iszWarnSound ) );
 	}
 
-#ifdef TF_DLL
+#if defined( TF_DLL ) || defined( OF_DLL )
 	PrecacheScriptSound( "Announcer.ControlPointContested" );
 	PrecacheScriptSound( "Announcer.ControlPointContested_Neutral" );
 #endif
@@ -308,7 +313,7 @@ void CTeamControlPoint::HandleScoring( int iTeam )
 		CTeamControlPointMaster *pMaster = g_hControlPointMasters.Count() ? g_hControlPointMasters[0] : NULL;
 		if ( pMaster && !pMaster->WouldNewCPOwnerWinGame( this, iTeam ) )
 		{
-#ifdef TF_DLL
+#if defined( TF_DLL ) || defined( OF_DLL )
 			if ( TeamplayRoundBasedRules()->GetGameType() == TF_GAMETYPE_ESCORT )
 			{
 				CBroadcastRecipientFilter filter;

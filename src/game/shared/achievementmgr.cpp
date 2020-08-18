@@ -1033,6 +1033,12 @@ extern bool IsInCommentaryMode( void );
 //-----------------------------------------------------------------------------
 bool CAchievementMgr::CheckAchievementsEnabled()
 {
+	// OFTODO: For now, no achievements.
+#ifdef OF_CLIENT_DLL
+	Msg( "Achievements disabled: Not supported in Open Fortress.\n" );
+	return false;
+#endif
+
 	// if PC, Steam must be running and user logged in
 	if ( IsPC() && !LoggedIntoSteam() )
 	{

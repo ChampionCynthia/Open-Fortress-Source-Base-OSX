@@ -39,7 +39,7 @@
 	ConVar cl_righthand( "cl_righthand", "1", FCVAR_ARCHIVE, "Use right-handed view models." );
 #endif
 
-#ifdef TF_CLIENT_DLL
+#if defined ( TF_CLIENT_DLL ) || defined ( OF_CLIENT_DLL )
 	ConVar cl_flipviewmodels( "cl_flipviewmodels", "0", FCVAR_USERINFO | FCVAR_ARCHIVE | FCVAR_NOT_CONNECTED, "Flip view models." );
 #endif
 
@@ -213,6 +213,10 @@ bool C_BaseViewModel::ShouldFlipViewModel()
 	{
 		return pWeapon->m_bFlipViewModel != cl_flipviewmodels.GetBool();
 	}
+#endif
+
+#ifdef OF_CLIENT_DLL
+	return cl_flipviewmodels.GetBool();
 #endif
 
 	return false;

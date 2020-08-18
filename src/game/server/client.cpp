@@ -35,10 +35,16 @@
 #include "datacache/imdlcache.h"
 #include "basemultiplayerplayer.h"
 #include "voice_gamemgr.h"
+#include "Multiplayer/multiplayer_animstate.h"
 
 #ifdef TF_DLL
 #include "tf_player.h"
 #include "tf_gamerules.h"
+#endif
+
+#ifdef OF_DLL
+#include "of_player.h"
+#include "of_gamerules.h"
 #endif
 
 #ifdef HL2_DLL
@@ -62,6 +68,8 @@ enum eAllowPointServerCommand {
 	eAllowOfficial,
 	eAllowAlways
 };
+
+// OFTODO: Add support for these server command checks
 
 #ifdef TF_DLL
 // The default value here should match the default of the convar
@@ -1365,8 +1373,11 @@ CON_COMMAND_F( setang_exact, "Snap player eyes and orientation to specified pitc
 	pPlayer->Teleport( NULL, &newang, NULL );
 	pPlayer->SnapEyeAngles( newang );
 
-#ifdef TF_DLL
+#if defined ( TF_DLL )
 	static_cast<CTFPlayer*>( pPlayer )->DoAnimationEvent( PLAYERANIMEVENT_SNAP_YAW );
+#endif
+#if defined ( OF_DLL )
+	static_cast<COFPlayer*>( pPlayer )->DoAnimationEvent( PLAYERANIMEVENT_SNAP_YAW );
 #endif
 }
 

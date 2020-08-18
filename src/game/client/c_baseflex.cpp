@@ -351,7 +351,7 @@ bool CFlexSceneFileManager::Init()
 	FindSceneFile( NULL, "randomAlert", true );
 #endif
 
-#if defined( TF_CLIENT_DLL )
+#if defined( TF_CLIENT_DLL ) || defined( OF_CLIENT_DLL )
 	// HACK TO ALL TF TO HAVE PER CLASS OVERRIDES
 	char const *pTFClasses[] = 
 	{

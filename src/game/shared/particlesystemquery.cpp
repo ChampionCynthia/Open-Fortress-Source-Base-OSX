@@ -18,6 +18,10 @@
 #include "tf_shareddefs.h"
 #endif
 
+#if defined( OF_CLIENT_DLL )
+#include "of_shareddefs.h"
+#endif
+
 #ifdef GAME_DLL
 #include "ai_utils.h"
 #endif
@@ -553,6 +557,9 @@ static CollisionGroupNameRecord_t s_NameMap[]={
 	{ "PASSABLE", COLLISION_GROUP_PASSABLE_DOOR },	
 #if defined( TF_CLIENT_DLL )
 	{ "ROCKETS", TFCOLLISION_GROUP_ROCKETS },
+#endif
+#if defined( OF_CLIENT_DLL )
+	{ "ROCKETS", OF_COLLISION_GROUP_ROCKETS },
 #endif
 };
 

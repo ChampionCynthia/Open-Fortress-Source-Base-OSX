@@ -676,6 +676,7 @@ void CTeamControlPointMaster::CheckWinConditions( void )
 		{
 			bool bWinner = true;
 
+			// OFTODO: Implement this
 #if defined( TF_DLL)
 			if ( TFGameRules() && TFGameRules()->IsInKothMode() )
 			{

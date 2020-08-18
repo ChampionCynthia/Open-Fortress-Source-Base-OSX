@@ -652,6 +652,7 @@ bool CRopeManager::IsHolidayLightMode( void )
 
 	bool bDrawHolidayLights = false;
 
+	// OFTODO: Implement holiday lights
 #ifdef USES_ECON_ITEMS
 	if ( !m_bHolidayInitialized && GameRules() )
 	{

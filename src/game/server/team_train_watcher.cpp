@@ -22,6 +22,10 @@
 #include "tf_shareddefs.h"
 #endif
 
+#ifdef OF_DLL
+#include "of_shareddefs.h"
+#endif
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 /*
@@ -319,7 +323,7 @@ CTeamTrainWatcher::CTeamTrainWatcher()
 	m_hGlowEnt.Set( NULL );
 #endif // GLOWS_ENABLE
 
-#ifdef TF_DLL
+#if defined( TF_DLL ) || defined( OF_DLL )
 	ChangeTeam( TF_TEAM_BLUE );
 #else
 	ChangeTeam( TEAM_UNASSIGNED );

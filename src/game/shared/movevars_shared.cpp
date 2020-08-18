@@ -24,6 +24,7 @@
 
 float GetCurrentGravity( void )
 {
+	// OFTODO: Implement this
 #if defined( TF_CLIENT_DLL ) || defined( TF_DLL )
 	if ( TFGameRules() )
 	{

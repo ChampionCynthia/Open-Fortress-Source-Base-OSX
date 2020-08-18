@@ -96,7 +96,10 @@ void ParseParticleEffects( bool bLoadSheets, bool bPrecache )
 	int nCount = files.Count();
 	for ( int i = 0; i < nCount; ++i )
 	{
-		g_pParticleSystemMgr->ReadParticleConfigFile( files[i], bPrecache, false );
+#if defined( OF_CLIENT )
+		if(!Q_strstr(files[i], "weapon_unusual"))
+#endif
+			g_pParticleSystemMgr->ReadParticleConfigFile( files[i], bPrecache, false );
 	}
 
 	g_pParticleSystemMgr->DecommitTempMemory();

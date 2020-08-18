@@ -272,7 +272,7 @@ public:
 
 		// Load in any map specific overrides
 		char scriptfile[ 512 ];
-#if defined( TF_CLIENT_DLL ) || defined( TF_DLL )
+#if defined( TF_CLIENT_DLL ) || defined( TF_DLL ) || defined ( OF_CLIENT_DLL ) || defined ( OF_DLL )
 		if( V_stristr( mapname, "mvm" ) )
 		{
 			V_strncpy( scriptfile, "scripts/mvm_level_sounds.txt", sizeof( scriptfile ) );
@@ -292,7 +292,10 @@ public:
 			{
 				soundemitterbase->AddSoundOverrides( "scripts/game_sounds_vo_mvm_mighty.txt", true );
 			}
+			// OFTODO: Add support for this?
+#if !defined( OF_CLIENT_DLL ) || !defined( OF_DLL )
 			g_pTFPlayerClassDataMgr->AddAdditionalPlayerDeathSounds();
+#endif
 		}
 		else
 		{
