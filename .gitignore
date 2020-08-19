@@ -54,13 +54,19 @@ ipch
 *.bak
 
 # Ignore tier1 since its compiled in VPC projs
-
+# windows
 /src/lib/public/tier1.lib
 /src/lib/public/raytrace.lib
 /src/lib/public/mathlib.lib
 /src/lib/public/vgui_controls.lib
+# macosx
 /src/lib/osx32/tier1.a
 /src/lib/osx32/raytrace.a
+/src/lib/osx32/mathlib.a
+/src/lib/osx32/vgui_controls.a
+# linux
+# These binaries are still listed as modified in git status for me,
+#  whether I list them with a leading / or not. git sux      -Nopey
 /src/lib/public/linux32/tier1.a
 /src/lib/public/linux32/raytrace.a
 /src/lib/public/linux32/mathlib.a
@@ -107,10 +113,6 @@ obj_*_macosx/
 !/src/devtools/*.mak
 
 # unsorted
-/src/lib/public/mathlib.lib
-/src/lib/public/raytrace.lib
-/src/lib/public/tier1.lib
-/src/lib/public/vgui_controls.lib
 src/utils/captioncompiler/Release/captioncompiler.exe
 src/utils/captioncompiler/Release/captioncompiler.lib
 src/utils/captioncompiler/Release/captioncompiler.pdb
