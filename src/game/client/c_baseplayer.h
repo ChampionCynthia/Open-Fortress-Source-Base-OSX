@@ -7,6 +7,8 @@
 //=============================================================================//
 // Open Fortress Modifications (CC-BY-NC-CA)
 // * Replace OVERRIDE macro with override, as defining override to nothing is prettier.
+// * include vphysics_interface.h for surfacedata_t defn
+// * include baseplayer_shared.h for stepsoundtimes_t defn
 
 #ifndef C_BASEPLAYER_H
 #define C_BASEPLAYER_H
@@ -16,6 +18,7 @@
 
 #include "c_playerlocaldata.h"
 #include "c_basecombatcharacter.h"
+#include "baseplayer_shared.h"
 #include "PlayerState.h"
 #include "usercmd.h"
 #include "shareddefs.h"
@@ -27,6 +30,7 @@
 #include "c_env_fog_controller.h"
 #include "igameevents.h"
 #include "GameEventListener.h"
+#include "vphysics_interface.h"
 
 #if defined USES_ECON_ITEMS
 #include "econ_item.h"

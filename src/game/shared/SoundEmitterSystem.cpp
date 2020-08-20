@@ -3,6 +3,8 @@
 // Purpose: 
 //
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * #if 0'd some ~~Some OF_DLL and OF_CLIENT_DLL gated changes regarding tf2 specific soundscripts.~~
 
 #include "cbase.h"
 #include <ctype.h>
@@ -293,8 +295,8 @@ public:
 				soundemitterbase->AddSoundOverrides( "scripts/game_sounds_vo_mvm_mighty.txt", true );
 			}
 			// OFTODO: Add support for this?
-#if !defined( OF_CLIENT_DLL ) || !defined( OF_DLL )
-			g_pTFPlayerClassDataMgr->AddAdditionalPlayerDeathSounds();
+#if 0 // defined( OF_CLIENT_DLL ) || defined( OF_DLL )
+			g_pOFPlayerClassDataMgr->AddAdditionalPlayerDeathSounds();
 #endif
 		}
 		else

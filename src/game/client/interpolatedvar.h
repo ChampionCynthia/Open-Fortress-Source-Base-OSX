@@ -3,6 +3,8 @@
 // Purpose: 
 //
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * include cdll_client_int.h to fix missing gpGlobals declaration err.
 
 #ifndef INTERPOLATEDVAR_H
 #define INTERPOLATEDVAR_H
@@ -15,7 +17,7 @@
 #include "lerp_functions.h"
 #include "animationlayer.h"
 #include "convar.h"
-
+#include "cdll_client_int.h"
 
 #include "tier0/memdbgon.h"
 

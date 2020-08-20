@@ -1,6 +1,6 @@
 // ========= Copyright Open Fortress Developers, CC-BY-NC-SA ============
-// Purpose: Implementation of CTFPlayer
-// Author(s): Fenteale
+// Purpose: Implementation of COFPlayer
+// Author(s): Fenteale, Nopey
 //
 
 #ifndef OF_PLAYER_H
@@ -11,6 +11,8 @@
 #endif
 
 #include "player.h"
+#include "dbg.h"
+#include "of_playeranimstate.h"
 
 class COFPlayer : public CBasePlayer {
 public:
@@ -18,19 +20,22 @@ public:
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
 
+	// This passes the event to the client's and server's CPlayerAnimState.
+	void DoAnimationEvent( PlayerAnimEvent_t event, int nData = 0 );
+
 	COFPlayer();
 	static COFPlayer* CreatePlayer( const char * name, edict_t* pEdict);
+
+private:
+	COFPlayerAnimState *m_PlayerAnimState;
 };
 
 inline COFPlayer *ToOFPlayer( CBaseEntity *pEntity )
 {
 	if ( !pEntity || !pEntity->IsPlayer() )
-		return NULL;
+		return nullptr;
 
-#ifdef _DEBUG
-	Assert( dynamic_cast<COFPlayer*>( pEntity ) != 0 );
-#endif
-	return static_cast< COFPlayer* >( pEntity );
+	return assert_cast<COFPlayer*>( pEntity );
 }
 
 #endif

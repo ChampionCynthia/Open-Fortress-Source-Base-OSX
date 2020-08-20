@@ -4,6 +4,8 @@
 //
 // $NoKeywords: $
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * add #include "networkvar.h" to solve a compiler error and because its used here.
 
 #ifndef PLAYERNET_VARS_H
 #define PLAYERNET_VARS_H
@@ -12,6 +14,7 @@
 #endif
 
 #include "shared_classnames.h"
+#include "networkvar.h"
 
 #define NUM_AUDIO_LOCAL_SOUNDS	8
 

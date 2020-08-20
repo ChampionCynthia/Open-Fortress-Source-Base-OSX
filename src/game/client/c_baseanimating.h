@@ -5,6 +5,9 @@
 // $Workfile:     $
 // $NoKeywords: $
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * add #include "baseentity_shared.h" for FCAP_SAVE_NON_NETWORKABLE defn
+
 #ifndef C_BASEANIMATING_H
 #define C_BASEANIMATING_H
 
@@ -26,6 +29,7 @@
 #include "ragdoll_shared.h"
 #include "tier0/threadtools.h"
 #include "datacache/idatacache.h"
+#include "baseentity_shared.h"
 
 #define LIPSYNC_POSEPARAM_NAME "mouth"
 #define NUM_HITBOX_FIRES	10

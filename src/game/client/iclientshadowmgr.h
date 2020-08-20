@@ -5,6 +5,8 @@
 // $NoKeywords: $
 //
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * include "predictioncopy.h" for EHANDLE (put first because im scared)
 
 #ifndef ICLIENTSHADOWMGR_H
 #define ICLIENTSHADOWMGR_H
@@ -13,6 +15,7 @@
 #pragma once
 #endif
 
+#include "predictioncopy.h"
 #include "igamesystem.h"
 #include "icliententityinternal.h"
 #include "engine/ishadowmgr.h"

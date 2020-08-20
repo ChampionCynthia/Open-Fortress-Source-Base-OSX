@@ -5,6 +5,8 @@
 //
 // $NoKeywords: $
 //===========================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * include "predictioncopy.h" for EHANDLE (put first because im scared)
 
 #ifndef PARTICLES_NEW_H
 #define PARTICLES_NEW_H
@@ -18,6 +20,7 @@
 #include "smartptr.h"
 #include "particles_simple.h"
 #include "tier1/utlobjectreference.h"
+#include "predictioncopy.h"
 
 
 //-----------------------------------------------------------------------------

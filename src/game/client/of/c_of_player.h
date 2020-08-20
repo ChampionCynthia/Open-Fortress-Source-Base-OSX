@@ -11,6 +11,7 @@
 #endif
 
 #include "c_baseplayer.h"
+#include "of_playeranimstate.h"
 
 class C_OFPlayer : public C_BasePlayer {
 public:
@@ -20,8 +21,9 @@ public:
 	DECLARE_INTERPOLATION();
 
 	C_OFPlayer();
-	static C_OFPlayer* CreatePlayer( const char * name, edict_t* pEdict);
 	void DoAnimationEvent( PlayerAnimEvent_t event, int nData = 0 );
+private:
+	COFPlayerAnimState *m_PlayerAnimState;
 };
 
 #endif
