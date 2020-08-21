@@ -39,8 +39,14 @@ $Project "Client (Open Fortress)"
 		$File	"$SRCDIR\game\shared\teamplay_round_timer.cpp"
 		$File	"$SRCDIR\game\shared\teamplay_round_timer.h"
 
-		$File	"$SRCDIR\game\shared\of\of_gamemovement.cpp"
-		$File	"$SRCDIR\game\shared\of\of_gamemovement.h"
+		$File	"$SRCDIR/game/shared/of/of_gamemovement.cpp"
+		$File	"$SRCDIR/game/shared/of/of_gamemovement.h"
+		$File	"$SRCDIR/game/shared/of/of_gamerules.cpp"
+		$File	"$SRCDIR/game/shared/of/of_gamerules.h"
+		$File	"$SRCDIR/game/shared/of/of_playeranimstate.cpp"
+		$File	"$SRCDIR/game/shared/of/of_playeranimstate.h"
+		$File	"$SRCDIR/game/shared/Multiplayer/multiplayer_animstate.cpp"
+		$File	"$SRCDIR/game/shared/Multiplayer/multiplayer_animstate.h"
 		
 		$Folder "VGUI"
 		{

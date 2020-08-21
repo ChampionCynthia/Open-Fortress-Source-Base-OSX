@@ -6,6 +6,7 @@
 #include "c_of_player.h"
 
 // Don't alias here
+// Why not? -Nopey
 #if defined( COFPlayer )
 #undef COFPlayer
 #endif

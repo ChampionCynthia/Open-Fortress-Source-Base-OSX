@@ -4,6 +4,8 @@
 //
 // $NoKeywords: $
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * include ai_activity.h for Activity, as it's used here.
 
 #ifndef ACTIVITYLIST_H
 #define ACTIVITYLIST_H
@@ -12,6 +14,7 @@
 #endif
 
 #include <KeyValues.h>
+#include "ai_activity.h"
 
 typedef struct activityentry_s activityentry_t;
 

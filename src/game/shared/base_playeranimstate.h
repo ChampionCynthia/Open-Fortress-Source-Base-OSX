@@ -3,6 +3,9 @@
 // Purpose: 
 //
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * include ai_activity.h for Activity
+// * include networkvar.h for DECLARE_CLASS_NOBASE
 
 #ifndef BASE_PLAYERANIMSTATE_H
 #define BASE_PLAYERANIMSTATE_H
@@ -14,6 +17,8 @@
 #include "iplayeranimstate.h"
 #include "studio.h"
 #include "sequence_Transitioner.h"
+#include "ai_activity.h"
+#include "networkvar.h"
 
 #ifdef CLIENT_DLL
 	class C_BaseAnimatingOverlay;

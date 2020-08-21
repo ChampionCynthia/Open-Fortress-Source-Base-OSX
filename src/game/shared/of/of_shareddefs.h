@@ -32,7 +32,9 @@ enum OF_Collision_Group_t
 #define AMMONAME_FIRST 1
 #define AMMONAME_LAST 7
 
-const char *g_aAmmoNames[] = 
+//OFHACK: g_aAmmoNames should probably be an extern + defined somewhere but isn't
+// (oh well, just bloats the exe a bit)
+static const char *g_aAmmoNames[] =
 {
 	"DUMMY AMMO", // This ammo is skipped
 	"TF_AMMO_PRIMARY",

@@ -40,13 +40,21 @@ $Project "Server (Open Fortress)"
 		
 		$File	"of/of_client.cpp"
 		$File	"of/of_player.cpp"
+		$File	"of/of_gameinterface.cpp"
+		$File	"of/of_playermove.cpp"
+
+		$File	"of/of_bot_temp.h"
 		
 		$File   "$SRCDIR\game\shared\teamplay_round_timer.cpp"
 		$File   "$SRCDIR\game\shared\teamplay_round_timer.h"
 		$File	"$SRCDIR\game\shared\teamplayroundbased_gamerules.cpp"
 		$File	"$SRCDIR\game\shared\touchlink.h"
-		
-		$File	"$SRCDIR\game\shared\of\of_gamemovement.cpp"
-		$File	"$SRCDIR\game\shared\of\of_gamemovement.h"
+
+		$File	"$SRCDIR/game/shared/of/of_gamemovement.cpp"
+		$File	"$SRCDIR/game/shared/of/of_gamemovement.h"
+		$File	"$SRCDIR/game/shared/of/of_gamerules.cpp"
+		$File	"$SRCDIR/game/shared/of/of_gamerules.h"
+		$File	"$SRCDIR/game/shared/of/of_playeranimstate.cpp"
+		$File	"$SRCDIR/game/shared/of/of_playeranimstate.h"
 	}
 }

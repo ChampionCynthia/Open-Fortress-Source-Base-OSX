@@ -1,6 +1,6 @@
 // ========= Copyright Open Fortress Developers, CC-BY-NC-SA ============
 // Purpose: Game logic manager
-// Author(s): ficool2, Fenteale
+// Author(s): ficool2, Fenteale, Nopey
 //
 
 #include "cbase.h"
@@ -24,9 +24,9 @@
 	#include <ctype.h>
 	#include "iscorer.h"
 	#include "of_player.h"
-	#include "of_gameinterface.h"	
+	#include "gameinterface.h"
 	#include "of_bot_temp.h"
-
+	#include "team.h"
 #endif
 
 REGISTER_GAMERULES_CLASS( COFGameRules );
@@ -253,13 +253,13 @@ bool COFGameRules::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 	{
 		case COLLISION_GROUP_PLAYER_MOVEMENT:
 			if ( collisionGroup1 == COLLISION_GROUP_WEAPON || collisionGroup1 == COLLISION_GROUP_PROJECTILE 
-				|| collisionGroup1 == OF_COLLISION_GROUP_ROCKETS || collisionGroup1 == OF_COLLISION_GROUP_UNKNOWN27 )
+				|| collisionGroup1 == OF_COLLISION_GROUP_ROCKETS || collisionGroup1 == OF_COLLISION_GROUP_PROJECTILE )
 				return false;		
 			if ( collisionGroup1 == OF_COLLISION_GROUP_UNKNOWN20 )
 				return false;
 			break;		
 		case COLLISION_GROUP_PLAYER:
-			if ( collisionGroup1 == OF_COLLISION_GROUP_ROCKETS || collisionGroup1 == OF_COLLISION_GROUP_UNKNOWN27 )
+			if ( collisionGroup1 == OF_COLLISION_GROUP_ROCKETS || collisionGroup1 == OF_COLLISION_GROUP_PROJECTILE )
 				return true;
 			if ( collisionGroup1 == OF_COLLISION_GROUP_UNKNOWN20 )
 				return false;
@@ -272,14 +272,14 @@ bool COFGameRules::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 				return true;
 			break;
 		case OF_COLLISION_GROUP_ROCKETS:
-		case OF_COLLISION_GROUP_UNKNOWN27:
+		case OF_COLLISION_GROUP_PROJECTILE:
 			break;
 		default:
 			var1 = true;
 			break;
 	}
 	
-	if ( !var1 && collisionGroup1 == OF_COLLISION_GROUP_UNKNOWN27 )
+	if ( !var1 && collisionGroup1 == OF_COLLISION_GROUP_PROJECTILE )
 		return false; 
 	
 	if ( collisionGroup1 != OF_COLLISION_GROUP_UNKNOWN25 )
@@ -302,7 +302,7 @@ bool COFGameRules::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 				return BaseClass::ShouldCollide( collisionGroup0, collisionGroup1 );
 		}
 		
-		if ( collisionGroup1 != OF_COLLISION_GROUP_UNKNOWN26 )
+		if ( collisionGroup1 != OF_COLLISION_GROUP_PUMPKIN_BOMB )
 			return BaseClass::ShouldCollide( collisionGroup0, collisionGroup1 );
 		
 		return false;
@@ -351,7 +351,7 @@ CAmmoDef *GetAmmoDef()
 			def.AddAmmoType( g_aAmmoNames[iAmmoIndex], DMG_BULLET | DMG_NOCLOSEDISTANCEMOD | DMG_USEDISTANCEMOD, 1,	0, 0, ammo_max.GetInt(), 2400.0, 10, 14, 8 );
 			iAmmoIndex++;
 		}
-		while ( iAmmoIndex != AMMONAME_LAST )
+		while ( iAmmoIndex != AMMONAME_LAST );
 	}
 
 	return &def;
@@ -360,16 +360,18 @@ CAmmoDef *GetAmmoDef()
 #ifdef GAME_DLL
 // OFSTATUS: INCOMPLETE (move this to of_bot_temp?) 
 void Bot_f()
-{		
+{
 	// Look at -count.
 	int count = 1;
 	count = clamp( count, 1, 16 );
 
-	int iTeam = TEAM_COMBINE;
-			
+	// what is TEAM_COMBINE? we're not playing hl2 here..
+	// oh well. OFTODO: What team should this be?
+	int iTeam = 0; // TEAM_COMBINE;
+
 	// Look at -frozen.
 	bool bFrozen = false;
-		
+
 	// Ok, spawn all the bots.
 	while ( --count >= 0 )
 	{

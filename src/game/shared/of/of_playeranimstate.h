@@ -14,7 +14,7 @@ class COFPlayerAnimState : public CMultiPlayerAnimState
 public:
 	// This is called by both the client and the server in the same way to trigger events for
 	// players
-	virtual void DoAnimationEvent( PlayerAnimEvent_t event, int nData = 0 ) = 0;
+	void DoAnimationEvent( PlayerAnimEvent_t event, int nData = 0 ) override;
 };
 
 COFPlayerAnimState* CreatePlayerAnimState( CBaseAnimatingOverlay *pEntity );
