@@ -70,7 +70,9 @@ static float WeightedAngle( Vector vec1, Vector vec2)
 	return a*a;	// vectors are facing opposite direction
 }
 
-#if !defined( CSTRIKE_DLL ) && !defined( DOD_DLL ) && !defined( TF_DLL ) && !defined( OF_DLL )// add your mod here if you use your own director
+#if !defined( CSTRIKE_DLL ) && !defined( DOD_DLL ) && !defined( TF_DLL )// add your mod here if you use your own director
+//OFTODO: This is the default HLTV director thing.  eventually we should add OF_DLL to
+//the above defines, and make our own.
 
 static CHLTVDirector s_HLTVDirector;	// singleton
 

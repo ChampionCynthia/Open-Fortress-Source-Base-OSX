@@ -44,6 +44,7 @@ $Project "Server (Open Fortress)"
 		$File	"of/of_playermove.cpp"
 
 		$File	"of/of_bot_temp.h"
+		$File	"of/of_bot_temp.cpp"
 		
 		$File   "$SRCDIR\game\shared\teamplay_round_timer.cpp"
 		$File   "$SRCDIR\game\shared\teamplay_round_timer.h"
@@ -56,5 +57,7 @@ $Project "Server (Open Fortress)"
 		$File	"$SRCDIR/game/shared/of/of_gamerules.h"
 		$File	"$SRCDIR/game/shared/of/of_playeranimstate.cpp"
 		$File	"$SRCDIR/game/shared/of/of_playeranimstate.h"
+		$File	"$SRCDIR/game/shared/Multiplayer/multiplayer_animstate.cpp"
+		$File	"$SRCDIR/game/shared/Multiplayer/multiplayer_animstate.h"
 	}
 }

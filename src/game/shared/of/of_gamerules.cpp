@@ -14,6 +14,7 @@
 #ifdef CLIENT_DLL
 	#include "c_of_player.h"
 #else
+	#include "voice_gamemgr.h"
 	#include "eventqueue.h"
 	#include "player.h"
 	#include "game.h"
@@ -40,6 +41,7 @@ BEGIN_NETWORK_TABLE_NOBASE( COFGameRules, DT_OFGameRules )
 END_NETWORK_TABLE()
 
 LINK_ENTITY_TO_CLASS( tf_gamerules, COFGameRulesProxy );
+IMPLEMENT_NETWORKCLASS_ALIASED( OFGameRulesProxy, DT_OFGameRulesProxy )
 
 // OFSTATUS: COMPLETE
 static const char *s_PreserveEnts[] =
@@ -137,6 +139,12 @@ void COFGameRules::GoToIntermission( void )
 {
 #ifndef CLIENT_DLL
 #endif
+}
+
+//OFSTATUS: INCOMPLETE
+int COFGameRules::PlayerRelationship( CBaseEntity *pPlayer, CBaseEntity *pTarget )
+{
+	return 0;
 }
 
 // OFSTATUS: INCOMPLETE
@@ -380,4 +388,30 @@ void Bot_f()
 }
 
 ConCommand cc_Bot( "bot", Bot_f, "Add a bot.", FCVAR_CHEAT );
+
+//OFTODO: This is just copy pasted from sdk_gamerules.cpp
+// --------------------------------------------------------------------------------------------------- //
+// Voice helper
+// --------------------------------------------------------------------------------------------------- //
+
+class CVoiceGameMgrHelper : public IVoiceGameMgrHelper
+{
+public:
+	virtual bool		CanPlayerHearPlayer( CBasePlayer *pListener, CBasePlayer *pTalker, bool &bProximity )
+	{
+		// Dead players can only be heard by other dead team mates
+		if ( pTalker->IsAlive() == false )
+		{
+			if ( pListener->IsAlive() == false )
+				return ( pListener->InSameTeam( pTalker ) );
+
+			return false;
+		}
+
+		return ( pListener->InSameTeam( pTalker ) );
+	}
+};
+CVoiceGameMgrHelper g_VoiceGameMgrHelper;
+IVoiceGameMgrHelper *g_pVoiceGameMgrHelper = &g_VoiceGameMgrHelper;
+
 #endif
