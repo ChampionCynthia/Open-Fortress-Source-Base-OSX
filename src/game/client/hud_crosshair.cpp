@@ -134,10 +134,11 @@ bool CHudCrosshair::ShouldDraw( void )
 }
 
 #if defined ( TF_CLIENT_DLL) || defined( OF_CLIENT_DLL )
-extern ConVar cl_crosshair_red;
-extern ConVar cl_crosshair_green;
-extern ConVar cl_crosshair_blue;
-extern ConVar cl_crosshair_scale;
+// TODO: Give these descriptions
+ConVar cl_crosshair_red	 ( "cl_crosshair_red", "255", FCVAR_ARCHIVE );
+ConVar cl_crosshair_green( "cl_crosshair_green", "255", FCVAR_ARCHIVE );
+ConVar cl_crosshair_blue ( "cl_crosshair_blue", "255", FCVAR_ARCHIVE );
+ConVar cl_crosshair_scale( "cl_crosshair_scale", "1",   FCVAR_ARCHIVE );
 #endif
 
 

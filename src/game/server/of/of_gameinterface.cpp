@@ -4,4 +4,5 @@
 //
 
 // XXX: until we find out what we actually want, just use the sdk one like so
+#include "cbase.h"
 #include "sdk/sdk_gameinterface.cpp"

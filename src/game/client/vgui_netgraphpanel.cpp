@@ -1173,7 +1173,10 @@ void CNetGraphPanel::DrawLargePacketSizes( int x, int w, int graphtype, float wa
 // Purpose: A basic version (doesn't taken into account the "holding after
 // screenshot" bit like TF does, but is good enough for hud_freezecamhide.
 //-----------------------------------------------------------------------------
-static bool IsTakingAFreezecamScreenshot()
+
+// Having it static doesnt let us use it via externs
+// Not sure if this is a problem on Windows only, if it is tell me - Kay
+bool IsTakingAFreezecamScreenshot()
 {
 	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
 	bool bInFreezeCam = ( pPlayer && pPlayer->GetObserverMode() == OBS_MODE_FREEZECAM );

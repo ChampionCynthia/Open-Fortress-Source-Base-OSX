@@ -6,6 +6,7 @@
 // TODO: Check against tf2 server.dylib! Much lacking functionality. -@Nopey
 // (Many functions are copied from sdk_player.cpp. Please mark any that match tf2 server.dylib)
 
+#include "cbase.h"
 #include "of_player.h"
 #include "of_playeranimstate.h"
 
@@ -47,6 +48,14 @@ void TE_PlayerAnimEvent( CBasePlayer *pPlayer, PlayerAnimEvent_t event, int nDat
 }
 
 // implementation of COFPlayer begin
+
+LINK_ENTITY_TO_CLASS( of_player, COFPlayer );
+
+IMPLEMENT_SERVERCLASS_ST(COFPlayer, DT_OF_Player)
+END_SEND_TABLE()
+
+BEGIN_DATADESC( COFPlayer )
+END_DATADESC()
 
 COFPlayer::COFPlayer() : BaseClass() {
 	m_PlayerAnimState = CreatePlayerAnimState(this);
