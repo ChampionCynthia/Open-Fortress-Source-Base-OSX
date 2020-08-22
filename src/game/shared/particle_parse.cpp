@@ -4,6 +4,11 @@
 //
 //=============================================================================
 
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Changed ParticleParseEffects function to not load any particle with
+// * "weapon_unusual" in the name, as they are different formats and crash
+// * when loaded.
+
 #include "cbase.h"
 #include "filesystem.h"
 #include <KeyValues.h>
@@ -96,8 +101,8 @@ void ParseParticleEffects( bool bLoadSheets, bool bPrecache )
 	int nCount = files.Count();
 	for ( int i = 0; i < nCount; ++i )
 	{
-#if defined( OF_CLIENT )
-		if(!Q_strstr(files[i], "weapon_unusual"))
+#if defined( OF_CLIENT_DLL ) || defined( OF_DLL )
+		if(!Q_strstr(files[i], "weapon_unusual"))  //weapon unusuals crash the game when loaded
 #endif
 			g_pParticleSystemMgr->ReadParticleConfigFile( files[i], bPrecache, false );
 	}

@@ -162,5 +162,5 @@ void GameStartFrame( void )
 // Instantiate the proper game rules object
 void InstallGameRules()
 {
-	CreateGameRulesObject( "COFRules" );
+	CreateGameRulesObject( "COFGameRules" );
 }
