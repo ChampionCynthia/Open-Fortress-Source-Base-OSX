@@ -22,6 +22,8 @@ $Project "Client (Open Fortress)"
 {
 	$Folder	"Source Files"
 	{
+		-$File	"$SRCDIR\game\shared\weapon_parse_default.cpp"
+
 		$File	"c_team_objectiveresource.cpp"
 		$File	"c_team_objectiveresource.h"
 		$File	"c_team_train_watcher.cpp"
@@ -47,6 +49,10 @@ $Project "Client (Open Fortress)"
 		$File	"$SRCDIR/game/shared/of/of_playeranimstate.h"
 		$File	"$SRCDIR/game/shared/Multiplayer/multiplayer_animstate.cpp"
 		$File	"$SRCDIR/game/shared/Multiplayer/multiplayer_animstate.h"
+		$File	"$SRCDIR/game/shared/of/of_weapon_parse.cpp"
+		$File	"$SRCDIR/game/shared/of/of_weapon_parse.h"
+
+		$File	"$SRCDIR/game/shared/of/of_usermessages.cpp"
 		
 		$Folder "VGUI"
 		{

@@ -104,6 +104,13 @@ static const char *s_PreserveEnts[] =
 	END_SEND_TABLE()
 #endif
 
+// Called by world.cpp, is a NOP in both SDK and TF2.
+// OFSTATUS: COMPLETE.
+void InitBodyQue()
+{
+}
+
+
 // OFSTATUS: INCOMPLETE	
 COFGameRules::COFGameRules()
 {
