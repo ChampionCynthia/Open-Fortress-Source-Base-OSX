@@ -4,6 +4,8 @@
 //
 // $NoKeywords: $
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Add a virtual deconstructor so that BaseTooltips can be safely delete'd.
 
 #ifndef TOOLTIP_H
 #define TOOLTIP_H
@@ -26,6 +28,7 @@ class BaseTooltip
 {
 public:
 	BaseTooltip(Panel *parent, const char *text = NULL);
+	virtual ~BaseTooltip();
 
 	virtual void SetText(const char *text);
 	virtual const char *GetText();

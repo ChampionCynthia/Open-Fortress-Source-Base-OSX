@@ -4,6 +4,8 @@
 //
 // $NoKeywords: $
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Mark CAI_Network as final, at least until VALVe finally adds a virt deconstructor to IPartitionEnumerator
 
 #ifndef AI_NETWORK_H
 #define AI_NETWORK_H
@@ -84,7 +86,7 @@ public:
 // Purpose: Stores a node graph through which an AI may pathfind
 //-----------------------------------------------------------------------------
 
-class CAI_Network : public IPartitionEnumerator
+class CAI_Network final : public IPartitionEnumerator
 {
 public:
 	CAI_Network();

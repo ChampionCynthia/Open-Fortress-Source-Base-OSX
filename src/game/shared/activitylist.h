@@ -6,6 +6,7 @@
 //=============================================================================//
 // Open Fortress Modifications (CC-BY-NC-CA)
 // * include ai_activity.h for Activity, as it's used here.
+// * Move REGISTER_SHARED_ACTIVITY from activitylist.h to activitylist.cpp (it's now called ACT)
 
 #ifndef ACTIVITYLIST_H
 #define ACTIVITYLIST_H
@@ -89,9 +90,7 @@ extern int ActivityList_IndexForName( const char *pszActivityName );
 extern const char *ActivityList_NameForIndex( int iActivityIndex );
 extern int ActivityList_HighestIndex();
 
-// This macro guarantees that the names of each activity and the constant used to
-// reference it in the code are identical.
-#define REGISTER_SHARED_ACTIVITY( _n ) ActivityList_RegisterSharedActivity(#_n, _n);
+// Adds an activity, will be placed after the ones listed in activitylist.inc
 #define REGISTER_PRIVATE_ACTIVITY( _n ) _n = ActivityList_RegisterPrivateActivity( #_n );
 
 // Implemented in shared code

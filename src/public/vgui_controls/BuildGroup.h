@@ -4,6 +4,9 @@
 //
 // $NoKeywords: $
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Mark BuildGroup as final to fix nonvirtual destructor warning
+//     (Don't know why this class has any virtual members at all, there're no subclasses.)
 
 #ifndef VGUI_BUILDGROUP_H
 #define VGUI_BUILDGROUP_H
@@ -31,7 +34,7 @@ namespace vgui
 // Purpose: a BuildGroup is a list of panels contained in a window (the contextPanel)
 //			Members of this group are viewable and editable in Build Mode, via the BuildModeDialog wizard
 //-----------------------------------------------------------------------------
-class BuildGroup
+class BuildGroup final
 {
 	DECLARE_HANDLES( BuildGroup, 20 );
 

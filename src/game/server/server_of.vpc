@@ -1,13 +1,13 @@
-//-----------------------------------------------------------------------------
-//	SERVER_OF.VPC
+// ========= Copyright Open Fortress Developers, CC-BY-NC-SA ============
+// Purpose: Project script for Open Fortress client
+// Author(s): ficool2, Fenteale, Nopey
 //
-//	Project Script
-//-----------------------------------------------------------------------------
 
 $Macro SRCDIR		"..\.."
 $Macro GAMENAME 	"open_fortress"
 
 $Include "$SRCDIR\game\server\server_base.vpc"
+$Include "$SRCDIR\game\shared\shared_of.vpc"
 $Include "$SRCDIR\game\server\nav_mesh.vpc"
 
 $Configuration
@@ -46,23 +46,8 @@ $Project "Server (Open Fortress)"
 		$File	"of/of_bot_temp.h"
 		$File	"of/of_bot_temp.cpp"
 		$File	"of/of_eventlog.cpp"
-		
-		$File   "$SRCDIR\game\shared\teamplay_round_timer.cpp"
-		$File   "$SRCDIR\game\shared\teamplay_round_timer.h"
-		$File	"$SRCDIR\game\shared\teamplayroundbased_gamerules.cpp"
-		$File	"$SRCDIR\game\shared\touchlink.h"
 
-		$File	"$SRCDIR/game/shared/of/of_gamemovement.cpp"
-		$File	"$SRCDIR/game/shared/of/of_gamemovement.h"
-		$File	"$SRCDIR/game/shared/of/of_gamerules.cpp"
-		$File	"$SRCDIR/game/shared/of/of_gamerules.h"
-		$File	"$SRCDIR/game/shared/of/of_playeranimstate.cpp"
-		$File	"$SRCDIR/game/shared/of/of_playeranimstate.h"
-		$File	"$SRCDIR/game/shared/Multiplayer/multiplayer_animstate.cpp"
-		$File	"$SRCDIR/game/shared/Multiplayer/multiplayer_animstate.h"
-		$File	"$SRCDIR/game/shared/of/of_weapon_parse.cpp"
-		$File	"$SRCDIR/game/shared/of/of_weapon_parse.h"
-
-		$File	"$SRCDIR/game/shared/of/of_usermessages.cpp"
+		// NOPEY: They're located in shared, but aren't in our client. dunno why
+		$File	"$SRCDIR/game/shared/teamplayroundbased_gamerules.cpp"
 	}
 }

@@ -1,0 +1,30 @@
+// ========= Copyright Open Fortress Developers, CC-BY-NC-SA ============
+// Purpose: Build script for files shared by Open Fortress client and server
+// Author(s): Nopey
+//
+
+$Macro SHARED		"$SRCDIR/game/shared"
+
+$Project
+{
+	$Folder	"Source Files"
+	{
+		$Folder	"Shared"
+		{
+			$File	"$SHARED/teamplay_round_timer.cpp"
+			$File	"$SHARED/teamplay_round_timer.h"
+			$File	"$SHARED/of/of_gamemovement.cpp"
+			$File	"$SHARED/of/of_gamemovement.h"
+			$File	"$SHARED/of/of_gamerules.cpp"
+			$File	"$SHARED/of/of_gamerules.h"
+			$File	"$SHARED/of/of_playeranimstate.cpp"
+			$File	"$SHARED/of/of_playeranimstate.h"
+			$File	"$SHARED/Multiplayer/multiplayer_animstate.cpp"
+			$File	"$SHARED/Multiplayer/multiplayer_animstate.h"
+			$File	"$SHARED/of/of_weapon_parse.cpp"
+			$File	"$SHARED/of/of_weapon_parse.h"
+
+			$File	"$SHARED/of/of_usermessages.cpp"
+		}
+	}
+}		

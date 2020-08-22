@@ -5,6 +5,8 @@
 // just the ok button of a message box. We use a message box class for the ok button
 // and implement another button here.
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Add a virtual deconstructor so that BaseTooltips can be safely delete'd.
 
 #include <math.h>
 #define PROTECTED_THINGS_DISABLE
@@ -47,6 +49,11 @@ BaseTooltip::BaseTooltip(Panel *parent, const char *text)
 	_tooltipDelay = 500; // default delay for opening tooltips
 	_delay = 0;
 }
+
+//-----------------------------------------------------------------------------
+// Purpose: Virtual deconstructor to allow safe deletion
+//-----------------------------------------------------------------------------
+BaseTooltip::~BaseTooltip() {}
 
 //-----------------------------------------------------------------------------
 // Purpose: Reset the tooltip delay timer

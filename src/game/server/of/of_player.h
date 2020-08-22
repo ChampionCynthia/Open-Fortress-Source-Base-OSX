@@ -26,6 +26,13 @@ public:
 	COFPlayer();
 	static COFPlayer* CreatePlayer( const char * name, edict_t* pEdict);
 
+	// Called from of_gamerules
+	void PreCacheKart();
+	void PreCacheMvM();
+	// set to true from of_gamerules
+	//OFTODO: I'm assuming the init value of m_bOFPlayerNeedsPrecache is false.
+	static bool m_bOFPlayerNeedsPrecache = false;
+
 private:
 	COFPlayerAnimState *m_PlayerAnimState;
 };

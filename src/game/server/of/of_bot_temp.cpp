@@ -74,6 +74,8 @@ public:
 // Purpose: Create a new Bot and put it in the game.
 // Output : Pointer to the new Bot, or NULL if there's no free clients.
 //-----------------------------------------------------------------------------
+// OFTODO: Should have the following signature, and some more functionality
+// CBasePlayer *BotPutInServer( bool bUnknown, bool bFrozen, int iTeam, int iClass, const char *forcedname )
 CBasePlayer *BotPutInServer( bool bFrozen, int iTeam, int iClass )
 {
 	char botname[ 64 ];

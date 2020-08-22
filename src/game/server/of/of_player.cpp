@@ -72,3 +72,13 @@ void COFPlayer::DoAnimationEvent( PlayerAnimEvent_t event, int nData )
 	m_PlayerAnimState->DoAnimationEvent( event, nData );
 	TE_PlayerAnimEvent( this, event, nData );	// Send to any clients who can see this guy.
 }
+
+//OFSTATUS: Incomplete, and low priority
+void COFPlayer::PreCacheKart()
+{
+}
+
+//OFSTATUS: Incomplete, and low priority
+void COFPlayer::PreCacheMvM()
+{
+}

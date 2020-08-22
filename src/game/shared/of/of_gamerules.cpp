@@ -241,7 +241,7 @@ void COFGameRules::DeathNotice( CBasePlayer *pVictim, const CTakeDamageInfo &inf
 // OFSTATUS: COMPLETE
 const char *COFGameRules::GetGameDescription( void )
 { 
-	return "Open Fortress"; 
+	return "Open Fortress";
 } 
 
 // OFSTATUS: INCOMPLETE 
@@ -250,9 +250,38 @@ bool COFGameRules::IsConnectedUserInfoChangeAllowed( CBasePlayer *pPlayer )
 	return true;
 }
  
-// OFSTATUS: INCOMPLETE
+//OFSTATUS: Incomplete, and low priority
 void COFGameRules::Precache( void )
 {
+	CTeamplayRules::Precache();
+	// !??!!?!??! this switch is evil. not gonna RE it for now
+	// OF? More like OOF
+	/*
+	switch (this->magic_value_at 0xd70)
+		case 1:
+		CHeadlessHatman::PrecacheHeadlessHatman();
+		break;
+	case 2:
+		CEyeballBoss::PrecacheEyeballBoss();
+		break;
+	case 4:
+		CEyeballBoss::PrecacheEyeballBoss();
+		CGhost::PrecacheGhost();
+		break;
+	case 5:
+		COFPlayer::PrecacheKart();
+		CGhost::PrecacheGhost();
+		CHeadlessHatman::PrecacheHeadlessHatman();
+	case 3:
+		CGhost::PrecacheMerasmus();
+	}
+	*/
+
+	if(StringAfterPrefix(gpGlobals->mapname, "mvm_"))
+		COFPlayer::PreCacheMvM();
+
+	COFPlayer::m_bOFPlayerNeedsPrecache = true;
+  }
 }
 
 // OFSTATUS: NEEDS LABELS
@@ -342,8 +371,7 @@ bool COFGameRules::ClientCommand( CBaseEntity *pEdict, const CCommand &args )
 	return false;
 }
 
-//OFSTATUS: INCOMPLETE
-//do we want to handle this?
+//OFSTATUS: Incomplete, and low priority
 bool COFGameRules::IsPlayingSpecialDeliveryMode( void ) {
 	return false;
 }
