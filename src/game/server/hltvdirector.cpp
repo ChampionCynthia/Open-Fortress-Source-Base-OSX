@@ -9,6 +9,9 @@
 //
 //////////////////////////////////////////////////////////////////////
 
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * OFTODO: implement our own HLTVDirector - Fenteale
+
 #include "cbase.h"
 #include "hltvdirector.h"
 #include "KeyValues.h"

@@ -4,6 +4,10 @@
 //
 // $NoKeywords: $
 //=============================================================================//
+
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added check for OF_DLL define
+
 #include "cbase.h"
 #include "baseviewmodel_shared.h"
 #include "datacache/imdlcache.h"

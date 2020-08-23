@@ -6,6 +6,10 @@
 //
 //=============================================================================//
 /*
+
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added checks for OF_DLL define
+
 Entity Data Descriptions
 
 Each entity has an array which defines it's data in way that is useful for

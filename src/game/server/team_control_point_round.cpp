@@ -5,6 +5,9 @@
 // $NoKeywords: $
 //===========================================================================//
 
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * OFTODO: Implement more KOTH mode stuff - Fenteale
+
 #include "cbase.h"
 #include "team_control_point_master.h"
 #include "teamplayroundbased_gamerules.h"

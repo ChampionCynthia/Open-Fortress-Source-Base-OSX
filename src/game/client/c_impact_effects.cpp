@@ -4,6 +4,9 @@
 //
 //=============================================================================//
 
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added check for OF_CLIENT_DLL define
+
 #include "cbase.h"
 #include "fx.h"
 #include "fx_sparks.h"
@@ -73,8 +76,7 @@ void FX_CacheMaterialHandles( void )
 	g_Mat_BloodPuff[0] = ParticleMgr()->GetPMaterial( "effects/blood" );
 	g_Mat_BloodPuff[1] = ParticleMgr()->GetPMaterial( "effects/blood2" );
 	
-#ifndef OF_CLIENT_DLL
-#ifndef TF_CLIENT_DLL
+#if !defined( TF_CLIENT_DLL ) && !defined( OF_CLIENT_DLL)
 	g_Mat_SMG_Muzzleflash[0] = ParticleMgr()->GetPMaterial( "effects/muzzleflash1" );
 	g_Mat_SMG_Muzzleflash[1] = ParticleMgr()->GetPMaterial( "effects/muzzleflash2" );
 	g_Mat_SMG_Muzzleflash[2] = ParticleMgr()->GetPMaterial( "effects/muzzleflash3" );
@@ -83,7 +85,6 @@ void FX_CacheMaterialHandles( void )
 	g_Mat_Combine_Muzzleflash[0] = ParticleMgr()->GetPMaterial( "effects/combinemuzzle1" );
 	g_Mat_Combine_Muzzleflash[1] = ParticleMgr()->GetPMaterial( "effects/combinemuzzle2" );
 	g_Mat_Combine_Muzzleflash[2] = ParticleMgr()->GetPMaterial( "effects/strider_muzzle" );
-#endif
 #endif
 #endif
 }

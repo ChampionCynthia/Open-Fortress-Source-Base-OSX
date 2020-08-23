@@ -4,6 +4,10 @@
 //
 // $NoKeywords: $
 //=============================================================================//
+
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added check for OF_DLL and OF_CLIENT_DLL defines
+
 #include "cbase.h"
 #include "gamemovement.h"
 #include "in_buttons.h"

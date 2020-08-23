@@ -7,6 +7,11 @@
 //=============================================================================//
 /*
 
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added check for OF_DLL define
+// * added includes for OF headers
+// * added cast for COFPlayer
+
 ===== client.cpp ========================================================
 
   client/server game specific stuff
@@ -35,7 +40,6 @@
 #include "datacache/imdlcache.h"
 #include "basemultiplayerplayer.h"
 #include "voice_gamemgr.h"
-#include "Multiplayer/multiplayer_animstate.h"
 
 #ifdef TF_DLL
 #include "tf_player.h"
@@ -45,6 +49,7 @@
 #ifdef OF_DLL
 #include "of_player.h"
 #include "of_gamerules.h"
+#include "Multiplayer/multiplayer_animstate.h"
 #endif
 
 #ifdef HL2_DLL

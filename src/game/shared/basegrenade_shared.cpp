@@ -4,6 +4,10 @@
 //
 // $NoKeywords: $
 //=============================================================================//
+
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added check for OF_DLL define
+
 #include "cbase.h"
 #include "decals.h"
 #include "basegrenade_shared.h"

@@ -5,6 +5,10 @@
 // $Workfile:     $
 // $NoKeywords: $
 //=============================================================================//
+
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added check for OF_CLIENT_DLL
+
 #include "cbase.h"
 #include <stdarg.h>
 #include "hud.h"

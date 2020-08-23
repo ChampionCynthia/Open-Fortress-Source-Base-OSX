@@ -4,6 +4,9 @@
 //
 //=============================================================================//
 
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added check for OF_DLL define
+
 #include "cbase.h"
 #include "gamerules.h"
 #include "ammodef.h"

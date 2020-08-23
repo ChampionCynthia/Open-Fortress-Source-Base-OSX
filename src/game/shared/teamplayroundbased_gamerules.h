@@ -4,6 +4,7 @@
 //
 //=============================================================================
 // Open Fortress Modifications (CC-BY-NC-CA)
+// * added check for OF_DLL and OF_CLIENT_DLL defines
 // * Replace OVERRIDE macro with override, as defining override to nothing is prettier.
 
 #ifndef TEAMPLAYROUNDBASED_GAMERULES_H

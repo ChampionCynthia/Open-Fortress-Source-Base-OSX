@@ -4,6 +4,9 @@
 //
 //=============================================================================//
 
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added check for OF_DLL define
+
 #ifndef TRAINS_H
 #define TRAINS_H
 #ifdef _WIN32

@@ -11,6 +11,10 @@
 // $NoKeywords: $
 //=============================================================================//
 
+
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added check for OF_CLIENT_DLL define
+
 #pragma warning( disable : 4800  )  // disable forcing int to bool performance warning
 
 #include "cbase.h"

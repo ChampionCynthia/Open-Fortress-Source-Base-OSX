@@ -5,6 +5,9 @@
 // $NoKeywords: $
 //=============================================================================//
 
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added checks for OF_DLL and OF_CLIENT_DLL defines
+
 #ifndef SHAREDDEFS_H
 #define SHAREDDEFS_H
 #ifdef _WIN32

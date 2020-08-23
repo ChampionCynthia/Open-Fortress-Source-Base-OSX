@@ -2,6 +2,7 @@
 //
 //===========================================================================//
 
+// Open Fortress Modifications (CC-BY-NC-CA)
 // OFTODO: Untangle the TF define mess in this file
 
 #include "cbase.h"

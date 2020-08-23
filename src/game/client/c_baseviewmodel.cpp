@@ -5,6 +5,11 @@
 //
 // $NoKeywords: $
 //=============================================================================//
+
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added check for OF_CLIENT_DLL define, implemented our own version
+// * of ShouldFlipViewModel.
+
 #include "cbase.h"
 #include "c_baseviewmodel.h"
 #include "model_types.h"

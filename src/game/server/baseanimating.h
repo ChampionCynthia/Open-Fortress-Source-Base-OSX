@@ -4,6 +4,9 @@
 //
 //=============================================================================//
 
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added check for OF_DLL define
+
 #ifndef BASEANIMATING_H
 #define BASEANIMATING_H
 #ifdef _WIN32

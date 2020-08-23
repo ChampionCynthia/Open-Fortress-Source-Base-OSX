@@ -4,6 +4,11 @@
 //
 //=============================================================================
 
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added checks for OF_DLL and OF_CLIENT_DLL defines
+// * added check against OFGameRules for if its on SD mode
+// * included of_gamerules.h
+
 #include "cbase.h"
 #include "mp_shareddefs.h"
 #include "teamplayroundbased_gamerules.h"

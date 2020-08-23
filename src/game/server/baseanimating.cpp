@@ -4,6 +4,9 @@
 //
 //=============================================================================//
 
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added checks for OF_DLL define
+
 #include "cbase.h"
 #include "baseanimating.h"
 #include "animation.h"
@@ -300,7 +303,7 @@ CBaseAnimating::~CBaseAnimating()
 
 void CBaseAnimating::Precache()
 {
-#if !defined( TF_DLL ) && !defined ( TF_DLL )
+#if !defined( TF_DLL ) && !defined ( OF_DLL )
 	// Anything derived from this class can potentially burn - true, but do we want it to!
 	PrecacheParticleSystem( "burning_character" );
 #endif

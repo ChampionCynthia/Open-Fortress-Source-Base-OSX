@@ -5,6 +5,9 @@
 // $NoKeywords: $
 //===========================================================================//
 
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * OFTODO: Implement KOTH mode round timer stuff - Fenteale
+
 #include "cbase.h"
 #include "team_objectiveresource.h"
 #include "team_control_point_master.h"

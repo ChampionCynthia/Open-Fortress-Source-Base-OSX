@@ -5,6 +5,9 @@
 // $NoKeywords: $
 //=============================================================================//
 
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added check for OF_DLL define
+
 #ifndef ITEMS_H
 #define ITEMS_H
 

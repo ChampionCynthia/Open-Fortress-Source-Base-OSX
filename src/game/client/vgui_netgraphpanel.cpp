@@ -6,6 +6,10 @@
 // $Date:         $
 // $NoKeywords: $
 //=============================================================================//
+
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * changed a static function to be a global function
+
 #include "cbase.h"
 #include "hud.h"
 #include "inetgraphpanel.h"

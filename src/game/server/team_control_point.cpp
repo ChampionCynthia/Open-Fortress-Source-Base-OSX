@@ -4,6 +4,10 @@
 //
 //===========================================================================//
 
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added check for OF_DLL define
+// * added OF includes
+
 #include "cbase.h"
 #include "team_control_point.h"
 #include "player.h"

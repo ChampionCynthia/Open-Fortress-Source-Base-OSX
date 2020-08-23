@@ -5,6 +5,9 @@
 // $NoKeywords: $
 //=============================================================================//
 
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added check for OF_DLL define
+
 #include "cbase.h"
 #include "dt_send.h"
 #include "server_class.h"

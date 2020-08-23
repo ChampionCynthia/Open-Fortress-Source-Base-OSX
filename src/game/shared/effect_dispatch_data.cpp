@@ -5,6 +5,9 @@
 // $NoKeywords: $
 //=============================================================================//
 
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added check for OF_DLL define
+
 #include "cbase.h"
 #include "effect_dispatch_data.h"
 #include "coordsize.h"

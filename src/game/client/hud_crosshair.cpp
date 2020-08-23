@@ -5,6 +5,10 @@
 // $NoKeywords: $
 //=============================================================================//
 
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added check for OF_CLIENT_DLL define
+// * defined a bunch of cl_crosshair ConVars
+
 #include "cbase.h"
 #include "hud.h"
 #include "hud_crosshair.h"

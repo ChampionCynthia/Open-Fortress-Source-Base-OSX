@@ -4,6 +4,10 @@
 //
 //===========================================================================//
 
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added OF_COLLISION rockets to the s_NameMap array
+// * Included of_shareddefs.h
+
 #include "cbase.h"
 #include "particles/particles.h"
 #include "baseparticleentity.h"

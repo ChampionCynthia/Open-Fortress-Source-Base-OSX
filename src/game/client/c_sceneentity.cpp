@@ -4,6 +4,10 @@
 //
 // $NoKeywords: $
 //=============================================================================//
+
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added checks for OF_CLIENT_DLL define
+
 #include "cbase.h"
 #include "networkstringtable_clientdll.h"
 #include "dt_utlvector_recv.h"

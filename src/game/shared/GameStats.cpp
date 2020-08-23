@@ -3,6 +3,10 @@
 // Purpose: 
 //
 //=============================================================================
+
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added check for OF_DLL and OF_CLIENT_DLL define
+
 #include "cbase.h"
 
 #include "igamesystem.h"

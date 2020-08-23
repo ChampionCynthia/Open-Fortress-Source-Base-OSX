@@ -6,8 +6,8 @@
 
 // Open Fortress Modifications (CC-BY-NC-CA)
 // * Changed ParticleParseEffects function to not load any particle with
-// * "weapon_unusual" in the name, as they are different formats and crash
-// * when loaded.
+//   "weapon_unusual" in the name, as they are different formats and crash
+//   when loaded.
 
 #include "cbase.h"
 #include "filesystem.h"

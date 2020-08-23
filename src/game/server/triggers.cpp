@@ -4,6 +4,7 @@
 //
 //===========================================================================//
 // Open Fortress Modifications (CC-BY-NC-CA)
+// * added check for OF_DLL define
 // * Replace OVERRIDE macro with override, as defining override to nothing is prettier.
 
 #include "cbase.h"

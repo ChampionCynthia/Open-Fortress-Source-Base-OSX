@@ -4,6 +4,8 @@
 //
 //=============================================================================//
 
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * OFTODO: Check OFGameRules to see if gravity should be different??
 
 #include "cbase.h"
 #include "movevars_shared.h"

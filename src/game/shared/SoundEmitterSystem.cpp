@@ -6,6 +6,9 @@
 // Open Fortress Modifications (CC-BY-NC-CA)
 // * #if 0'd some ~~Some OF_DLL and OF_CLIENT_DLL gated changes regarding tf2 specific soundscripts.~~
 
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added check for OF_DLL and OF_CLIENT_DLL define
+
 #include "cbase.h"
 #include <ctype.h>
 #include <KeyValues.h>

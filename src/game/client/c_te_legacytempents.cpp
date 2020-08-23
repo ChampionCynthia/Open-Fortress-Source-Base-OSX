@@ -5,6 +5,10 @@
 // $Workfile:     $
 // $NoKeywords: $
 //=============================================================================//
+
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Added checks for OF_CLIENT_DLL define
+
 #include "cbase.h"
 #include "model_types.h"
 #include "view_shared.h"

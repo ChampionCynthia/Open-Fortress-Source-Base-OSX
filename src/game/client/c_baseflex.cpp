@@ -4,6 +4,10 @@
 //
 // $NoKeywords: $
 //===========================================================================//
+
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Added check for OF_CLIENT_DLL define
+
 #include "cbase.h"
 #include "filesystem.h"
 #include "sentence.h"

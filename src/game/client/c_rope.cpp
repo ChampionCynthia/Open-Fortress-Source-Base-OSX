@@ -4,6 +4,10 @@
 //
 // $NoKeywords: $
 //=====================================================================================//
+
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Added code to draw holiday lights
+
 #include "cbase.h"
 #include "c_rope.h"
 #include "beamdraw.h"

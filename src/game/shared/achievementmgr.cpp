@@ -4,6 +4,9 @@
 //
 //=============================================================================
 
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Added message to show that Achievements ain't happening
+
 #include "cbase.h"
 #ifdef _WIN32
 #include "winerror.h"

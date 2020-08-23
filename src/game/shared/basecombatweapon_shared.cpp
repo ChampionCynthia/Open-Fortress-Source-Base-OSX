@@ -4,6 +4,11 @@
 //
 // $NoKeywords: $
 //=============================================================================//
+
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added check for OF_DLL and OF_CLIENT_DLL defines
+// * included of_shareddefs.h
+
 #include "cbase.h"
 #include "in_buttons.h"
 #include "engine/IEngineSound.h"

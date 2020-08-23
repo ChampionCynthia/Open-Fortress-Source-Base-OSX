@@ -5,6 +5,9 @@
 // $NoKeywords: $
 //===========================================================================//
 
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added checks for OF_DLL define
+
 #include "cbase.h"
 #include "player.h"
 #include "items.h"

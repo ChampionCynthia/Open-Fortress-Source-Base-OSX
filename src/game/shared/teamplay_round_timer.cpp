@@ -5,6 +5,9 @@
 // $NoKeywords: $
 //=============================================================================//
 
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * added checks for OF_DLL and OF_CLIENT_DLL defines
+
 #include "cbase.h"
 #include "teamplay_round_timer.h"
 #include "teamplayroundbased_gamerules.h"

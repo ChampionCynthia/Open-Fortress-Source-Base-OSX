@@ -4,6 +4,10 @@
 //
 // $NoKeywords: $
 //=============================================================================//
+
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * OFTODO: Untangle the TF define mess in this file
+
 #include "cbase.h"
 #include "vote_controller.h"
 #include "shareddefs.h"
@@ -11,8 +15,6 @@
 #include "team.h"
 #include "gameinterface.h"
 #include "fmtstr.h"
-
-// OFTODO: Untangle the TF define mess in this file
 
 #ifdef TF_DLL
 #include "tf/tf_gamerules.h"
