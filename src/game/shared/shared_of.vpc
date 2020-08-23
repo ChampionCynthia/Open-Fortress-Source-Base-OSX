@@ -19,6 +19,8 @@ $Project
 			$File	"$SHARED/of/of_gamerules.h"
 			$File	"$SHARED/of/of_playeranimstate.cpp"
 			$File	"$SHARED/of/of_playeranimstate.h"
+			$File	"$SHARED/of/of_shareddefs.cpp"
+			$File	"$SHARED/of/of_shareddefs.h"
 			$File	"$SHARED/Multiplayer/multiplayer_animstate.cpp"
 			$File	"$SHARED/Multiplayer/multiplayer_animstate.h"
 			$File	"$SHARED/of/of_weapon_parse.cpp"

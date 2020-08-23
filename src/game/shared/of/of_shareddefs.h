@@ -1,7 +1,9 @@
 // ========= Copyright Open Fortress Developers, CC-BY-NC-SA ============
 // Purpose: General definitions
-// Author(s): ficool2, Fenteale
+// Author(s): ficool2, Fenteale, Kay
 //
+
+#include "shareddefs.h"
 
 // OFSTATUS: INCOMPLETE  ( labeling )
 enum OF_Collision_Group_t
@@ -28,25 +30,25 @@ enum OF_Collision_Group_t
 #define DMG_IGNITE              DMG_PLASMA      // < Ignite victim 
 #define DMG_USE_HITLOCATIONS    DMG_AIRBOAT     // < Do hit location damage (sniper rifle) 
 
+enum
+{
+	OF_TEAM_RED = FIRST_GAME_TEAM,
+	OF_TEAM_BLUE,
+	OF_TEAM_MERCENARY,
+
+	OF_TEAM_COUNT
+};
+
 // Needs to match the array below
 #define AMMONAME_FIRST 1
 #define AMMONAME_LAST 7
 
 //OFHACK: g_aAmmoNames should probably be an extern + defined somewhere but isn't
 // (oh well, just bloats the exe a bit)
-static const char *g_aAmmoNames[] =
-{
-	"DUMMY AMMO", // This ammo is skipped
-	"TF_AMMO_PRIMARY",
-	"TF_AMMO_SECONDARY",
-	"TF_AMMO_METAL",
-	"TF_AMMO_GRENADES1",
-	"TF_AMMO_GRENADES2",
-	"TF_AMMO_GRENADES3"
-};
+
+// No longer the case, did it properly and moved it to of_shareddefs.cpp now - Kay
+extern const char *g_aAmmoNames[AMMONAME_LAST];
+extern const char *g_aTeamNames[OF_TEAM_COUNT];
 
 #define TF_DAMAGE_CRIT_MULTIPLIER	3
 #define TF_GAMETYPE_ESCORT			3
-
-#define TF_TEAM_RED 				2
-#define TF_TEAM_BLUE				3
