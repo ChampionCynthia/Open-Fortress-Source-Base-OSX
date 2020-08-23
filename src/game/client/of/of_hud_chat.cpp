@@ -102,8 +102,8 @@ Color CHudChat::GetClientColor( int clientIndex )
 		// Change to an color array later - Kay
 		switch ( g_PR->GetTeam( clientIndex ) )
 		{
-		case TF_TEAM_RED	: return g_ColorBlue;
-		case TF_TEAM_BLUE	: return g_ColorRed;
+		case OF_TEAM_RED	: return g_ColorBlue;
+		case OF_TEAM_BLUE	: return g_ColorRed;
 		default	: return g_ColorYellow;
 		}
 	}

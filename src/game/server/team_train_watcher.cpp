@@ -328,7 +328,7 @@ CTeamTrainWatcher::CTeamTrainWatcher()
 #endif // GLOWS_ENABLE
 
 #if defined( TF_DLL ) || defined( OF_DLL )
-	ChangeTeam( TF_TEAM_BLUE );
+	ChangeTeam( OF_TEAM_BLUE );
 #else
 	ChangeTeam( TEAM_UNASSIGNED );
 #endif
