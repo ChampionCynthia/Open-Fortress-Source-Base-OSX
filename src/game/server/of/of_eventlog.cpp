@@ -4,6 +4,7 @@
 //
 
 //OFTODO: move player.h and usercmd.h includes into EventLog.h, because that's where they're used.
+#include "cbase.h"
 #include "player.h"
 #include "usercmd.h"
 #include "EventLog.h"

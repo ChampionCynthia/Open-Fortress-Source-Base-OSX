@@ -49,7 +49,7 @@ void TE_PlayerAnimEvent( CBasePlayer *pPlayer, PlayerAnimEvent_t event, int nDat
 
 // implementation of COFPlayer begin
 
-LINK_ENTITY_TO_CLASS( of_player, COFPlayer );
+LINK_ENTITY_TO_CLASS( player, COFPlayer );
 
 IMPLEMENT_SERVERCLASS_ST(COFPlayer, DT_OF_Player)
 END_SEND_TABLE()

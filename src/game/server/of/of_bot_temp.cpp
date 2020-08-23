@@ -5,8 +5,8 @@
 
 //OFTODO: This is mainly a copy of sdk_bot_temp.cpp.  We gotta RE this!
 
-#include "of_bot_temp.h"
 #include "cbase.h"
+#include "of_bot_temp.h"
 #include "player.h"
 #include "of_player.h"
 #include "in_buttons.h"

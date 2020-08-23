@@ -31,6 +31,8 @@ $Project "Client (Open Fortress)"
 		
 		$File	"of/of_clientmode.cpp"
 		$File	"of/of_clientmode.h"
+		$File	"of/of_hud_chat.cpp"
+		$File	"of/of_hud_chat.h"		
 		$File	"of/of_in_main.cpp"
 		$File	"of/of_prediction.cpp"	
 		$File	"of/c_of_player.cpp"
