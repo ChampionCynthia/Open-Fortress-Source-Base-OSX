@@ -8,7 +8,7 @@ $Macro GAMENAME 	"open_fortress"
 
 $Include "$SRCDIR\game\server\server_base.vpc"
 $Include "$SRCDIR\game\shared\shared_of.vpc"
-$Include "$SRCDIR\game\server\nav_mesh.vpc"
+//$Include "$SRCDIR\game\server\nav_mesh.vpc"
 
 $Configuration
 {
