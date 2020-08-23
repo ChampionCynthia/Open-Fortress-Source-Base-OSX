@@ -250,6 +250,7 @@ bool COFGameRules::IsConnectedUserInfoChangeAllowed( CBasePlayer *pPlayer )
 	return true;
 }
  
+#ifdef GAME_DLL
 //OFSTATUS: Incomplete, and low priority
 void COFGameRules::Precache( void )
 {
@@ -258,6 +259,7 @@ void COFGameRules::Precache( void )
 	// OF? More like OOF
 	/*
 	switch (this->magic_value_at 0xd70)
+	{
 		case 1:
 		CHeadlessHatman::PrecacheHeadlessHatman();
 		break;
@@ -277,12 +279,13 @@ void COFGameRules::Precache( void )
 	}
 	*/
 
-	if(StringAfterPrefix(gpGlobals->mapname, "mvm_"))
+	if(StringAfterPrefix(gpGlobals->mapname.ToCStr(), "mvm_"))
 		COFPlayer::PreCacheMvM();
 
 	COFPlayer::m_bOFPlayerNeedsPrecache = true;
-  }
 }
+
+#endif
 
 // OFSTATUS: NEEDS LABELS
 bool COFGameRules::ShouldCollide( int collisionGroup0, int collisionGroup1 )

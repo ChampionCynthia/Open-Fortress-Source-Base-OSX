@@ -44,7 +44,9 @@ public:
 	COFGameRules();
 	virtual ~COFGameRules();
 
+#ifdef GAME_DLL
 	virtual void Precache( void );
+#endif
 	virtual bool ShouldCollide( int collisionGroup0, int collisionGroup1 );
 	virtual bool ClientCommand( CBaseEntity *pEdict, const CCommand &args );
 	virtual void Think( void );

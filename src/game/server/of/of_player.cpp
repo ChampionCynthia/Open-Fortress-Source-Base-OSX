@@ -61,6 +61,8 @@ COFPlayer::COFPlayer() : BaseClass() {
 	m_PlayerAnimState = CreatePlayerAnimState(this);
 }
 
+bool COFPlayer::m_bOFPlayerNeedsPrecache { false };
+
 COFPlayer* COFPlayer::CreatePlayer( const char * name, edict_t* pEdict)
 {
 	CBasePlayer::s_PlayerEdict = pEdict;

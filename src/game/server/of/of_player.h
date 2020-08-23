@@ -3,12 +3,7 @@
 // Author(s): Fenteale, Nopey
 //
 
-#ifndef OF_PLAYER_H
-#define OF_PLAYER_H
-
-#ifdef _WIN32
 #pragma once
-#endif
 
 #include "player.h"
 #include "dbg.h"
@@ -28,10 +23,10 @@ public:
 
 	// Called from of_gamerules
 	void PreCacheKart();
-	void PreCacheMvM();
+	static void PreCacheMvM();
 	// set to true from of_gamerules
 	//OFTODO: I'm assuming the init value of m_bOFPlayerNeedsPrecache is false.
-	static bool m_bOFPlayerNeedsPrecache = false;
+	static bool m_bOFPlayerNeedsPrecache;
 
 private:
 	COFPlayerAnimState *m_PlayerAnimState;
@@ -44,5 +39,3 @@ inline COFPlayer *ToOFPlayer( CBaseEntity *pEntity )
 
 	return assert_cast<COFPlayer*>( pEntity );
 }
-
-#endif

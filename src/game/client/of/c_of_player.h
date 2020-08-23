@@ -3,12 +3,7 @@
 // Author(s): Fenteale
 //
 
-#ifndef C_OF_PLAYER_H
-#define C_OF_PLAYER_H
-
-#ifdef _WIN32
 #pragma once
-#endif
 
 #include "c_baseplayer.h"
 #include "of_playeranimstate.h"
@@ -25,5 +20,3 @@ public:
 private:
 	COFPlayerAnimState *m_PlayerAnimState;
 };
-
-#endif
