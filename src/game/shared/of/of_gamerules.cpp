@@ -46,9 +46,11 @@ IMPLEMENT_NETWORKCLASS_ALIASED( OFGameRulesProxy, DT_OFGameRulesProxy )
 // OFSTATUS: COMPLETE
 static const char *s_PreserveEnts[] =
 {
+	"worldspawn",
 	"tf_gamerules",
 	"tf_player_manager",
 	"tf_team",
+	"team_manager",
 	"tf_objective_resource",
 	"keyframe_rope",
 	"move_rope",
@@ -115,6 +117,14 @@ void InitBodyQue()
 COFGameRules::COFGameRules()
 {
 #ifndef CLIENT_DLL
+	// Create the team managers
+	for ( int i = 0; i < ARRAYSIZE( g_aTeamNames ); i++ )
+	{
+		CTeam *pTeam = static_cast<CTeam*>(CreateEntityByName( "team_manager" ));
+		pTeam->Init( g_aTeamNames[i], i );
+
+		g_Teams.AddToTail( pTeam );
+	}
 #endif
 }
 	
@@ -122,6 +132,9 @@ COFGameRules::COFGameRules()
 COFGameRules::~COFGameRules( void )
 {
 #ifndef CLIENT_DLL
+	// Note, don't delete each team since they are in the gEntList and will 
+	// automatically be deleted from there, instead.
+	g_Teams.Purge();
 #endif
 }
 
