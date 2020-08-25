@@ -260,6 +260,35 @@ const char *COFGameRules::GetGameDescription( void )
 // OFSTATUS: INCOMPLETE 
 bool COFGameRules::IsConnectedUserInfoChangeAllowed( CBasePlayer *pPlayer )
 {
+	/*
+	if ( pPlayer && ( pPlayer->??? != '\0' ) ) {
+		if ( (int*) pPlayer[0x10c] ){
+			return true;
+		}
+		uint team = GetTeamNumber(pPlayer);
+		// 2 and 3 are BLU and RED, aren't they?
+		if ( team!=2 && team!=3 ) {
+			return true;
+		}
+		if ( gpGlobals->absoluteframetime - (float*)(pPlayer + 0x21a8) < 2) {
+			return true;
+		}
+		// COFPlayerShared::ShouldSuppressPrediction
+		bool suppressed = (pPlayer + 0x19b8)->ShouldSuppressPrediction();
+		int clientIndex = 0;
+		if (*(int *)(pPlayer + 0x20) != 0) {
+			clientIndex = (int)*(short *)(*(int *)(pPlayer + 0x20) + 6);
+		}
+		const char *client_predict = engine->GetClientConVarValue("cl_predict");
+		// some bs xor stuff?
+		// if (((!suppressed) != ((byte *)pPlayer)[0xade]) && ((V_atoi(client_predict) != 0) == (bool)(suppressed ^ 1U))) {
+		// potentially equivalent, idk man ask the science team:
+		if ((suppressed != (!((byte *)pPlayer)[0xade])) && ((!V_atoi(client_predict))==suppressed)) {
+			return true;
+		}
+	}
+	return false;
+	*/
 	return true;
 }
  
@@ -393,6 +422,15 @@ bool COFGameRules::IsPlayingSpecialDeliveryMode( void ) {
 }
 
 ConVar ammo_max( "ammo_max", "5000", FCVAR_GAMEDLL | FCVAR_REPLICATED );
+
+#ifdef GAME_DLL
+#include "of_team.h"
+// OFSTATUS: Incomplete
+void COFGameRules::TeamPlayerCountChanged(COFTeam *pTeam)
+{
+
+}
+#endif
 
 // OFSTATUS: COMPLETE
 CAmmoDef *GetAmmoDef()

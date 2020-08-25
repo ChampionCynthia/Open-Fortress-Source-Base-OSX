@@ -25,6 +25,8 @@ $Project
 			$File	"$SHARED/Multiplayer/multiplayer_animstate.h"
 			$File	"$SHARED/of/of_weapon_parse.cpp"
 			$File	"$SHARED/of/of_weapon_parse.h"
+			$File	"$SHARED/of/of_weapon_base.cpp"
+			$File	"$SHARED/of/of_weapon_base.h"
 
 			$File	"$SHARED/of/of_usermessages.cpp"
 		}

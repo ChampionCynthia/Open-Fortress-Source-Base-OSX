@@ -1,10 +1,7 @@
 // ========= Copyright Open Fortress Developers, CC-BY-NC-SA ============
 // Purpose: Game logic manager
-// Author(s): ficool2, Fenteale
+// Author(s): ficool2, Fenteale, Nopey
 //
-
-#ifndef OF_GAMERULES_H
-#define OF_GAMERULES_H
 #pragma once
 
 #include "gamerules.h"
@@ -18,6 +15,10 @@
 #ifdef CLIENT_DLL
 	#define COFGameRules C_OFGameRules
 	#define COFGameRulesProxy C_OFGameRulesProxy
+#endif
+
+#ifdef GAME_DLL
+class COFTeam;
 #endif
 
 #define HUD_ALERT_SCRAMBLE_TEAMS	0
@@ -35,11 +36,7 @@ public:
 	DECLARE_CLASS( COFGameRules, CTeamplayRules );
 
 	 // This makes datatables able to access our private vars
-#ifdef CLIENT_DLL
-	DECLARE_CLIENTCLASS_NOBASE();
-#else
-	DECLARE_SERVERCLASS_NOBASE(); 
-#endif
+	DECLARE_NETWORKCLASS_NOBASE();
 	
 	COFGameRules();
 	virtual ~COFGameRules();
@@ -58,6 +55,9 @@ public:
 	virtual const unsigned char *GetEncryptionKey( void ) { return (unsigned char *)"E2NcUkG2"; }
 	virtual void ClientDisconnected( edict_t *pClient );
 	virtual bool IsConnectedUserInfoChangeAllowed( CBasePlayer *pPlayer );
+#ifdef GAME_DLL
+	void TeamPlayerCountChanged(COFTeam *);
+#endif
 
 	virtual bool IsPlayingSpecialDeliveryMode( void );
 };
@@ -66,5 +66,3 @@ inline COFGameRules* OFGameRules()
 {
 	return static_cast< COFGameRules* >( g_pGameRules );
 }
-
-#endif
