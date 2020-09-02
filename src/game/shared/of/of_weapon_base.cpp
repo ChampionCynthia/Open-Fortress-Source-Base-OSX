@@ -55,3 +55,39 @@ CBaseEntity *COFWeaponBase::GetOwnerViaInterface ()
 {
     return CBaseCombatWeapon::GetOwner();
 }
+
+//OFSTATUS: COMPLETE
+bool COFWeaponBase::HasAmmo()
+{
+    if(IsEnergyWeapon())
+        return true;
+    else
+        return CBaseCombatWeapon::HasAmmo();
+}
+
+//OFSTATUS: INCOMPLETE
+bool COFWeaponBase::CanHolster() const
+{
+    /*
+    MysteryThing:  offset 0x769*4
+    MysteryThing2: offset 0x768*4
+    MysteryThing3: offset 0x42*4
+    */
+
+    CBaseCombatCharacter* p_Character = CBaseCombatWeapon::GetOwner();
+    if(p_Character && p_Character->IsPlayer())
+        if(p_Character->GetActiveWeapon() != this || p_Character->MysteryThing <= gpGlobals + 0xc)
+            // Only for Attributes stuff
+            // if( CAttributeManager::AttribHookValue<int>(0, "honorbound", static_cast_pointer<CBaseEntity>(this), nullptr, true)
+            if( p_Character->MysteryThing2 == 0 && p_Character->MysteryThing3 < 0x33)
+                return false;
+    
+    return true;
+}
+
+
+//OFSTATUS: COMPLETE
+bool COFWeaponBase::IsEnergyWeapon() const
+{
+    return false;
+}

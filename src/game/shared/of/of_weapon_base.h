@@ -1,6 +1,6 @@
 // ========= Copyright Open Fortress Developers, CC-BY-NC-SA ============
 // Purpose: COFWeaponBase is the root of all OF weapons
-// Author(s): Nopey
+// Author(s): Nopey, Fenteale
 //
 #pragma once
 
@@ -85,9 +85,9 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // virtual void Equip( CBaseCombatCharacter *pOwner ) override;
     // virtual void Drop( const Vector &vecVelocity ) override;
     // virtual bool VisibleInWeaponSelection() override;
-    // virtual bool HasAmmo() override;
+    virtual bool HasAmmo() override;
     // virtual bool SendWeaponAnim( int iActivity ) override;
-    // virtual bool CanHolster() const override;
+    virtual bool CanHolster() const override;
     // virtual void Deploy() override;
     // virtual bool Holster( CBaseCombatWeapon *pSwitchingTo ) override;
     // virtual void SetWeaponVisible( bool visible ) override;
@@ -205,7 +205,7 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // virtual bool IsViewModelFlipped();
     // virtual int GetMaxHealthMod();
     // virtual float GetLastDeployTime();
-    // virtual bool IsEnergyWeapon();
+    virtual bool IsEnergyWeapon() const;
     // virtual bool IsBlastImpactWeapon();
     // virtual float Energy_GetShotCost();
     // virtual float Energy_GetRechargeCost();
