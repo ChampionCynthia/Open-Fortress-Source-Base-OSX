@@ -84,20 +84,20 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // CBaseCombatWeapon::
     // virtual void Equip( CBaseCombatCharacter *pOwner ) override;
     // virtual void Drop( const Vector &vecVelocity ) override;
-    // virtual bool VisibleInWeaponSelection() override;
+    virtual bool VisibleInWeaponSelection() override;
     virtual bool HasAmmo() override;
     // virtual bool SendWeaponAnim( int iActivity ) override;
     virtual bool CanHolster() const override;
     // virtual void Deploy() override;
     // virtual bool Holster( CBaseCombatWeapon *pSwitchingTo ) override;
-    // virtual void SetWeaponVisible( bool visible ) override;
+    virtual void SetWeaponVisible( bool visible ) override;
     // virtual void OnActiveStateChanged( int iOldState ) override;
-    // virtual void Detach() override;
+    virtual void Detach() override;
     // virtual void ItemPostFrame() override;
     // virtual void ItemBusyFrame() override;
     // virtual void ItemHolsterFrame() override;
     // virtual void WeaponIdle() override;
-    // virtual bool CanPerformSecondaryAttack() const override;
+    virtual bool CanPerformSecondaryAttack() const override;
     // virtual void CheckReload() override;
     // virtual void FinishReload() override;
     // virtual void AbortReload() override;
@@ -151,9 +151,10 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // virtual void ExtraWearableEquipped(CTFWearable *);
     // virtual void ExtraWearableViewModelEquipped(CTFWearable *);
     // // awful name, just awful.
-    // virtual bool HideAttachmentsAndShowBodygroupsWhenPerformingWeaponIndependentTaunt();
+    virtual bool HideAttachmentsAndShowBodygroupsWhenPerformingWeaponIndependentTaunt() const;
     // virtual void RemoveExtraWearables();
-    // virtual void Misfire();
+    virtual void Misfire();
+    virtual void CalcIsAttackCritical();
     // virtual void FireFullClipAtOnce();
     // virtual bool CalcIsAttackCriticalHelper();
     // virtual bool CalcIsAttackCriticalHelperNoCrits();
@@ -162,14 +163,14 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // virtual void GetProjectileFireSetup (CTFPlayer *,Vector,Vector *,QAngle *, bool, float);
     // This return type is almost certainly incorrect.
     // virtual void GetSpreadAngles();
-    // virtual bool IsFiring();
-    // virtual bool AreRandomCritsEnabled();
+    virtual bool IsFiring() const;
+    virtual bool AreRandomCritsEnabled();
     // virtual bool DefaultReload( int iClipSize1, int iClipSize2, int iActivity );
     // virtual bool IsReloading();
-    // virtual float GetReloadSpeedScale();
-    // virtual bool CheckReloadMisfire();
-    // virtual bool CanDrop();
-    // virtual bool AllowTaunts();
+    virtual float GetReloadSpeedScale() const;
+    virtual bool CheckReloadMisfire() const;
+    virtual bool CanDrop() const;
+    virtual bool AllowTaunts() const;
     // virtual float ApplyFireDelay( float );
     // virtual int GetActivityWeaponRole();
     // virtual int GetViewModelWeaponRole();
@@ -205,7 +206,7 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // virtual bool IsViewModelFlipped();
     // virtual int GetMaxHealthMod();
     // virtual float GetLastDeployTime();
-    virtual bool IsEnergyWeapon() const;
+    //virtual bool IsEnergyWeapon() const; //TRIMMED!
     // virtual bool IsBlastImpactWeapon();
     // virtual float Energy_GetShotCost();
     // virtual float Energy_GetRechargeCost();
