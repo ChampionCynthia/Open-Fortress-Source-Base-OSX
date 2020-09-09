@@ -390,7 +390,7 @@ void CSheetSimulator::InitPosition( int i )
 		MASK_SOLID_BRUSHONLY, m_CollisionGroup, &tr );
 	if ( tr.fraction - 1.0 < 0 )
 	{
-		memcpy( &m_pCollisionPlanes[i], &tr.plane, sizeof(cplane_t) );
+		memcpy( static_cast<void*>(&m_pCollisionPlanes[i]), &tr.plane, sizeof(cplane_t) );
 		m_pCollisionPlanes[i].dist += COLLISION_PLANE_OFFSET;
 
 		// The trace endpos represents where the center of the box
@@ -440,7 +440,7 @@ void CSheetSimulator::DetectCollision( int i, float flPlaneOffset )
 	if ( tr.fraction - 1.0 < 0 )
 	{
 		m_pValidCollisionPlane[i] = true;
-		memcpy( &m_pCollisionPlanes[i], &tr.plane, sizeof(cplane_t) );
+		memcpy( static_cast<void*>(&m_pCollisionPlanes[i]), &tr.plane, sizeof(cplane_t) );
 		m_pCollisionPlanes[i].dist += flPlaneOffset;
 	}
 	else if (tr.allsolid || tr.startsolid)

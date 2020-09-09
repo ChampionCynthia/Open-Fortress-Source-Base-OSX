@@ -77,7 +77,7 @@ struct AIMoveTrace_t
 {
 	AIMoveTrace_t()
 	{
-		memset( this, 0, sizeof(*this) );
+		memset( static_cast<void*>(this), 0, sizeof(*this) );
 	}
 	
 	AIMoveResult_t 	fStatus;				// See AIMoveResult_t
@@ -124,7 +124,7 @@ struct AILocalMoveGoal_t
 {
 	AILocalMoveGoal_t()
 	{
-		memset( this, 0, sizeof(*this) );
+		memset( static_cast<void*>(this), 0, sizeof(*this) );
 	}
 	
 	// Object of the goal

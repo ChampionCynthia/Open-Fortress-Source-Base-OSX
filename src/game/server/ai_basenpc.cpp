@@ -13138,7 +13138,7 @@ void CAI_BaseNPC::AddScriptedNPCInteraction( ScriptedNPCInteraction_t *pInteract
 
 	// Copy the interaction over
 	ScriptedNPCInteraction_t *pNewInt = &(m_ScriptedInteractions[nNewIndex]);
-	memcpy( pNewInt, pInteraction, sizeof(ScriptedNPCInteraction_t) );
+	memcpy( static_cast<void*>(pNewInt), pInteraction, sizeof(ScriptedNPCInteraction_t) );
 
 	// Calculate the local to world matrix
 	m_ScriptedInteractions[nNewIndex].matDesiredLocalToWorld.SetupMatrixOrgAngles( pInteraction->vecRelativeOrigin, pInteraction->angRelativeAngles );

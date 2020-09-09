@@ -1730,7 +1730,7 @@ void C_BaseAnimating::SaveRagdollInfo( int numbones, const matrix3x4_t &cameraTr
 			Msg( "Memory allocation of RagdollInfo_t failed!\n" );
 			return;
 		}
-		memset( m_pRagdollInfo, 0, sizeof( *m_pRagdollInfo ) );
+		memset( static_cast<void*>(m_pRagdollInfo), 0, sizeof( *m_pRagdollInfo ) );
 	}
 
 	mstudiobone_t *pbones = hdr->pBone( 0 );

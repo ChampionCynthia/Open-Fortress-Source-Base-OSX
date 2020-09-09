@@ -2488,7 +2488,8 @@ void CClientShadowMgr::BuildRenderToTextureShadow( IClientRenderable* pRenderabl
 	Vector boxSize;
 	VectorSubtract( maxs, mins, boxSize );
 	
-	Vector yvec;
+	// OFTODO: stupid fix for Wmaybe-uninitialized warning, i shouldnt do this, this should be set to an empty vector
+	Vector yvec = GetShadowDirection( pRenderable );
 	float fProjMax = 0.0f;
 	for( int i = 0; i != 3; ++i )
 	{

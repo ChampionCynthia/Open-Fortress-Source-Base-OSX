@@ -469,7 +469,7 @@ void CAI_Motor::MoveStart()
 
 void CAI_Motor::MoveStop()
 { 
-	memset( &m_vecVelocity, 0, sizeof(m_vecVelocity) ); 
+	memset( static_cast<void*>(&m_vecVelocity), 0, sizeof(m_vecVelocity) ); 
 	GetOuter()->GetLocalNavigator()->ResetMoveCalculations();
 }
 

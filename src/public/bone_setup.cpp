@@ -2625,14 +2625,14 @@ public:
          X[i] = P[i];
       normalize(X);
 
-// Its y axis is perpendicular to P, so Y = unit( E - X(E·X) ).
+// Its y axis is perpendicular to P, so Y = unit( E - X(Eï¿½X) ).
 
       float dDOTx = dot(D,X);
       for (i = 0 ; i < 3 ; i++)
          Y[i] = D[i] - dDOTx * X[i];
       normalize(Y);
 
-// Its z axis is perpendicular to both X and Y, so Z = X×Y.
+// Its z axis is perpendicular to both X and Y, so Z = Xï¿½Y.
 
       cross(X,Y,Z);
 
@@ -3045,7 +3045,7 @@ bool Studio_IKSequenceError( const CStudioHdr *pStudioHdr, mstudioseqdesc_t &seq
 {
 	int i;
 
-	memset( &ikRule, 0, sizeof(ikRule) );
+	memset( static_cast<void*>(&ikRule), 0, sizeof(ikRule) );
 	ikRule.start = ikRule.peak = ikRule.tail = ikRule.end = 0;
 
 
@@ -3236,7 +3236,7 @@ void CIKContext::Init( const CStudioHdr *pStudioHdr, const QAngle &angles, const
 		if (m_target.Count() == 0)
 		{
 			m_target.SetSize(12);
-			memset( m_target.Base(), 0, sizeof(m_target[0])*m_target.Count() );
+			memset( static_cast<void*>(m_target.Base()), 0, sizeof(m_target[0])*m_target.Count() );
 			ClearTargets();
 		}
 
@@ -3311,7 +3311,7 @@ void CIKContext::AddDependencies( mstudioseqdesc_t &seqdesc, int iSequence, floa
 		if (m_target.Count() == 0)
 		{
 			m_target.SetSize(12);
-			memset( m_target.Base(), 0, sizeof(m_target[0])*m_target.Count() );
+			memset( static_cast<void*>(m_target.Base()), 0, sizeof(m_target[0])*m_target.Count() );
 			ClearTargets();
 		}
 
@@ -3353,7 +3353,7 @@ void CIKContext::AddAutoplayLocks( Vector pos[], Quaternion q[] )
 	CBoneBitList boneComputed;
 
 	int ikOffset = m_ikLock.AddMultipleToTail( m_pStudioHdr->GetNumIKAutoplayLocks() );
-	memset( &m_ikLock[ikOffset], 0, sizeof(ikcontextikrule_t)*m_pStudioHdr->GetNumIKAutoplayLocks() );
+	memset( static_cast<void*>(&m_ikLock[ikOffset]), 0, sizeof(ikcontextikrule_t)*m_pStudioHdr->GetNumIKAutoplayLocks() );
 
 	for (int i = 0; i < m_pStudioHdr->GetNumIKAutoplayLocks(); i++)
 	{
@@ -3412,7 +3412,7 @@ void CIKContext::AddSequenceLocks( mstudioseqdesc_t &seqdesc, Vector pos[], Quat
 	CBoneBitList boneComputed;
 
 	int ikOffset = m_ikLock.AddMultipleToTail( seqdesc.numiklocks );
-	memset( &m_ikLock[ikOffset], 0, sizeof(ikcontextikrule_t) * seqdesc.numiklocks );
+	memset( static_cast<void*>(&m_ikLock[ikOffset]), 0, sizeof(ikcontextikrule_t) * seqdesc.numiklocks );
 
 	for (int i = 0; i < seqdesc.numiklocks; i++)
 	{
@@ -4330,7 +4330,7 @@ void CIKContext::AddAllLocks( Vector pos[], Quaternion q[] )
 	CBoneBitList boneComputed;
 
 	int ikOffset = m_ikLock.AddMultipleToTail( m_pStudioHdr->GetNumIKChains() );
-	memset( &m_ikLock[ikOffset], 0, sizeof(ikcontextikrule_t)*m_pStudioHdr->GetNumIKChains() );
+	memset( static_cast<void*>(&m_ikLock[ikOffset]), 0, sizeof(ikcontextikrule_t)*m_pStudioHdr->GetNumIKChains() );
 
 	for (int i = 0; i < m_pStudioHdr->GetNumIKChains(); i++)
 	{
