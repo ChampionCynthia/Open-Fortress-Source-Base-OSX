@@ -48,7 +48,7 @@ struct AI_Follower_t
 	AI_Follower_t()
 	{
 		slot = -1;
-		memset( &navInfo, 0, sizeof(navInfo) );
+		memset( static_cast<void*>(&navInfo), 0, sizeof(navInfo) );
 		pGroup = NULL;
 	}
 
@@ -232,7 +232,7 @@ END_DATADESC();
 
 CAI_FollowBehavior::CAI_FollowBehavior( const AI_FollowParams_t &params )
 {
-	memset( &m_FollowNavGoal, 0, sizeof( m_FollowNavGoal ) );
+	memset( static_cast<void*>(&m_FollowNavGoal), 0, sizeof( m_FollowNavGoal ) );
 	
 	m_FollowDelay.Set( 1.0, 3.0 );
 	m_hFollowManagerInfo.m_pGroup = NULL;

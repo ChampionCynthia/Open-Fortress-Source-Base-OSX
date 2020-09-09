@@ -384,7 +384,7 @@ void CSoundParametersInternal::CopyFrom( const CSoundParametersInternal& src )
 		if ( m_nSoundNames > 1 )
 		{
 			m_pSoundNames = (SoundFile*)malloc( sizeof(SoundFile)*m_nSoundNames);
-			memcpy( m_pSoundNames, src.m_pSoundNames, m_nSoundNames * sizeof(SoundFile) );
+			memcpy( static_cast<void*>(m_pSoundNames), src.m_pSoundNames, m_nSoundNames * sizeof(SoundFile) );
 		}
 		else
 		{
@@ -402,7 +402,7 @@ void CSoundParametersInternal::CopyFrom( const CSoundParametersInternal& src )
 		if ( m_nConvertedNames > 1 )
 		{
 			m_pConvertedNames = (SoundFile*)malloc( sizeof(SoundFile)*m_nConvertedNames);
-			memcpy( m_pConvertedNames, src.m_pConvertedNames, m_nConvertedNames * sizeof(SoundFile) );
+			memcpy( static_cast<void*>(m_pConvertedNames), src.m_pConvertedNames, m_nConvertedNames * sizeof(SoundFile) );
 		}
 		else
 		{
@@ -570,7 +570,7 @@ void CSoundParametersInternal::AddToTail( SoundFile **pDest, uint16 *pDestCount,
 			*pDest = NULL;
 		}
 
-		*pDest = (SoundFile *)realloc( *pDest, (*pDestCount) * sizeof(SoundFile) );
+		*pDest = (SoundFile *)realloc( static_cast<void*>(*pDest), (*pDestCount) * sizeof(SoundFile) );
 		(*pDest)[ *pDestCount - 1 ] = source;
 
 		if ( *pDestCount == 2 )

@@ -79,7 +79,7 @@ struct PhysObjectHeader_t
 {
 	PhysObjectHeader_t()
 	{
-		memset( this, 0, sizeof(*this) );
+		memset( static_cast<void*>(this), 0, sizeof(*this) );
 	}
 
 	PhysInterfaceId_t 	type;
@@ -436,7 +436,7 @@ public:
 																	// the field name would normally be in the string
 																	// pool anyway. (toml 12-10-02)
 		item.header.modelName = NULL_STRING;
-		memset( &item.header.bbox, 0, sizeof( item.header.bbox ) );
+		memset( static_cast<void*>(&item.header.bbox), 0, sizeof( item.header.bbox ) );
 		item.header.sphere.radius = 0;
 		
 		if ( !fOnlyNotingExistence && type == PIID_IPHYSICSOBJECT )

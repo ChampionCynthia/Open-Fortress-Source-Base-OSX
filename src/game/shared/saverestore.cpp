@@ -1993,7 +1993,7 @@ int CRestore::ReadEHandle( EHANDLE *pEHandle, int count, int nBytesAvailable )
 	
 	if ( nRead < count)
 	{
-		memset( &pEHandle[nRead], 0xFF, ( count - nRead ) * sizeof(pEHandle[0]) );
+		memset( static_cast<void*>(&pEHandle[nRead]), 0xFF, ( count - nRead ) * sizeof(pEHandle[0]) );
 	}
 	
 	return nRead;

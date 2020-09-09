@@ -289,7 +289,7 @@ struct CInterpolatedVarEntryBase<Type, false>
 	{
 		Assert(maxCount==1);
 		changetime = time;
-		memcpy( &value, pValue, maxCount*sizeof(Type) );
+		memcpy( static_cast<void*>(&value), pValue, maxCount*sizeof(Type) );
 		return &value;
 	}
 	void FastTransferFrom( CInterpolatedVarEntryBase &src )
@@ -621,7 +621,7 @@ inline int CInterpolatedVarArrayBase<Type, IS_ARRAY>::GetType() const
 template< typename Type, bool IS_ARRAY >
 void CInterpolatedVarArrayBase<Type, IS_ARRAY>::NoteLastNetworkedValue()
 {
-	memcpy( m_LastNetworkedValue, m_pValue, m_nMaxCount * sizeof( Type ) );
+	memcpy( static_cast<void*>(m_LastNetworkedValue), m_pValue, m_nMaxCount * sizeof( Type ) );
 	m_LastNetworkedTime = g_flLastPacketTimestamp;
 }
 
@@ -684,7 +684,7 @@ template< typename Type, bool IS_ARRAY >
 inline void CInterpolatedVarArrayBase<Type, IS_ARRAY>::RestoreToLastNetworked()
 {
 	Assert( m_pValue );
-	memcpy( m_pValue, m_LastNetworkedValue, m_nMaxCount * sizeof( Type ) );
+	memcpy( static_cast<void*>(m_pValue), m_LastNetworkedValue, m_nMaxCount * sizeof( Type ) );
 }
 
 template< typename Type, bool IS_ARRAY >
@@ -749,7 +749,7 @@ inline void CInterpolatedVarArrayBase<Type, IS_ARRAY>::Reset()
 		AddToHead( gpGlobals->curtime, m_pValue, false );
 		AddToHead( gpGlobals->curtime, m_pValue, false );
 
-		memcpy( m_LastNetworkedValue, m_pValue, m_nMaxCount * sizeof( Type ) );
+		memcpy( static_cast<void*>(m_LastNetworkedValue), m_pValue, m_nMaxCount * sizeof( Type ) );
 	}
 }
 
@@ -1294,7 +1294,7 @@ inline void	CInterpolatedVarArrayBase<Type, IS_ARRAY>::SetMaxCount( int newmax )
 		m_bLooping = new byte[m_nMaxCount];
 		m_LastNetworkedValue = new Type[m_nMaxCount];
 		memset( m_bLooping, 0, sizeof(byte) * m_nMaxCount);
-		memset( m_LastNetworkedValue, 0, sizeof(Type) * m_nMaxCount);
+		memset( static_cast<void*>(m_LastNetworkedValue), 0, sizeof(Type) * m_nMaxCount);
 
 		Reset();
 	}

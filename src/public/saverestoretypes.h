@@ -183,7 +183,7 @@ public:
 	CGameSaveRestoreInfo()
 		: tableCount( 0 ), pTable( 0 ), m_pCurrentEntity( 0 ), m_EntityToIndex( 1024 )
 	{
-		memset( &levelInfo, 0, sizeof( levelInfo ) );
+		memset( static_cast<void*>(&levelInfo), 0, sizeof( levelInfo ) );
 		modelSpaceOffset.Init( 0, 0, 0 );
 	}
 

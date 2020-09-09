@@ -190,7 +190,7 @@ bool PhysModelParseSolidByIndex( solid_t &solid, CBaseEntity *pEntity, int model
 
 	bool parsed = false;
 
-	memset( &solid, 0, sizeof(solid) );
+	memset( static_cast<void*>(&solid), 0, sizeof(solid) );
 	solid.params = g_PhysDefaultObjectParams;
 
 	IVPhysicsKeyParser *pParse = physcollision->VPhysicsKeyParserCreate( pCollide->pKeyValues );
@@ -200,7 +200,7 @@ bool PhysModelParseSolidByIndex( solid_t &solid, CBaseEntity *pEntity, int model
 		if ( !strcmpi( pBlock, "solid" ) )
 		{
 			solid_t tmpSolid;
-			memset( &tmpSolid, 0, sizeof(tmpSolid) );
+			memset( static_cast<void*>(&tmpSolid), 0, sizeof(tmpSolid) );
 			tmpSolid.params = g_PhysDefaultObjectParams;
 
 			pParse->ParseSolid( &tmpSolid, &g_SolidSetup );
@@ -253,7 +253,7 @@ bool PhysModelParseSolidByIndex( solid_t &solid, CBaseEntity *pEntity, vcollide_
 {
 	bool parsed = false;
 
-	memset( &solid, 0, sizeof(solid) );
+	memset( static_cast<void*>(&solid), 0, sizeof(solid) );
 	solid.params = g_PhysDefaultObjectParams;
 
 	IVPhysicsKeyParser *pParse = physcollision->VPhysicsKeyParserCreate( pCollide->pKeyValues );
@@ -263,7 +263,7 @@ bool PhysModelParseSolidByIndex( solid_t &solid, CBaseEntity *pEntity, vcollide_
 		if ( !strcmpi( pBlock, "solid" ) )
 		{
 			solid_t tmpSolid;
-			memset( &tmpSolid, 0, sizeof(tmpSolid) );
+			memset( static_cast<void*>(&tmpSolid), 0, sizeof(tmpSolid) );
 			tmpSolid.params = g_PhysDefaultObjectParams;
 
 			pParse->ParseSolid( &tmpSolid, &g_SolidSetup );

@@ -59,9 +59,6 @@ extern int g_nEventListVersion;
 
 void SetEventIndexForSequence( mstudioseqdesc_t &seqdesc )
 {
-	if ( &seqdesc == NULL )
-		 return;
-
 	seqdesc.flags |= STUDIO_EVENT;
 
 	if ( seqdesc.numevents == 0 )
@@ -600,12 +597,8 @@ bool HasAnimationEventOfType( CStudioHdr *pstudiohdr, int sequence, int type )
 		return false;
 
 	mstudioseqdesc_t &seqdesc = pstudiohdr->pSeqdesc( sequence );
-	if ( !&seqdesc )
-		return false;
 
 	mstudioevent_t *pevent = GetEventIndexForSequence( seqdesc );
-	if ( !pevent )
-		return false;
 
 	if (seqdesc.numevents == 0 )
 		return false;

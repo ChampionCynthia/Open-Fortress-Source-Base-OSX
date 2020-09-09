@@ -287,7 +287,7 @@ void DirectorySelectDialog::ExpandTreeToPath( const char *lpszPath, bool bSelect
 //-----------------------------------------------------------------------------
 void DirectorySelectDialog::SetStartDirectory(const char *path)
 {
-	strncpy(m_szCurrentDir, path, sizeof(m_szCurrentDir));
+	strncpy(m_szCurrentDir, path, sizeof(m_szCurrentDir)-1);
 	strncpy(m_szCurrentDrive, path, sizeof(m_szCurrentDrive));
 	m_szCurrentDrive[sizeof(m_szCurrentDrive) - 1] = 0;
 	char *firstSlash = strstr(m_szCurrentDrive, "\\");

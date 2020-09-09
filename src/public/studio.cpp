@@ -819,10 +819,11 @@ const virtualmodel_t * CStudioHdr::ResetVModel( const virtualmodel_t *pVModel ) 
 
 const studiohdr_t *CStudioHdr::GroupStudioHdr( int i )
 {
-	if ( !this )
-	{
-		ExecuteNTimes( 5, Warning( "Call to NULL CStudioHdr::GroupStudioHdr()\n" ) );
-	}
+	// \this/ is nonull, no need for this check
+	// if ( !this )
+	// {
+	// 	ExecuteNTimes( 5, Warning( "Call to NULL CStudioHdr::GroupStudioHdr()\n" ) );
+	// }
 
 	if ( m_nFrameUnlockCounter != *m_pFrameUnlockCounter )
 	{
