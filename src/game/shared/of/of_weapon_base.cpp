@@ -83,7 +83,7 @@ bool COFWeaponBase::CanHolster() const
     MysteryThing3: offset 0x42*4
     */
 
-    CBaseCombatCharacter* p_Character = CBaseCombatWeapon::GetOwner();
+    // CBaseCombatCharacter* p_Character = CBaseCombatWeapon::GetOwner();
     /*
     //This comment block is not compiling, OFTODO: Fix this!
     if(p_Character && p_Character->IsPlayer())

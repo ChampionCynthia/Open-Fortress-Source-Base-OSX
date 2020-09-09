@@ -37,6 +37,8 @@ $Project "Client (Open Fortress)"
 		$File	"of/of_prediction.cpp"	
 		$File	"of/c_of_player.cpp"
 		$File	"of/c_of_player.h"
+		$File	"of/c_of_team.cpp"
+		$File	"of/c_of_team.h"
 
 		// NOPEY: They're located in shared, but aren't in our server. dunno why
 		$File	"$SRCDIR\game\shared\predicted_viewmodel.cpp"
