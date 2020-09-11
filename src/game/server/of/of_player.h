@@ -24,6 +24,9 @@ public:
 	// Called from of_gamerules
 	void PreCacheKart();
 	static void PreCacheMvM();
+
+	bool ClientCommand(const CCommand& args);
+
 	// set to true from of_gamerules
 	//OFTODO: I'm assuming the init value of m_bOFPlayerNeedsPrecache is false.
 	static bool m_bOFPlayerNeedsPrecache;

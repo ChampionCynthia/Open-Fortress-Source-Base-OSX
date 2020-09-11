@@ -9,6 +9,7 @@
 #include "cbase.h"
 #include "of_player.h"
 #include "of_playeranimstate.h"
+#include "of_shareddefs.h"
 
 // -------------------------------------------------------------------------------- //
 // Player animation event. Sent to the client when a player fires, jumps, reloads, etc..
@@ -83,4 +84,16 @@ void COFPlayer::PreCacheKart()
 //OFSTATUS: Incomplete, and low priority
 void COFPlayer::PreCacheMvM()
 {
+}
+
+//OFSTATUS: Incomplete, only handles jointeam and in jointeam it only handles actual numbers.
+bool COFPlayer::ClientCommand( const CCommand& args )
+{
+	if ( FStrEq( args[0], "jointeam" ) && args.ArgC() >= 2)
+	{
+		BaseClass::ChangeTeam( atoi( args[1] ) );
+		return true;
+	}
+
+	return BaseClass::ClientCommand(args);
 }
