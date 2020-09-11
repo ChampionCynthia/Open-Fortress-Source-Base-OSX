@@ -6,6 +6,12 @@
 #include "cbase.h"
 #include "of_shareddefs.h"
 
+const char *g_aWeaponModePrefix[] =
+{
+	"", // Primary parse doesnt use any prefixes
+	"secondary_", // Primary parse doesnt use any prefixes
+};
+
 const char *g_aAmmoNames[] =
 {
 	"DUMMY AMMO", // This ammo is skipped

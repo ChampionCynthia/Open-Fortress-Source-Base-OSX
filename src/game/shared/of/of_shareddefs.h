@@ -30,6 +30,12 @@ enum OF_Collision_Group_t
 #define DMG_IGNITE              DMG_PLASMA      // < Ignite victim 
 #define DMG_USE_HITLOCATIONS    DMG_AIRBOAT     // < Do hit location damage (sniper rifle) 
 
+#ifdef CLIENT_DLL
+#define Shared_VarArgs VarArgs
+#else
+#define Shared_VarArgs UTIL_VarArgs
+#endif
+
 enum
 {
 	OF_TEAM_RED = FIRST_GAME_TEAM,
@@ -38,6 +44,27 @@ enum
 
 	OF_TEAM_COUNT
 };
+
+enum
+{
+	TF_WEAPON_MODE_PRIMARY = 0,
+	TF_WEAPON_MODE_SECONDARY,
+	TF_WEAPON_MODE_COUNT
+};
+
+enum
+{
+	TF_WEAPON_TYPE_PRIMARY = 0,
+	TF_WEAPON_TYPE_SECONDARY,
+	TF_WEAPON_TYPE_MELEE,
+	TF_WEAPON_TYPE_GRENADE,
+	TF_WEAPON_TYPE_BUILDING,
+	TF_WEAPON_TYPE_PDA,
+	TF_WEAPON_TYPE_ITEM1,
+	TF_WEAPON_TYPE_ITEM2
+};
+
+extern const char *g_aWeaponModePrefix[TF_WEAPON_MODE_COUNT];
 
 // Needs to match the array below
 #define AMMONAME_FIRST 1
