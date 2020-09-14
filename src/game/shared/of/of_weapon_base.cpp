@@ -29,6 +29,7 @@ BEGIN_PREDICTION_DATA( COFWeaponBase )
 END_PREDICTION_DATA()
 #endif
 
+// Do we need this? Weapon bases never get used on their own - Kay
 LINK_ENTITY_TO_CLASS( tf_weapon_base, COFWeaponBase );
 
 
