@@ -30,15 +30,19 @@ class COFWeaponBaseGun: public COFWeaponBase
 	virtual bool HasPrimaryAmmo();
 	virtual bool CanDeploy();
 	virtual bool Holster();
+	*/
 	virtual void PrimaryAttack();
-	virtual void SecondaryAttack();
+/*	virtual void SecondaryAttack();
 	
 	// What is this used for??
 	// Re: Apparently there's a "last_shot_crits" attribute, dont think anything uses it - Kay
 	virtual bool HasLastShotCritical();
-	
+	*/
 	virtual void DoFireEffects();
-	virtual bool ShouldDoMuzzleFlash();
+
+	// OFTODO: Placeholder for now, look into what makes this be false sometimes
+	virtual bool ShouldDoMuzzleFlash() { return true; };
+	/*
 	virtual int GetWeaponProjectileType() const;
 	virtual CBaseEntity *FireProjectile( CTFPlayer *pPlayer );
 	virtual void RemoveProjectileAmmo( CTFPlayer *pPlayer );
@@ -58,12 +62,15 @@ class COFWeaponBaseGun: public COFWeaponBase
 	virtual float GetProjectileSpeed();
 	virtual float GetProjectileGravity();
 	virtual float GetProjectileSpread();
+	*/
 	virtual int GetAmmoPerShot();
+	/*
 	virtual int GetProjectileDamage();
 	virtual bool ShouldPlayFireAnim();
 	virtual void ZoomIn();
 	virtual void ZoomOut();
 	virtual void PlayWeaponShootSound();
-	virtual bool ShouldRemoveDisguiseOnPrimaryFire() const;
 	*/
+	// OFTODO: Placeholder for now, i think only attributes affect this so it will stay hardcoded as true for now - Kay
+	virtual bool ShouldRemoveDisguiseOnPrimaryAttack() const{ return true };
 };

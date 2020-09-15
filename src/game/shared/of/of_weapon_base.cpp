@@ -292,3 +292,12 @@ bool COFWeaponBase::CanDrop() const {
 bool COFWeaponBase::AllowTaunts() const {
     return true;
 }
+
+//-----------------------------------------------------------------------------
+// Purpose: Get my data in the file weapon info array
+//-----------------------------------------------------------------------------
+const COFWeaponInfo &COFWeaponBase::GetOFWpnData( void ) const
+{
+	const FileWeaponInfo_t *pWpnData = &GetWpnData();
+	return *dynamic_cast<const COFWeaponInfo*>(pWpnData);
+}

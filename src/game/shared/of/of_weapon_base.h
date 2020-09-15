@@ -236,4 +236,6 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // (oh, and it doesn't have any overrides)
     // or in other words, all my homies hate CTFWeaponBase::OnUpgraded
     // void OnUpgraded();
+	
+	const COFWeaponInfo	&GetOFWpnData( void ) const;
 };
