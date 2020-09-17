@@ -3,13 +3,20 @@
 // Author(s): Nopey, Fenteale
 //
 #include "cbase.h"
-#include "of_weapon_base.h"
+#ifdef CLIENT_DLL
+#include "c_of_player.h"
+#else
+#include "of_player.h"
+#endif
+#include "of_shareddefs.h"
+#include "of_weapon_base_gun.h"
+#include "of_fx_shared.h"
 
 // ----------------------------------------------------------------------------- //
 // COFWeaponBase tables.
 // ----------------------------------------------------------------------------- //
 
-IMPLEMENT_NETWORKCLASS_ALIASED( COFWeaponBaseGun, DT_OFWeaponBaseGun )
+IMPLEMENT_NETWORKCLASS_ALIASED( OFWeaponBaseGun, DT_OFWeaponBaseGun )
 
 BEGIN_NETWORK_TABLE( COFWeaponBaseGun, DT_OFWeaponBaseGun )
 #ifdef CLIENT_DLL
@@ -43,6 +50,8 @@ LINK_ENTITY_TO_CLASS( tf_weapon_base_gun, COFWeaponBaseGun );
 
 #endif
 
+COFWeaponBaseGun::COFWeaponBaseGun() {}
+COFWeaponBaseGun::~COFWeaponBaseGun() {}
 
 void COFWeaponBaseGun::PrimaryAttack()
 {
@@ -79,7 +88,7 @@ void COFWeaponBaseGun::PrimaryAttack()
 	if( gpGlobals->curtime <= m_flNextPrimaryAttack )
 		return;
 	
-	CTFPlayer *pPlayer = GetTFPlayerOwner();
+	COFPlayer *pPlayer = GetOFPlayerOwner();
 	if( !pPlayer )
 		return;
 	
@@ -95,7 +104,8 @@ void COFWeaponBaseGun::PrimaryAttack()
 		return;
 
 	// OFTODO: Replace this with CTFWeaponBase::ApplyFireDelay whenever that function gets added - Kay
-	m_flNextPrimaryAttack += GetOFWpnData()->m_WeaponModeInfo[m_iWeaponMode].m_flTimeFireDelay;
+	m_flNextPrimaryAttack += GetOFWpnData().m_WeaponModeInfo[m_iWeaponMode].m_flTimeFireDelay;
+	DevMsg("Next attack %f\n", GetOFWpnData().m_WeaponModeInfo[m_iWeaponMode].m_flTimeFireDelay);
 	
 	m_iClip1 -= GetAmmoPerShot();
 	
@@ -114,7 +124,8 @@ void COFWeaponBaseGun::PrimaryAttack()
 	SendWeaponAnim( GetPrimaryAttackActivity() );
 	
 	// Uncomment when we implement these -Kay
-	//CBaseEntity *pProjectile = FireProjectile( pPlayer );
+	// CBaseEntity *pProjectile =
+	FireProjectile( pPlayer );
 	
 	//ModifyProjectile( pProjectile );
 
@@ -131,17 +142,102 @@ void COFWeaponBaseGun::PrimaryAttack()
 
 	SetWeaponIdleTime( SequenceDuration() );
 	
+/*	Uncomment when we have these functions
 	if( ShouldRemoveDisguiseOnPrimaryAttack() )
-		pPlayer()->RemoveDisguise();
+		pPlayer->RemoveDisguise(); */
 	
-	pPlayer->OnAttack();
+//	pPlayer->OnAttack();
 }
 
+// OFSTATUS: INCOMPLETE, only supports FireBullet for now, and some functions are missing at the end
+CBaseEntity *COFWeaponBaseGun::FireProjectile( COFPlayer *pPlayer )
+{
+	CBaseEntity *pProjectile = NULL;
+	int iProjectileType = GetOFWpnData().m_WeaponModeInfo[m_iWeaponMode].m_iProjectileType;
+	
+	switch( iProjectileType )
+	{
+		case OF_PROJECTILE_TYPE_BULLET:
+			FireBullet( pPlayer );
+			break;
+/*		case OF_PROJECTILE_TYPE_ROCKET:
+		case OF_PROJECTILE_TYPE_MANGLER:
+			pProjectile = FireRocket();
+			break;
+		case OF_PROJECTILE_TYPE_FLAMEROCKET:
+			pProjectile = FireFlameRocket();
+			break;
+		case OF_PROJECTILE_TYPE_PIPEBOMB:
+		case OF_PROJECTILE_TYPE_STICKYBOMB:
+		case OF_PROJECTILE_TYPE_STICKYJUMPER:
+		case OF_PROJECTILE_TYPE_CANNONBALL:
+			pProjectile = FirePipeBomb();
+			break;
+		case OF_PROJECTILE_TYPE_SYRINGE:
+			pProjectile = FireNail();
+			break;
+		case OF_PROJECTILE_TYPE_FLARE:
+			pProjectile = FireFlare();
+			break;
+		case OF_PROJECTILE_TYPE_JARATE:
+		case OF_PROJECTILE_TYPE_MADMILK:
+		case OF_PROJECTILE_TYPE_CLEAVER:
+		case OF_PROJECTILE_TYPE_JARATE_FESTIVE:
+		case OF_PROJECTILE_TYPE_CROSSBOW_FESTIVE:
+		case OF_PROJECTILE_TYPE_JARATE_BREAD:
+		case OF_PROJECTILE_TYPE_MADMILK_BREAD:
+			pProjectile = FireJar();
+			break;
+		case OF_PROJECTILE_TYPE_ARROW:
+		case OF_PROJECTILE_TYPE_CROSSBOW:
+		case OF_PROJECTILE_TYPE_RANGER:
+		case OF_PROJECTILE_TYPE_ARROW_FESTIVE:
+		case OF_PROJECTILE_TYPE_GRAPPLE:
+			pProjectile = FireArrow();
+			break;
+		case OF_PROJECTILE_TYPE_BISON:
+			pProjectile = FireEnergyBall();
+			break;*/
+		default:
+		case OF_PROJECTILE_TYPE_NONE:
+		case OF_PROJECTILE_TYPE_UNKNOWN1:
+		case OF_PROJECTILE_TYPE_UNKNOWN2:
+		case OF_PROJECTILE_TYPE_UNKNOWN3:
+			DevMsg("Weapon does not have a projectile type set\n");
+			break;
+	}
+	
+	if( ShouldPlayFireAnim() )
+		pPlayer->DoAnimationEvent( PLAYERANIMEVENT_ATTACK_PRIMARY );
+	
+	return pProjectile;
+}
+
+// OFSTATUS: ~50% comlpete, there's some functions before FX_FireBullets 
+void COFWeaponBaseGun::FireBullet( COFPlayer *pPlayer )
+{
+	PlayWeaponShootSound();
+	
+	FX_FireBullets(
+		this,
+		GetOwner()->entindex(),
+		pPlayer->Weapon_ShootPosition(),
+		pPlayer->EyeAngles() + pPlayer->GetPunchAngle(),
+		GetWeaponID(),
+		m_iWeaponMode,
+		CBaseEntity::GetPredictionRandomSeed() & 255,
+		GetWeaponSpread(),
+		GetProjectileDamage(),
+		false);
+}
+
+//OFSTATUS: INCOMPLETE
 int COFWeaponBaseGun::GetAmmoPerShot()
 {
-	return GetOFWpnData()->m_WeaponModeInfo[m_iWeaponMode].m_iAmmoPerShot;
+	return GetOFWpnData().m_WeaponModeInfo[m_iWeaponMode].m_iAmmoPerShot;
 }
 
+//OFSTATUS: COMPLETE
 void COFWeaponBaseGun::DoFireEffects()
 {
 	// From what i can tell this just casts to the player's active weapon and checks if it can do the muzzleflash
@@ -153,3 +249,41 @@ void COFWeaponBaseGun::DoFireEffects()
 	if( ShouldDoMuzzleFlash() )
 		pPlayer->DoMuzzleFlash();
 }
+
+//OFSTATUS: INCOMPLETE
+float COFWeaponBaseGun::GetWeaponSpread()
+{
+	return GetOFWpnData().m_WeaponModeInfo[m_iWeaponMode].m_flSpread;
+}
+
+//OFSTATUS: INCOMPLETE
+int COFWeaponBaseGun::GetProjectileDamage()
+{
+	return GetOFWpnData().m_WeaponModeInfo[m_iWeaponMode].m_iDamage;
+};
+
+//OFSTATUS: INCOMPLETE, DoAnimationEvent seems to cause crashes, so we disable this for now
+bool COFWeaponBaseGun::ShouldPlayFireAnim()
+{
+	return false;
+};
+
+//OFSTATUS: INCOMPLETE
+void COFWeaponBaseGun::PlayWeaponShootSound()
+{
+	// Default sound is single
+	WeaponSound_t iSound = SINGLE;
+
+	// Check if the current attack is a critical, and if so, play the burst ( crit ) sound
+	// OFTODO: Replace this with a variable or function that checks if we're critting
+	if( false )
+		iSound = BURST;
+	
+	WeaponSound(iSound);
+}
+
+//OFSTATUS: INCOMPLETE
+bool COFWeaponBaseGun::ShouldRemoveDisguiseOnPrimaryAttack() const
+{
+	return true;
+};

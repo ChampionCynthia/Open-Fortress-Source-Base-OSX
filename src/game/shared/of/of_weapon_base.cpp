@@ -3,7 +3,54 @@
 // Author(s): Nopey, Fenteale
 //
 #include "cbase.h"
+#ifdef CLIENT_DLL
+#include "c_of_player.h"
+#else
+#include "of_player.h"
+#endif
 #include "of_weapon_base.h"
+#include "of_shareddefs.h"
+
+// ----------------------------------------------------------------------------- //
+// Global functions.
+// ----------------------------------------------------------------------------- //
+
+//--------------------------------------------------------------------------------------------------------
+static const char * s_WeaponAliasInfo[] = 
+{
+	"none",				// WEAPON_NONE
+	"tf_weapon_smg",	// OF_WEAPON_SMG
+	NULL,				// WEAPON_OFTODO
+	NULL,				// WEAPON_MAX
+};
+
+//--------------------------------------------------------------------------------------------------------
+//
+// Given an alias, return the associated weapon ID
+//
+int AliasToWeaponID( const char *alias )
+{
+	if (alias)
+	{
+		for( int i=0; s_WeaponAliasInfo[i] != NULL; ++i )
+			if (!Q_stricmp( s_WeaponAliasInfo[i], alias ))
+				return i;
+	}
+
+	return WEAPON_NONE;
+}
+
+//--------------------------------------------------------------------------------------------------------
+//
+// Given a weapon ID, return its alias
+//
+const char *WeaponIDToAlias( int id )
+{
+	if ( (id >= WEAPON_MAX) || (id < 0) )
+		return NULL;
+
+	return s_WeaponAliasInfo[id];
+}
 
 // ----------------------------------------------------------------------------- //
 // COFWeaponBase tables.
@@ -49,7 +96,10 @@ LINK_ENTITY_TO_CLASS( tf_weapon_base, COFWeaponBase );
 // ----------------------------------------------------------------------------- //
 
 //OFSTATUS: INCOMPLETE, massive (~500 lines). (lots of fields, too)
-COFWeaponBase::COFWeaponBase() {}
+COFWeaponBase::COFWeaponBase()
+{
+	m_iWeaponMode = OF_WEAPON_MODE_PRIMARY;
+}
 
 //OFSTATUS: COMPLETE
 CBaseEntity *COFWeaponBase::GetOwnerViaInterface ()
@@ -293,11 +343,26 @@ bool COFWeaponBase::AllowTaunts() const {
     return true;
 }
 
+//OFSTATUS: INCOMPLETE, only temp for now
+bool COFWeaponBase::CanAttack()
+{
+    return true;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Get my data in the file weapon info array
 //-----------------------------------------------------------------------------
 const COFWeaponInfo &COFWeaponBase::GetOFWpnData( void ) const
 {
-	const FileWeaponInfo_t *pWpnData = &GetWpnData();
-	return *dynamic_cast<const COFWeaponInfo*>(pWpnData);
+	const FileWeaponInfo_t *pWeaponInfo = &GetWpnData();
+	const COFWeaponInfo *pOFInfo;
+
+	pOFInfo = static_cast< const COFWeaponInfo* >( pWeaponInfo );
+
+	return *pOFInfo;
 }
+
+COFPlayer *COFWeaponBase::GetOFPlayerOwner() const
+{
+	return ToOFPlayer( GetOwner() );
+}	

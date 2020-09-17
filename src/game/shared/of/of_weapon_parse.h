@@ -29,6 +29,8 @@ struct TempStructName_t
 	
 	bool m_bUseRapidFireCrits;
 	
+	int m_iProjectileType;
+	
 	float m_flProjectileSpeed;
 	
 	float m_flSmackDelay;

@@ -42,6 +42,7 @@ int ScreenTransform( const Vector& point, Vector& screen );
 
 #if defined ( TF_CLIENT_DLL) || defined( OF_CLIENT_DLL )
 // If running TF, we use CHudTFCrosshair instead (which is derived from CHudCrosshair)
+DECLARE_HUDELEMENT( CHudCrosshair );
 #else
 DECLARE_HUDELEMENT( CHudCrosshair );
 #endif

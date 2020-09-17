@@ -44,10 +44,14 @@ class COFWeaponBaseGun: public COFWeaponBase
 	virtual bool ShouldDoMuzzleFlash() { return true; };
 	/*
 	virtual int GetWeaponProjectileType() const;
-	virtual CBaseEntity *FireProjectile( CTFPlayer *pPlayer );
+	*/
+	virtual CBaseEntity *FireProjectile( COFPlayer *pPlayer );
+	/*
 	virtual void RemoveProjectileAmmo( CTFPlayer *pPlayer );
 	virtual void ModifyProjectile( CBaseEntity *pEnt );
-	virtual void FireBullet( CTFPlayer *pPlayer );
+	*/
+	virtual void FireBullet( COFPlayer *pPlayer );
+	/*
 	// OFTODO: Figure out what the types are
 	virtual void FirePipeBomb( CTFPlayer *pPlayer, int iType );
 	// OFTODO: Ditto
@@ -57,20 +61,23 @@ class COFWeaponBaseGun: public COFWeaponBase
 	virtual void FireFlameRocket( CTFPlayer *pPlayer );
 	// OFTODO: Figure out what the magic bool does
 	virtual void FireEnergyBall( CTFPlayer *pPlayer, bool bMagic );
-	virtual void GetWeaponSpread();
+	*/
+	virtual float GetWeaponSpread();
+	/*
 	virtual char GetCustomProjectileModel( CAttribute_String *szParam );
 	virtual float GetProjectileSpeed();
 	virtual float GetProjectileGravity();
 	virtual float GetProjectileSpread();
 	*/
 	virtual int GetAmmoPerShot();
-	/*
 	virtual int GetProjectileDamage();
+	
 	virtual bool ShouldPlayFireAnim();
+	/*
 	virtual void ZoomIn();
 	virtual void ZoomOut();
-	virtual void PlayWeaponShootSound();
 	*/
+	virtual void PlayWeaponShootSound();
 	// OFTODO: Placeholder for now, i think only attributes affect this so it will stay hardcoded as true for now - Kay
-	virtual bool ShouldRemoveDisguiseOnPrimaryAttack() const{ return true };
+	virtual bool ShouldRemoveDisguiseOnPrimaryAttack() const;
 };

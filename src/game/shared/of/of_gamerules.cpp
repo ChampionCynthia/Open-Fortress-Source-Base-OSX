@@ -43,6 +43,8 @@ END_NETWORK_TABLE()
 LINK_ENTITY_TO_CLASS( tf_gamerules, COFGameRulesProxy );
 IMPLEMENT_NETWORKCLASS_ALIASED( OFGameRulesProxy, DT_OFGameRulesProxy )
 
+ConVar sv_showimpacts("sv_showimpacts", "0", FCVAR_REPLICATED, "Shows client (red) and server (blue) bullet impact point" );
+
 // OFSTATUS: COMPLETE
 static const char *s_PreserveEnts[] =
 {

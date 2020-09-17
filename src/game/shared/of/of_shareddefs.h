@@ -47,24 +47,65 @@ enum
 
 enum
 {
-	TF_WEAPON_MODE_PRIMARY = 0,
-	TF_WEAPON_MODE_SECONDARY,
-	TF_WEAPON_MODE_COUNT
+	OF_WEAPON_MODE_PRIMARY = 0,
+	OF_WEAPON_MODE_SECONDARY,
+	OF_WEAPON_MODE_COUNT
 };
 
 enum
 {
-	TF_WEAPON_TYPE_PRIMARY = 0,
-	TF_WEAPON_TYPE_SECONDARY,
-	TF_WEAPON_TYPE_MELEE,
-	TF_WEAPON_TYPE_GRENADE,
-	TF_WEAPON_TYPE_BUILDING,
-	TF_WEAPON_TYPE_PDA,
-	TF_WEAPON_TYPE_ITEM1,
-	TF_WEAPON_TYPE_ITEM2
+	OF_WEAPON_TYPE_PRIMARY = 0,
+	OF_WEAPON_TYPE_SECONDARY,
+	OF_WEAPON_TYPE_MELEE,
+	OF_WEAPON_TYPE_GRENADE,
+	OF_WEAPON_TYPE_BUILDING,
+	OF_WEAPON_TYPE_PDA,
+	OF_WEAPON_TYPE_ITEM1,
+	OF_WEAPON_TYPE_ITEM2
 };
 
-extern const char *g_aWeaponModePrefix[TF_WEAPON_MODE_COUNT];
+// These values are approximate and gotten via limited testing
+// using the override projectile type attribute in Live tf2
+// couldn't get some of these to spawn, so for those i used the FireProjectile class as a reference
+// however some i still couldnt figure out, those are marked as Unknown
+// If you know a better way, feel free to update this
+enum
+{
+	OF_PROJECTILE_TYPE_NONE = 0,		 // 0  "projectile_bullet"
+	OF_PROJECTILE_TYPE_BULLET,           // 1  "projectile_bullet"
+	OF_PROJECTILE_TYPE_ROCKET,           // 2  "projectile_rocket"
+	OF_PROJECTILE_TYPE_PIPEBOMB,         // 3  "projectile_pipe"
+	OF_PROJECTILE_TYPE_STICKYBOMB,       // 4  "projectile_pipe_remote"
+	OF_PROJECTILE_TYPE_SYRINGE,          // 5  "projectile_syringe"
+	OF_PROJECTILE_TYPE_FLARE,            // 6  "projectile_flare"
+	OF_PROJECTILE_TYPE_JARATE,           // 7  "projectile_jar"
+	OF_PROJECTILE_TYPE_ARROW,            // 8  "projectile_arrow"
+	OF_PROJECTILE_TYPE_FLAMEROCKET,      // 9  Seems to be unused?
+	OF_PROJECTILE_TYPE_MADMILK,          // 10 "projectile_jar_milk"
+	OF_PROJECTILE_TYPE_CROSSBOW,         // 11 "projectile_healing_bolt"
+	OF_PROJECTILE_TYPE_MANGLER,          // 12 "projectile_energy_ball"
+	OF_PROJECTILE_TYPE_BISON,            // 13 "projectile_energy_ring" 
+	OF_PROJECTILE_TYPE_STICKYJUMPER,     // 14 Defined only via items game
+	OF_PROJECTILE_TYPE_CLEAVER,           // 15 "projectile_cleaver"
+	OF_PROJECTILE_TYPE_UNKNOWN1,         // 16 
+	OF_PROJECTILE_TYPE_CANNONBALL,       // 17 "projectile_cannonball"
+	OF_PROJECTILE_TYPE_RANGER,           // 18 Defined only via items game
+	OF_PROJECTILE_TYPE_ARROW_FESTIVE,    // 19 Defined only via items game
+	OF_PROJECTILE_TYPE_UNKNOWN2,         // 20
+	OF_PROJECTILE_TYPE_UNKNOWN3,         // 21
+	OF_PROJECTILE_TYPE_JARATE_FESTIVE,   // 22 Defined only via items game
+	OF_PROJECTILE_TYPE_CROSSBOW_FESTIVE, // 23 Defined only via items game
+	OF_PROJECTILE_TYPE_JARATE_BREAD,     // 24 Defined only via items game
+	OF_PROJECTILE_TYPE_MADMILK_BREAD,    // 25 Defined only via items game
+	OF_PROJECTILE_TYPE_GRAPPLE,       	 // 26 "tf_projectile_grapplinghook"
+
+	OF_PROJECTILE_TYPE_BALLOFFIRE,		 // 27? "tf_projectile_balloffire" Havent tried out projectile override in a while so these werent in my list
+	OF_PROJECTILE_TYPE_GASPASSER,		 // 28? "projectile_jar_gas" 
+	OF_PROJECTILE_TYPE_COUNT
+};
+
+extern const char *g_aWeaponModePrefix[OF_WEAPON_MODE_COUNT];
+extern const char *g_aProjectileTypeNames[OF_PROJECTILE_TYPE_COUNT];
 
 // Needs to match the array below
 #define AMMONAME_FIRST 1

@@ -1,6 +1,6 @@
 // ========= Copyright Open Fortress Developers, CC-BY-NC-SA ============
 // Purpose: 
-// Author(s): Nopey
+// Author(s): Nopey, KaydemonLP
 //
 
 #include "cbase.h"
@@ -26,7 +26,7 @@ void COFWeaponInfo::Parse( KeyValues *pKeyValuesData, const char *szWeaponName )
 	// These have Secondary_ versions, so just in case, made compatability to add new modes
 	// Add things that should be changable via modes here
 	// example of how this would be accessed pWeapon->GetTFWeapon()->m_WeaponModeInfo[m_iWeaponType].m_something
-	for( int i = 0; i < TF_WEAPON_MODE_COUNT; i++ )
+	for( int i = 0; i < OF_WEAPON_MODE_COUNT; i++ )
 	{
 		TempStructName_t WeaponInfo_t;
 		m_WeaponModeInfo.AddToTail(WeaponInfo_t);
@@ -49,11 +49,16 @@ void COFWeaponInfo::Parse( KeyValues *pKeyValuesData, const char *szWeaponName )
 		m_WeaponModeInfo[i].m_iAmmoPerShot		 = pKeyValuesData->GetInt( Shared_VarArgs("%sAmmoPerShot", szPrefix), 1 );
 					
 		m_WeaponModeInfo[i].m_bUseRapidFireCrits = pKeyValuesData->GetBool( Shared_VarArgs("%sUseRapidFireCrits", szPrefix), true );
-	    
+
 		// TODO: Finish this, basically go through a ProjectileType char pointer string array and assign the proper int value
-		// char szProjectileType = pKeyValuesData->GetString("ProjectileType", "projectile_none" );
-		// m_iProjectileType = whatever etc
-		
+		const char *szProjectileType = pKeyValuesData->GetString("ProjectileType", "projectile_none" );
+		m_WeaponModeInfo[i].m_iProjectileType = OF_PROJECTILE_TYPE_NONE;
+		for( int y = 0; y < OF_PROJECTILE_TYPE_COUNT; y++ )
+		{
+			if( FStrEq( szProjectileType, g_aProjectileTypeNames[y] ) )
+				m_WeaponModeInfo[i].m_iProjectileType = y;
+		}
+
 		m_WeaponModeInfo[i].m_flProjectileSpeed	 = pKeyValuesData->GetFloat( Shared_VarArgs("%sProjectileSpeed", szPrefix), 0.0f ); // Maybe add a min speed 
 
 		m_WeaponModeInfo[i].m_flSmackDelay = pKeyValuesData->GetFloat( Shared_VarArgs("%sSmackDelay", szPrefix), 0.2f );
@@ -67,21 +72,21 @@ void COFWeaponInfo::Parse( KeyValues *pKeyValuesData, const char *szWeaponName )
 	
 	// Mainly used for animations
 	if( FStrEq(pWeaponType, "primary") )
-		m_iWeaponType = TF_WEAPON_TYPE_PRIMARY;
+		m_iWeaponType = OF_WEAPON_TYPE_PRIMARY;
 	else if( FStrEq(pWeaponType, "secondary") )
-		m_iWeaponType = TF_WEAPON_TYPE_SECONDARY;
+		m_iWeaponType = OF_WEAPON_TYPE_SECONDARY;
 	else if( FStrEq(pWeaponType, "melee") )
-		m_iWeaponType = TF_WEAPON_TYPE_MELEE;
+		m_iWeaponType = OF_WEAPON_TYPE_MELEE;
 	else if( FStrEq(pWeaponType, "grenade") )
-		m_iWeaponType = TF_WEAPON_TYPE_GRENADE;
+		m_iWeaponType = OF_WEAPON_TYPE_GRENADE;
 	else if( FStrEq(pWeaponType, "building") )
-		m_iWeaponType = TF_WEAPON_TYPE_BUILDING;
+		m_iWeaponType = OF_WEAPON_TYPE_BUILDING;
 	else if( FStrEq(pWeaponType, "pda") )
-		m_iWeaponType = TF_WEAPON_TYPE_PDA;
+		m_iWeaponType = OF_WEAPON_TYPE_PDA;
 	else if( FStrEq(pWeaponType, "item1") )
-		m_iWeaponType = TF_WEAPON_TYPE_ITEM1;
+		m_iWeaponType = OF_WEAPON_TYPE_ITEM1;
 	else if( FStrEq(pWeaponType, "item2") )
-		m_iWeaponType = TF_WEAPON_TYPE_ITEM2;
+		m_iWeaponType = OF_WEAPON_TYPE_ITEM2;
 	
 	// Explosion stuff, ie Grenade timers and explosion radius
 	m_bGrenade = pKeyValuesData->GetBool( "Grenade", false );

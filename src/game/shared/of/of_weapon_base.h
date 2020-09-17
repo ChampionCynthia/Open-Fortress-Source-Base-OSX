@@ -9,6 +9,10 @@
 #include "econ/ihasowner.h"
 #include "predictable_entity.h"
 
+#ifdef CLIENT_DLL
+#define COFPlayer C_OFPlayer
+#endif
+
 //--------------------------------------------------------------------------------------------------------
 //
 // Weapon IDs for all OF Game weapons
@@ -17,10 +21,13 @@ typedef enum
 {
     WEAPON_NONE = 0,
 
+	OF_WEAPON_SMG,
     WEAPON_OFTODO,
 
     WEAPON_MAX,
 } OFWeaponID;
+
+const char *WeaponIDToAlias( int id );
 
 #if defined( CLIENT_DLL )
     #define COFWeaponBase C_OFWeaponBase
@@ -43,8 +50,11 @@ typedef enum
     GetChargeInterval
 */
 
+class COFPlayer;
+
 //OFTODO: Mark many COFWeaponBase getters const
-class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */ {
+class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */ 
+{
     DECLARE_CLASS(COFWeaponBase, CBaseCombatWeapon);
     DECLARE_NETWORKCLASS();
     DECLARE_PREDICTABLE();
@@ -187,7 +197,7 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // virtual void PlayDeflectionSound(bool);
     // virtual float GetDeflectionRadius();
     // virtual float GetJarateTime();
-    // virtual bool CanAttack();
+    virtual bool CanAttack();
     // virtual int GetCanAttackFlags();
     // virtual void WeaponReset();
     // virtual void WeaponRegenerate();
@@ -237,5 +247,10 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // or in other words, all my homies hate CTFWeaponBase::OnUpgraded
     // void OnUpgraded();
 	
+	COFPlayer	*GetOFPlayerOwner() const;
+	
 	const COFWeaponInfo	&GetOFWpnData( void ) const;
+	
+public:
+	int m_iWeaponMode; // Used in stuff like airblast 'n similar
 };
