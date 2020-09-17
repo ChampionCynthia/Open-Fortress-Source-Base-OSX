@@ -25,7 +25,16 @@ public:
 	void PreCacheKart();
 	static void PreCacheMvM();
 
-	bool ClientCommand(const CCommand& args);
+	void Precache();
+	void PrecacheOFPlayer();
+	void PrecachePlayerModels();
+	bool ClientCommand( const CCommand& args );
+	void HandleCommand_JoinTeam(const char* arg);
+	void ChangeTeam(int iTeam);
+	void Spawn();
+	void UpdateModel();
+	CBaseEntity *EntSelectSpawnPoint();
+	CBaseEntity* SelectSpawnSpotByType(char * type, CBaseEntity **param_2);
 
 	// set to true from of_gamerules
 	//OFTODO: I'm assuming the init value of m_bOFPlayerNeedsPrecache is false.

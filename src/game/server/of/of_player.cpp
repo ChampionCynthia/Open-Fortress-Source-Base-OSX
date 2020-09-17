@@ -10,6 +10,8 @@
 #include "of_player.h"
 #include "of_playeranimstate.h"
 #include "of_shareddefs.h"
+#include "tier0/vprof.h"
+#include "entity_ofstart.h"
 
 // -------------------------------------------------------------------------------- //
 // Player animation event. Sent to the client when a player fires, jumps, reloads, etc..
@@ -86,14 +88,352 @@ void COFPlayer::PreCacheMvM()
 {
 }
 
+//OFSTATUS: Nearly complete, only missing vprof(but that doesn't make any difference ingame)
+void COFPlayer::Precache()
+{
+    //VPROF_SCOPE_BEGIN("CTFPlayer::Precache"); //Maybe, this could also be something else
+    /*uint *puVar1;
+    int iVar2;
+    undefined *puVar3;
+    char cVar4;
+    int iVar5;
+    char **ppcVar6;
+    int iVar7;
+    undefined *puVar8;
+  
+    puVar3 = _g_VProfCurrentProfile;
+    iVar2 = *(int *)(_g_VProfCurrentProfile + 0x100c);
+    if (iVar2 != 0) {
+    iVar7 = *(int *)(_g_VProfCurrentProfile + 0x19b8);
+    iVar5 = _ThreadGetCurrentId();
+    if (iVar7 == iVar5) {
+        ppcVar6 = *(char ***)(puVar3 + 0x1014);
+        if (*ppcVar6 != "CTFPlayer::Precache") {
+        ppcVar6 = (char **)__ZN10CVProfNode10GetSubNodeEPKciS1_i
+                                        (ppcVar6,"CTFPlayer::Precache",0,"Player",4);
+        *(char ***)(puVar3 + 0x1014) = ppcVar6;
+        }
+        puVar1 = (uint *)(*(int *)(puVar3 + 0x10a0) + 4 + (int)ppcVar6[0x1c] * 8);
+        *puVar1 = *puVar1 | 4;
+        __ZN10CVProfNode10EnterScopeEv(ppcVar6);
+        puVar3[0x1010] = 0;
+    }
+    }*/
+    PrecacheOFPlayer();
+    PrecacheParticleSystem("achieved");
+    BaseClass::Precache();
+    /*if ((iVar2 != 0) && ((puVar3[0x1010] == '\0' || (*(int*)(puVar3 + 0x100c) != 0)))) {
+        iVar2 = *(int*)(puVar3 + 0x19b8);
+        iVar7 = _ThreadGetCurrentId();
+        if (iVar2 == iVar7) {
+            cVar4 = __ZN10CVProfNode9ExitScopeEv(*(undefined4*)(puVar3 + 0x1014));
+            puVar8 = *(undefined**)(puVar3 + 0x1014);
+            if (cVar4 != '\0') {
+                puVar8 = *(undefined**)(puVar8 + 100);
+                *(undefined**)(puVar3 + 0x1014) = puVar8;
+            }
+            *(bool*)(puVar3 + 0x1010) = puVar8 == puVar3 + 0x1018;
+        }
+    }*/
+    //VPROF_SCOPE_END(); //Maybe, this could also be something else
+}
+
+//OFSTATUS: Nearly complete, only missing vprof(but that doesn't make any difference ingame)
+void COFPlayer::PrecacheOFPlayer()
+{
+    /*uint* puVar1;
+    int iVar2;
+    undefined* puVar3;
+    char cVar4;
+    int iVar5;
+    char** ppcVar6;
+    int iVar7;
+    undefined* puVar8;
+
+    puVar3 = _g_VProfCurrentProfile;
+    iVar2 = *(int*)(_g_VProfCurrentProfile + 0x100c);
+    if (iVar2 != 0) {
+        iVar7 = *(int*)(_g_VProfCurrentProfile + 0x19b8);
+        iVar5 = _ThreadGetCurrentId();
+        if (iVar7 == iVar5) {
+            ppcVar6 = *(char***)(puVar3 + 0x1014);
+            if (*ppcVar6 != "CTFPlayer::PrecacheTFPlayer") {
+                ppcVar6 = (char**)__ZN10CVProfNode10GetSubNodeEPKciS1_i
+                (ppcVar6, "CTFPlayer::PrecacheTFPlayer", 0, "Player", 4);
+                *(char***)(puVar3 + 0x1014) = ppcVar6;
+            }
+            puVar1 = (uint*)(*(int*)(puVar3 + 0x10a0) + 4 + (int)ppcVar6[0x1c] * 8);
+            *puVar1 = *puVar1 | 4;
+            __ZN10CVProfNode10EnterScopeEv(ppcVar6);
+            puVar3[0x1010] = 0;
+        }
+    }*/
+    if (m_bOFPlayerNeedsPrecache) 
+    {
+        m_bOFPlayerNeedsPrecache = false;
+        PrecachePlayerModels();
+        PrecacheScriptSound("Player.Spawn");
+        PrecacheScriptSound("TFPlayer.Pain");
+        PrecacheScriptSound("TFPlayer.CritHit");
+        PrecacheScriptSound("TFPlayer.CritHitMini");
+        PrecacheScriptSound("TFPlayer.DoubleDonk");
+        PrecacheScriptSound("TFPlayer.CritPain");
+        PrecacheScriptSound("TFPlayer.CritDeath");
+        PrecacheScriptSound("TFPlayer.FreezeCam");
+        PrecacheScriptSound("TFPlayer.Drown");
+        PrecacheScriptSound("TFPlayer.AttackerPain");
+        PrecacheScriptSound("TFPlayer.SaveMe");
+        PrecacheScriptSound("TFPlayer.CritBoostOn");
+        PrecacheScriptSound("TFPlayer.CritBoostOff");
+        PrecacheScriptSound("TFPlayer.Decapitated");
+        PrecacheScriptSound("TFPlayer.ReCharged");
+        PrecacheScriptSound("Camera.SnapShot");
+        PrecacheScriptSound("TFPlayer.Dissolve");
+        PrecacheScriptSound("Saxxy.TurnGold");
+        PrecacheScriptSound("Icicle.TurnToIce");
+        PrecacheScriptSound("Icicle.HitWorld");
+        PrecacheScriptSound("Icicle.Melt");
+        PrecacheScriptSound("DemoCharge.ChargeCritOn");
+        PrecacheScriptSound("DemoCharge.ChargeCritOff");
+        PrecacheScriptSound("DemoCharge.Charging");
+        PrecacheScriptSound("TFPlayer.StunImpactRange");
+        PrecacheScriptSound("TFPlayer.StunImpact");
+        PrecacheScriptSound("Halloween.PlayerScream");
+        PrecacheScriptSound("Halloween.PlayerEscapedUnderworld");
+        PrecacheScriptSound("Game.YourTeamLost");
+        PrecacheScriptSound("Game.YourTeamWon");
+        PrecacheScriptSound("Game.SuddenDeath");
+        PrecacheScriptSound("Game.Stalemate");
+        PrecacheScriptSound("TV.Tune");
+        PrecacheScriptSound("Announcer.AM_FirstBloodRandom");
+        PrecacheScriptSound("Announcer.AM_CapEnabledRandom");
+        PrecacheScriptSound("Announcer.AM_RoundStartRandom");
+        PrecacheScriptSound("Announcer.AM_FirstBloodFast");
+        PrecacheScriptSound("Announcer.AM_FirstBloodFinally");
+        PrecacheScriptSound("Announcer.AM_FlawlessVictoryRandom");
+        PrecacheScriptSound("Announcer.AM_FlawlessDefeatRandom");
+        PrecacheScriptSound("Announcer.AM_FlawlessVictory01");
+        PrecacheScriptSound("Announcer.AM_TeamScrambleRandom");
+        PrecacheScriptSound("Taunt.MedicHeroic");
+        PrecacheScriptSound("Taunt.GuitarRiff");
+        PrecacheScriptSound("Powerup.ReducedDamage");
+        PrecacheScriptSound("Tournament.PlayerReady");
+        PrecacheScriptSound("Medic.AutoCallerAnnounce");
+        PrecacheScriptSound("Player.FallDamageIndicator");
+        PrecacheScriptSound("Player.FallDamageDealt");
+        PrecacheParticleSystem("crit_text");
+        PrecacheParticleSystem("miss_text");
+        PrecacheParticleSystem("cig_smoke");
+        PrecacheParticleSystem("speech_mediccall");
+        PrecacheParticleSystem("speech_mediccall_auto");
+        PrecacheParticleSystem("speech_taunt_all");
+        PrecacheParticleSystem("speech_taunt_red");
+        PrecacheParticleSystem("speech_taunt_blue");
+        PrecacheParticleSystem("player_recent_teleport_blue");
+        PrecacheParticleSystem("player_recent_teleport_red");
+        PrecacheParticleSystem("particle_nemesis_red");
+        PrecacheParticleSystem("particle_nemesis_blue");
+        PrecacheParticleSystem("spy_start_disguise_red");
+        PrecacheParticleSystem("spy_start_disguise_blue");
+        PrecacheParticleSystem("burningplayer_red");
+        PrecacheParticleSystem("burningplayer_blue");
+        PrecacheParticleSystem("burningplayer_rainbow");
+        PrecacheParticleSystem("blood_spray_red_01");
+        PrecacheParticleSystem("blood_spray_red_01_far");
+        PrecacheParticleSystem("pyrovision_blood");
+        PrecacheParticleSystem("water_blood_impact_red_01");
+        PrecacheParticleSystem("blood_impact_red_01");
+        PrecacheParticleSystem("water_playerdive");
+        PrecacheParticleSystem("water_playeremerge");
+        PrecacheParticleSystem("healthgained_red");
+        PrecacheParticleSystem("healthgained_blu");
+        PrecacheParticleSystem("healthgained_red_large");
+        PrecacheParticleSystem("healthgained_blu_large");
+        PrecacheParticleSystem("healthgained_red_giant");
+        PrecacheParticleSystem("healthgained_blu_giant");
+        PrecacheParticleSystem("critgun_weaponmodel_red");
+        PrecacheParticleSystem("critgun_weaponmodel_blu");
+        PrecacheParticleSystem("overhealedplayer_red_pluses");
+        PrecacheParticleSystem("overhealedplayer_blue_pluses");
+        PrecacheParticleSystem("highfive_red");
+        PrecacheParticleSystem("highfive_blue");
+        PrecacheParticleSystem("god_rays");
+        PrecacheParticleSystem("bl_killtaunt");
+        PrecacheParticleSystem("birthday_player_circling");
+        PrecacheParticleSystem("drg_fiery_death");
+        PrecacheParticleSystem("drg_wrenchmotron_teleport");
+        PrecacheParticleSystem("taunt_flip_land_red");
+        PrecacheParticleSystem("taunt_flip_land_blue");
+        PrecacheParticleSystem("tfc_sniper_mist");
+        PrecacheParticleSystem("dxhr_sniper_rail_blue");
+        PrecacheParticleSystem("dxhr_sniper_rail_red");
+        PrecacheParticleSystem("tfc_sniper_distortion_trail");
+        PrecacheParticleSystem("rps_rock_red");
+        PrecacheParticleSystem("rps_paper_red");
+        PrecacheParticleSystem("rps_scissors_red");
+        PrecacheParticleSystem("rps_rock_red_win");
+        PrecacheParticleSystem("rps_paper_red_win");
+        PrecacheParticleSystem("rps_scissors_red_win");
+        PrecacheParticleSystem("rps_rock_blue");
+        PrecacheParticleSystem("rps_paper_blue");
+        PrecacheParticleSystem("rps_scissors_blue");
+        PrecacheParticleSystem("rps_rock_blue_win");
+        PrecacheParticleSystem("rps_paper_blue_win");
+        PrecacheParticleSystem("rps_scissors_blue_win");
+        PrecacheParticleSystem("blood_decap");
+        PrecacheParticleSystem("xms_icicle_idle");
+        PrecacheParticleSystem("xms_icicle_impact");
+        PrecacheParticleSystem("xms_icicle_impact_dryice");
+        PrecacheParticleSystem("xms_icicle_melt");
+        PrecacheParticleSystem("xms_ornament_glitter");
+        PrecacheParticleSystem("xms_ornament_smash_blue");
+        PrecacheParticleSystem("xms_ornament_smash_red");
+        PrecacheParticleSystem("drg_pomson_muzzleflash");
+        PrecacheParticleSystem("drg_pomson_impact");
+        PrecacheParticleSystem("drg_pomson_impact_drain");
+        PrecacheParticleSystem("dragons_fury_effect");
+        PrecacheParticleSystem("dxhr_arm_muzzleflash");
+        PrecacheModel("effects/beam001_red.vmt", true);
+        PrecacheModel("effects/beam001_blu.vmt", true);
+        PrecacheModel("effects/beam001_white.vmt", true);
+        PrecacheModel("models/player/gibs/random_organ.mdl", true);
+        PrecacheScriptSound("Weapon_Mantreads.Impact");
+        PrecacheScriptSound("cleats_conc.StepLeft");
+        PrecacheScriptSound("cleats_conc.StepRight");
+        PrecacheScriptSound("cleats_dirt.StepLeft");
+        PrecacheScriptSound("cleats_dirt.StepRight");
+        PrecacheScriptSound("xmas.jingle");
+        PrecacheScriptSound("xmas.jingle_higher");
+        PrecacheScriptSound("PegLeg.StepRight");
+        PrecacheParticleSystem("bombinomicon_burningdebris");
+        PrecacheParticleSystem("bombinomicon_burningdebris_halloween");
+        PrecacheParticleSystem("halloween_player_death_blue");
+        PrecacheParticleSystem("halloween_player_death");
+        PrecacheScriptSound("Bombinomicon.Explode");
+        PrecacheScriptSound("Weapon_DRG_Wrench.Teleport");
+        PrecacheScriptSound("Weapon_Pomson.Single");
+        PrecacheScriptSound("Weapon_Pomson.SingleCrit");
+        PrecacheScriptSound("Weapon_Pomson.Reload");
+        PrecacheScriptSound("Weapon_Pomson.DrainedVictim");
+        PrecacheScriptSound("BlastJump.Whistle");
+        PrecacheScriptSound("Spy.TeaseVictim");
+        PrecacheScriptSound("Demoman.CritDeath");
+        PrecacheScriptSound("Heavy.Battlecry03");
+        PrecacheModel("models/effects/resist_shield/resist_shield.mdl", true);
+        PrecacheModel("models/props_mvm/mvm_revive_tombstone.mdl", true);
+        PrecacheScriptSound("General.banana_slip");
+        PrecacheScriptSound("Parachute_open");
+        PrecacheScriptSound("Parachute_close");
+        PrecacheModel("models/props_trainyard/bomb_eotl_blue.mdl", true);
+        PrecacheModel("models/props_trainyard/bomb_eotl_red.mdl", true);
+    }
+    /*if ((iVar2 != 0) && ((puVar3[0x1010] == '\0' || (*(int*)(puVar3 + 0x100c) != 0)))) {
+        iVar2 = *(int*)(puVar3 + 0x19b8);
+        iVar7 = _ThreadGetCurrentId();
+        if (iVar2 == iVar7) {
+            cVar4 = __ZN10CVProfNode9ExitScopeEv(*(undefined4*)(puVar3 + 0x1014));
+            puVar8 = *(undefined**)(puVar3 + 0x1014);
+            if (cVar4 != '\0') {
+                puVar8 = *(undefined**)(puVar8 + 100);
+                *(undefined**)(puVar3 + 0x1014) = puVar8;
+            }
+            *(bool*)(puVar3 + 0x1010) = puVar8 == puVar3 + 0x1018;
+        }
+    }*/
+    return;
+}
+
+//OFSTATUS: Incomplete
+void COFPlayer::PrecachePlayerModels()
+{
+    //For testing
+    PrecacheModel("models/player/scout.mdl"); //TEMPORARY FOR TESTING ONLY
+}
+
 //OFSTATUS: Incomplete, only handles jointeam and in jointeam it only handles actual numbers.
 bool COFPlayer::ClientCommand( const CCommand& args )
 {
-	if ( FStrEq( args[0], "jointeam" ) && args.ArgC() >= 2)
+	if ( FStrEq( args[0], "jointeam" ) && args.ArgC() >= 2 )
 	{
-		BaseClass::ChangeTeam( atoi( args[1] ) );
+        HandleCommand_JoinTeam(args[1]);
 		return true;
 	}
 
-	return BaseClass::ClientCommand(args);
+	return BaseClass::ClientCommand( args );
+}
+
+//OFSTATUS: Incomplete, all placeholder
+void COFPlayer::HandleCommand_JoinTeam(const char* arg)
+{
+    int iTeam = atoi(arg);
+
+    if (iTeam != GetTeamNumber())
+    {
+        ChangeTeam(iTeam);
+        BaseClass::ForceRespawn();
+    }
+}
+
+//OFSTATUS: Incomplete, all placeholder
+void COFPlayer::ChangeTeam(int iTeam)
+{
+    switch (iTeam)
+    {
+        case OF_TEAM_RED: m_nSkin = 0; break;
+        case OF_TEAM_BLUE: m_nSkin = 1; break;
+        default: m_nSkin = 0;
+    }
+    UpdateModel();
+    BaseClass::ChangeTeam(iTeam);
+}
+
+//OFSTATUS: Incomplete
+void COFPlayer::Spawn()
+{
+    Precache();
+
+	//start line 276 CTFPlayer::Spawn
+	SetModelScale(1.0f);
+	UpdateModel(); //line 277 - 284 CTFPlayer::Spawn() is inlined UpdateModel()
+	SetMoveType(MOVETYPE_WALK);
+	BaseClass::Spawn();
+	//end line 286 CTFPlayer::Spawn
+}
+
+//OFSTATUS: Incomplete, all placeholder
+CBaseEntity *COFPlayer::EntSelectSpawnPoint()
+{
+    return SelectSpawnSpotByType("info_player_teamspawn", nullptr);
+
+    //return BaseClass::EntSelectSpawnPoint();
+}
+
+//OFSTATUS: Incomplete, all placeholder
+CBaseEntity* COFPlayer::SelectSpawnSpotByType(char* type, CBaseEntity** param_2)
+{
+    CBaseEntity* pSpawn = gEntList.FindEntityByClassname(nullptr, type);
+
+    while (pSpawn && pSpawn->GetTeamNumber() != GetTeamNumber())
+    {
+        pSpawn = gEntList.FindEntityByClassname(pSpawn, type);
+    }
+
+    if (pSpawn == nullptr)
+    {
+        Warning("Could not find %s for team %i, selecting non matching spawnpoint", type, GetTeamNumber());
+
+        //Select a spawnpoint even though the team doesn't match, otherwise the game will crash
+        pSpawn = gEntList.FindEntityByClassname(nullptr, type);
+    }
+
+    return pSpawn;
+}
+
+//OFSTATUS: Incomplete, needs CTFPlayerClassShared to get the model names
+void COFPlayer::UpdateModel()
+{
+	//BaseClass::SetModel((COFPlayerClassShared*)(this[1].data + 0x688)->GetModelName());
+	BaseClass::SetModel("models/player/scout.mdl"); //TEMPORARY FOR TESTING ONLY
+	SetCollisionBounds(BaseClass::GetPlayerMins(), BaseClass::GetPlayerMaxs());
+    //m_PlayerAnimState->OnNewModel(); //Crashes so disabled for now
 }
