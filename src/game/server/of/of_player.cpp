@@ -12,6 +12,18 @@
 #include "of_shareddefs.h"
 #include "tier0/vprof.h"
 #include "entity_ofstart.h"
+#include "viewport_panel_names.h"
+
+ConVar sv_motd_unload_on_dismissal( "sv_motd_unload_on_dismissal", "0", 0, "If enabled, the MOTD contents will be unloaded when the player closes the MOTD." );
+ConVar tf_playerstatetransitions( "tf_playerstatetransitions", "-2", FCVAR_DEVELOPMENTONLY, "tf_playerstatetransitions <ent index or -1 for all>. Show player state transitions." );
+
+const char* sz_OFPlayerState[TF_STATE_LAST] =
+{
+    "TF_STATE_ACTIVE",
+	"TF_STATE_WELCOME",
+	"TF_STATE_OBSERVER",
+    "TF_STATE_DYING"
+};
 
 // -------------------------------------------------------------------------------- //
 // Player animation event. Sent to the client when a player fires, jumps, reloads, etc..
@@ -70,6 +82,111 @@ COFPlayer* COFPlayer::CreatePlayer( const char * name, edict_t* pEdict)
 {
 	CBasePlayer::s_PlayerEdict = pEdict;
 	return (COFPlayer *)CreateEntityByName(name, -1);
+}
+
+//OFSTATUS: Incomplete, some variables are supposed to be set here
+void COFPlayer::InitialSpawn()
+{
+	BaseClass::InitialSpawn();
+
+//	CAttributeList::SetManager( ( CAttributeList* )( this + 653 ), ( CAttributeManager* )( this + 1120 ) );
+
+	StateEnter( TF_STATE_WELCOME );
+//	UpdateInventory( true );
+
+//	Here the event "player_initial_spawn" should be fired
+}
+
+//OFSTATUS: Incomplete, must implement all states
+void COFPlayer::StateEnter( OFPlayerState state )
+{
+	if ( m_iPlayerState != state )
+		m_iPlayerState = state;
+
+	if ( tf_playerstatetransitions.GetInt() != -2 )
+	{
+		if ( tf_playerstatetransitions.GetInt() == -1 || tf_playerstatetransitions.GetInt() == entindex() )
+			Msg( "ShowStateTransitions: entering \'%s\'\n", sz_OFPlayerState[state] );
+	}
+
+	switch ( state )
+	{
+	case TF_STATE_WELCOME:
+		StateEnterWELCOME();
+		break;
+	default:
+		break;
+	}
+}
+
+//OFSTATUS: Incomplete, info_observer_point needs to be added
+void COFPlayer::StateEnterWELCOME()
+{
+	CBaseEntity* pOT = gEntList.FindEntityByClassname( NULL, "info_observer_point" );
+	while ( pOT != NULL )
+	{
+		if ( IsValidObserverTarget( pOT ) )
+		{
+			SetObserverTarget( pOT );
+			break;
+		}
+
+		pOT = gEntList.FindEntityByClassname( pOT, "info_observer_point" );
+	}
+
+	StartObserverMode( OBS_MODE_FIXED );
+	SetMoveType( MOVETYPE_NONE );
+	SetSolidFlags( GetSolidFlags() | SOLID_OBB_YAW );
+	AddEffects( 48 );
+
+	char title[128];
+
+	if ( UTIL_GetActiveHolidayString() )
+	{
+		V_snprintf( title, sizeof( title ), "#TF_Welcome_%s", UTIL_GetActiveHolidayString() );
+	}
+	else
+	{
+		V_snprintf( title, sizeof( title ), "#TF_Welcome" );
+	}
+
+	// open info panel on client showing MOTD:
+	KeyValues* data = new KeyValues( "data" );
+	data->SetString( "title", title );		// info panel title
+	data->SetString( "type", "1" );			// show userdata from stringtable entry
+	data->SetString( "msg", "motd" );		
+	data->SetString( "msg_fallback", "motd_text" );
+	data->SetBool( "unload", sv_motd_unload_on_dismissal.GetBool() );
+
+	ShowViewPortPanel( PANEL_INFO, true, data );
+
+	data->deleteThis();
+}
+
+//OFSTATUS: Incomplete
+void COFPlayer::Spawn()
+{
+    Precache();
+    
+    //start line 276 CTFPlayer::Spawn
+    SetModelScale( 1.0f );
+    UpdateModel(); //line 277 - 284 CTFPlayer::Spawn() is inlined UpdateModel()
+    SetMoveType( MOVETYPE_WALK );
+    BaseClass::Spawn();
+    //end line 286 CTFPlayer::Spawn
+
+    if ( m_iPlayerState == TF_STATE_WELCOME )
+    {
+        StateEnterWELCOME();
+    }
+
+}
+
+//OFSTATUS: Incomplete, placeholder
+void COFPlayer::ForceRespawn()
+{
+    StateEnter( TF_STATE_ACTIVE );
+    BaseClass::ForceRespawn();
 }
 
 void COFPlayer::DoAnimationEvent( PlayerAnimEvent_t event, int nData )
@@ -370,7 +487,7 @@ void COFPlayer::HandleCommand_JoinTeam(const char* arg)
     if (iTeam != GetTeamNumber())
     {
         ChangeTeam(iTeam);
-        BaseClass::ForceRespawn();
+        ForceRespawn();
     }
 }
 
@@ -385,19 +502,6 @@ void COFPlayer::ChangeTeam(int iTeam)
     }
     UpdateModel();
     BaseClass::ChangeTeam(iTeam);
-}
-
-//OFSTATUS: Incomplete
-void COFPlayer::Spawn()
-{
-    Precache();
-
-	//start line 276 CTFPlayer::Spawn
-	SetModelScale(1.0f);
-	UpdateModel(); //line 277 - 284 CTFPlayer::Spawn() is inlined UpdateModel()
-	SetMoveType(MOVETYPE_WALK);
-	BaseClass::Spawn();
-	//end line 286 CTFPlayer::Spawn
 }
 
 //OFSTATUS: Incomplete, all placeholder

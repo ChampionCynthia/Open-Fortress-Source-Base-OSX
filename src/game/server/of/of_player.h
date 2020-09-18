@@ -5,13 +5,24 @@
 
 #pragma once
 
-#include "player.h"
+#include "basemultiplayerplayer.h"
 #include "dbg.h"
 #include "of_playeranimstate.h"
 
-class COFPlayer : public CBasePlayer {
+enum OFPlayerState
+{
+	TF_STATE_ACTIVE,
+	TF_STATE_WELCOME,
+	TF_STATE_OBSERVER,
+	TF_STATE_DYING,
+	TF_STATE_LAST
+};
+
+extern const char* sz_OFPlayerState[TF_STATE_LAST];
+
+class COFPlayer : public CBaseMultiplayerPlayer {
 public:
-	DECLARE_CLASS( COFPlayer, CBasePlayer );
+	DECLARE_CLASS( COFPlayer, CBaseMultiplayerPlayer );
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
 
@@ -20,6 +31,17 @@ public:
 
 	COFPlayer();
 	static COFPlayer* CreatePlayer( const char * name, edict_t* pEdict);
+
+	virtual void InitialSpawn() override;
+
+	void StateEnter( OFPlayerState state );
+
+	virtual void StateEnterWELCOME();
+
+	virtual void Spawn() override;
+	virtual void ForceRespawn() override;
+
+	virtual bool IsValidObserverTarget( CBaseEntity* target ) override { return true; }
 
 	// Called from of_gamerules
 	void PreCacheKart();
@@ -31,7 +53,6 @@ public:
 	bool ClientCommand( const CCommand& args );
 	void HandleCommand_JoinTeam(const char* arg);
 	void ChangeTeam(int iTeam);
-	void Spawn();
 	void UpdateModel();
 	CBaseEntity *EntSelectSpawnPoint();
 	CBaseEntity* SelectSpawnSpotByType(char * type, CBaseEntity **param_2);
@@ -42,6 +63,7 @@ public:
 
 private:
 	COFPlayerAnimState *m_PlayerAnimState;
+	OFPlayerState	m_iPlayerState;
 };
 
 inline COFPlayer *ToOFPlayer( CBaseEntity *pEntity )

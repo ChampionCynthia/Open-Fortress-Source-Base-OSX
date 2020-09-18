@@ -18,6 +18,13 @@ public:
 
 	virtual void AddPlayer( CBasePlayer *pPlayer ) override;
 	virtual void RemovePlayer( CBasePlayer *pPlayer ) override;
+
+private:
+	CNetworkVar( int, m_nFlagCaptures );
+	CNetworkVar( unsigned int, m_iRole );
+
+public:
+	CUtlVector< CBaseEntity* > m_aObjects; // When buildings are implemented, change this to CBaseObject
 };
 
 COFTeam *GetGlobalOFTeam( int iIndex );

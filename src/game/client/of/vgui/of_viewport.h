@@ -22,6 +22,8 @@ class OFViewport : public CBaseViewport
 public:
 	IViewPortPanel* CreatePanelByName(const char *szPanelName);
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
+
+	virtual void CreateDefaultPanels( void );
 };
 
 

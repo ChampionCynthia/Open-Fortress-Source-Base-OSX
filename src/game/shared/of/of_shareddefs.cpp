@@ -1,6 +1,6 @@
 // ========= Copyright Open Fortress Developers, CC-BY-NC-SA ============
 // Purpose: General definitions
-// Author(s): ficool2, Fenteale, KaydemonLP
+// Author(s): ficool2, Fenteale, KaydemonLP, Ms
 //
 
 #include "cbase.h"
@@ -24,4 +24,14 @@ const char *g_aTeamNames[] =
 	"Red",
 	"Blue",
 	"Mercenary"
+};
+
+const char* s_ValveMaps[][3] =
+{
+	"ctf_2fort", "2Fort", "#Gametype_CTF",
+};
+
+const char* s_CommunityMaps[][3] =
+{
+	"pl_borneo", "Borneo", "#Gametype_Escort",
 };

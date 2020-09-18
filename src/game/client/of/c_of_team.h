@@ -14,4 +14,11 @@ public:
 	~C_OFTeam();
 
 	virtual void ClientThink() override;
+
+private:
+	CNetworkVar( int, m_nFlagCaptures );
+	CNetworkVar( unsigned int, m_iRole );
+
+public:
+	CUtlVector< int > m_aObjects;
 };

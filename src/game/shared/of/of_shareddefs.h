@@ -1,6 +1,6 @@
 // ========= Copyright Open Fortress Developers, CC-BY-NC-SA ============
 // Purpose: General definitions
-// Author(s): ficool2, Fenteale, Kay
+// Author(s): ficool2, Fenteale, Kay, Ms
 //
 
 #include "shareddefs.h"
@@ -49,6 +49,8 @@ enum
 // No longer the case, did it properly and moved it to of_shareddefs.cpp now - Kay
 extern const char *g_aAmmoNames[AMMONAME_LAST];
 extern const char *g_aTeamNames[OF_TEAM_COUNT];
+extern const char* s_ValveMaps[][3];
+extern const char* s_CommunityMaps[][3];
 
 #define TF_DAMAGE_CRIT_MULTIPLIER	3
 #define TF_GAMETYPE_ESCORT			3

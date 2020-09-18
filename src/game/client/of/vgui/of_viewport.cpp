@@ -18,6 +18,8 @@
 
 #include <baseviewport.h>
 #include "of_viewport.h"
+#include "of_textwindow.h"
+#include "of_mapinfomenu.h"
 
 
 void OFViewport::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -29,11 +31,28 @@ void OFViewport::ApplySchemeSettings( vgui::IScheme *pScheme )
 	SetPaintBackgroundEnabled( false );
 }
 
+void OFViewport::CreateDefaultPanels( void )
+{
+	AddNewPanel( CreatePanelByName( "mapinfo" ), "mapinfo" );
+	BaseClass::CreateDefaultPanels();
+}
+
 IViewPortPanel* OFViewport::CreatePanelByName( const char *szPanelName )
 {
 	IViewPortPanel* newpanel = NULL;
 
-	newpanel = BaseClass::CreatePanelByName( szPanelName );
+	if ( Q_strcmp( PANEL_INFO, szPanelName ) == 0 )
+	{
+		newpanel = new COFTextWindow( this );
+	}
+	else if ( Q_strcmp( "mapinfo", szPanelName ) == 0 )
+	{
+		newpanel = new COFMapInfoMenu( this );
+	}
+	else
+	{
+		newpanel = BaseClass::CreatePanelByName( szPanelName );
+	}
 
 	return newpanel; 
 }
