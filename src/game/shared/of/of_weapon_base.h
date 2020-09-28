@@ -22,6 +22,7 @@ typedef enum
     WEAPON_NONE = 0,
 
 	OF_WEAPON_SMG,
+	OF_WEAPON_SHOTGUN,
     WEAPON_OFTODO,
 
     WEAPON_MAX,
@@ -103,7 +104,12 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     virtual void SetWeaponVisible( bool visible ) override;
     // virtual void OnActiveStateChanged( int iOldState ) override;
     virtual void Detach() override;
-    // virtual void ItemPostFrame() override;
+    virtual void ItemPostFrame() override;
+	virtual void ReloadSinglyPostFrame();
+	virtual bool Reload();
+	virtual bool ReloadSingly();
+	virtual void IncrementAmmo();
+	virtual void SetReloadTimer( float flReloadTime );
     // virtual void ItemBusyFrame() override;
     // virtual void ItemHolsterFrame() override;
     // virtual void WeaponIdle() override;
@@ -165,7 +171,7 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // virtual void RemoveExtraWearables();
     virtual void Misfire();
     virtual void CalcIsAttackCritical();
-    // virtual void FireFullClipAtOnce();
+    virtual void FireFullClipAtOnce(){ return; };
     // virtual bool CalcIsAttackCriticalHelper();
     // virtual bool CalcIsAttackCriticalHelperNoCrits();
     // virtual int GetPenetrateType();
@@ -216,10 +222,12 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // virtual bool IsViewModelFlipped();
     // virtual int GetMaxHealthMod();
     // virtual float GetLastDeployTime();
-    //virtual bool IsEnergyWeapon() const; //TRIMMED!
+    virtual bool IsEnergyWeapon() const { return false; };
     // virtual bool IsBlastImpactWeapon();
-    // virtual float Energy_GetShotCost();
-    // virtual float Energy_GetRechargeCost();
+	// OFSTATUS: COMPLETE
+    virtual float Energy_GetShotCost(){ return 4.0f; };
+	// OFSTATUS: COMPLETE
+    virtual float Energy_GetRechargeCost(){ return 4.0f; };
     // virtual Vector GetParticleColor(int);
     // virtual bool HasLastShotCritical();
     // virtual bool UseServerRandomSeed();
@@ -253,4 +261,13 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
 	
 public:
 	int m_iWeaponMode; // Used in stuff like airblast 'n similar
+private:
+	CNetworkVar( bool, m_bAnimReload );
+	CNetworkVar( bool, m_bInAttack );
+	CNetworkVar( bool, m_bInAttack2 );
+	CNetworkVar( float, m_flEnergy );
+	CNetworkVar( int, m_iConsecutiveShots );
+	CNetworkVar( int, m_iOldClip );
+	CNetworkVar( int, m_iReloadStage );
+	CNetworkVar( float, m_flOldPrimaryAttack );
 };

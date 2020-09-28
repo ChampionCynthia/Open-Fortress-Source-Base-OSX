@@ -33,6 +33,7 @@ public:
 	bool ClientCommand(const CCommand& args);
 	
 	COFWeaponBase 	*GetActiveOFWeapon( void ) const;
+	bool			ShouldAutoReload(){ return false; };
 	
 	virtual void FireBullet( 
 						   Vector vecSrc,	// shooting postion
@@ -59,8 +60,11 @@ private:
 
 inline COFPlayer *ToOFPlayer( CBaseEntity *pEntity )
 {
-	if ( !pEntity || !pEntity->IsPlayer() )
+	if ( !pEntity )
+		return nullptr;
+	
+	if( !pEntity->IsPlayer() )
 		return nullptr;
 
-	return assert_cast<COFPlayer*>( pEntity );
+	return static_cast< COFPlayer* >( pEntity );
 }

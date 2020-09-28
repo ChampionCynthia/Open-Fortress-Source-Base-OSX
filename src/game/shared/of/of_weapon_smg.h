@@ -9,6 +9,7 @@
 // Client specific.
 #ifdef CLIENT_DLL
 #define COFSMG C_OFSMG
+#define COFShotgun C_OFShotgun
 #endif
 
 
@@ -30,4 +31,21 @@ public:
 #endif
 
 	virtual OFWeaponID	GetWeaponID(void) const			{ return OF_WEAPON_SMG; }
+};
+
+class COFShotgun : public COFWeaponBaseGun
+{
+public:
+
+	COFShotgun();
+
+	DECLARE_CLASS( COFShotgun, COFWeaponBaseGun );
+	DECLARE_NETWORKCLASS(); 
+	DECLARE_PREDICTABLE();
+
+#ifdef GAME_DLL
+	DECLARE_DATADESC();
+#endif
+
+	virtual OFWeaponID	GetWeaponID(void) const			{ return OF_WEAPON_SHOTGUN; }
 };

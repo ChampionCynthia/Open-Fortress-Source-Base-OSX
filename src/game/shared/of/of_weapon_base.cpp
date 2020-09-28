@@ -5,11 +5,16 @@
 #include "cbase.h"
 #ifdef CLIENT_DLL
 #include "c_of_player.h"
+#include "c_baseviewmodel.h"
 #else
 #include "of_player.h"
+#include "baseviewmodel.h"
 #endif
 #include "of_weapon_base.h"
+#include "in_buttons.h"
 #include "of_shareddefs.h"
+#include "activitylist.h"
+#include "baseviewmodel_shared.h"
 
 // ----------------------------------------------------------------------------- //
 // Global functions.
@@ -20,6 +25,7 @@ static const char * s_WeaponAliasInfo[] =
 {
 	"none",				// WEAPON_NONE
 	"tf_weapon_smg",	// OF_WEAPON_SMG
+	"tf_weapon_shotgun",// OF_WEAPON_SHOTGUN
 	NULL,				// WEAPON_OFTODO
 	NULL,				// WEAPON_MAX
 };
@@ -156,6 +162,11 @@ void COFWeaponBase::SetWeaponVisible(bool visible)
         AddEffects(EF_NODRAW);
         return;
     }
+	else
+	{
+        RemoveEffects(EF_NODRAW);
+        return;		
+	}
     /*
     byte *pbVar1;
     ushort uVar2;
@@ -251,8 +262,427 @@ void COFWeaponBase::SetWeaponVisible(bool visible)
 }
 
 //OFSTATUS: COMPLETE
-void COFWeaponBase::Detach() {
+void COFWeaponBase::Detach() 
+{
     return;
+}
+
+/* OFTODO: AAAAAAAA - Kay */
+/* CTFWeaponBase::ItemPostFrame() */
+
+//OFSTATUS: INCOMPLETE 90% done
+// ----------------------------------------------------------------------------- //
+// Purpoise: Runs every tick while the weapon isnt "Buisy" aka reloading or drawing
+// Mostly handles barrages here ( Beggars/Old Panic attack )
+// But also handles Singly reload frames
+// ----------------------------------------------------------------------------- //
+void COFWeaponBase::ItemPostFrame()
+{
+	COFPlayer *pOwner = GetOFPlayerOwner();
+	if( !pOwner ) 
+		return;
+
+	int iMaxClip1 = GetMaxClip1();
+	bool bClipIsNotFull = true;
+
+	if( pOwner && UsesClipsForAmmo1() ) 
+	{
+		int iAmmoCount = pOwner->GetAmmoCount( m_iPrimaryAmmoType );
+		if( iMaxClip1 - m_iClip1 < iAmmoCount ) 
+		{
+			iAmmoCount = iMaxClip1 - m_iClip1;
+		}
+		else 
+		{
+			iAmmoCount = pOwner->GetAmmoCount( m_iPrimaryAmmoType );
+		}
+
+		if( iAmmoCount != 0 ) 
+		{
+			bClipIsNotFull = false;
+		}
+	}
+	else if( IsEnergyWeapon() ) 
+	{
+		float flMaxEnergy = 20.0f / Energy_GetShotCost(); // No attributes, so commented out AttribHook "mult_clipsize_upgrade",(20.0f / Energy_GetShotCost());
+		bClipIsNotFull = (flMaxEnergy * Energy_GetShotCost()) > m_flEnergy;
+	}
+
+	if ( !AutoFiresFullClip() && pOwner->ShouldAutoReload() &&
+      UsesClipsForAmmo1() && bClipIsNotFull
+	  && !( (pOwner->m_nButtons & IN_ATTACK) || (pOwner->m_nButtons & IN_ATTACK2) ) )
+	{
+		pOwner->m_nButtons = pOwner->m_nButtons | IN_RELOAD;
+	}
+
+	if( m_bInAttack && !(pOwner->m_nButtons & IN_ATTACK) ) 
+	{
+		m_bInAttack = false;
+	}
+
+	if( m_bInAttack2 && !(pOwner->m_nButtons & IN_ATTACK2) ) 
+	{
+		m_bInAttack2 = false;
+	}
+
+/*
+	We dont have any regen items since they're post release
+	May add later if we decide to do so - Kay
+	ApplyItemRegen();
+	CheckEffectBarRegen();
+  */
+	// I think this is weapon being lowered/round lost? not 100% sure though so just commented out for now
+	if ( true ) // !this[0x1b2].vtable
+	{
+		BaseClass::ItemPostFrame();
+
+		if ( m_bReloadsSingly ) 
+		{
+			ReloadSinglyPostFrame();
+		}
+	
+		bool bAutoFiresFullClpAtOnce = false; // No attributes, so commented out AttribHookValue<int>(0,"auto_fires_full_clip_all_at_once") > 0;
+											  // Turn into function maybe
+		// bAutoFiresFullClpAtOnce moved to front so it cancels faster
+		if( bAutoFiresFullClpAtOnce && AutoFiresFullClip() && m_iClip1 == GetMaxClip1() )
+		{
+			FireFullClipAtOnce();
+			return;
+		}
+	}
+}
+
+//OFSTATUS: COMPLETE
+// ----------------------------------------------------------------------------- //
+// Purpoise: Start the singly reload whenever needed
+// ----------------------------------------------------------------------------- //
+void COFWeaponBase::ReloadSinglyPostFrame()
+{
+	if( gpGlobals->curtime < m_flTimeWeaponIdle )
+		return;
+
+	if( IsEnergyWeapon() ) 
+	{
+		Reload();
+		return;
+	}
+	
+	// GetOwner() Null point check here maybe? Then again the function that calls it already does that - Kay
+	if( !AutoFiresFullClip() && Clip1() == 0 && GetOwner()->GetAmmoCount( m_iPrimaryAmmoType ) > 0 ) 
+		Reload();
+
+	if( m_iReloadStage != OF_RELOAD_STAGE_NONE ) 
+		Reload();
+}
+
+//OFSTATUS: INCOMPLETE 95% done
+// ----------------------------------------------------------------------------- //
+// Purpoise: Reload the weapon, or start a Singly Reload
+// ----------------------------------------------------------------------------- //
+bool COFWeaponBase::Reload()
+{
+	COFPlayer *pPlayer = GetOFPlayerOwner();
+	if ( !pPlayer ) 
+		return false;
+
+	if( !pPlayer->IsPlayer() ) 
+		return false;
+
+/*
+	// Uncomment when you figure out what this is - Kay
+	*(undefined4 *)&this->field_0x788 = 0;
+	*(undefined4 *)&this->field_0x78c = 0;
+*/
+
+	m_iConsecutiveShots = 0;
+															// No attributes no problems
+	float flMaxEnergy = 20.0f / Energy_GetShotCost();		// AttribHookValue<float>((float)(int)(20.00000000 / (float)Energy_GetShotCost()),"mult_clipsize_upgrade",(CBaseEntity *)this,(CUtlVector *)0x0,true); 
+	
+	// ( flMaxEnergy * Energy_GetShotCost() ) <= m_flEnergy seems to get called a lot, maybe turn into a function? - Kay
+	if( !IsEnergyWeapon() || ( flMaxEnergy * Energy_GetShotCost() ) <= m_flEnergy ) 
+	{
+		if( m_iReloadStage == OF_RELOAD_STAGE_NONE ) 
+		{
+			if( GetOwner()->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 ) 
+				return false;
+
+			bool bCanOverload = false; //AttribHookValue<int>(0,"can_overload",(CBaseEntity *)this,(CUtlVector *)0x0,true);
+			if( !bCanOverload && GetMaxClip1() <= Clip1() ) 
+				return false;
+		}
+
+		if( !m_bReloadsSingly ) 
+		{
+			DefaultReload( GetMaxClip1(), GetMaxClip2(), ACT_VM_RELOAD );
+			return true;
+		}
+	}
+
+	return ReloadSingly();
+}
+
+//OFSTATUS: INCOMPLETE 95% done
+// ----------------------------------------------------------------------------- //
+// Purpoise: Handle Singly reloads
+// ----------------------------------------------------------------------------- //
+bool COFWeaponBase::ReloadSingly()
+{
+	DevMsg("Reload Singly()");
+	if( m_flNextPrimaryAttack > gpGlobals->curtime )
+		return false;
+
+	DevMsg("Passed first\n");
+	
+	COFPlayer *pPlayer = GetOFPlayerOwner();
+	if( !pPlayer ) 
+		return false;
+
+	if( !pPlayer->IsPlayer() ) 
+		return false;
+
+	bool bAutoFiresWhenFull = false; //AttribHookValue<int>(0,"auto_fires_when_full",(CBaseEntity *)this,(CUtlVector *)0x0,true);
+	if( ( AutoFiresFullClip() && Clip1() > 0 && m_iReloadStage == OF_RELOAD_STAGE_NONE ) 
+	|| ( bAutoFiresWhenFull && Clip1() == GetMaxClip1() || pPlayer->GetAmmoCount(m_iPrimaryAmmoType) <= 0 ) ) 
+	{
+		DevMsg("Oh no\n");
+		PrimaryAttack();
+		//*(undefined *)&this->field_0x5b6 = 1; Does this mark the start of firing a barrage? - Kay
+		return false;
+	}
+
+	switch( m_iReloadStage )
+	{
+		case OF_RELOAD_STAGE_NONE:
+		{
+			float flReloadTime;
+			if ( !SendWeaponAnim(0x42) ) // Figure out what this enum is
+			{
+				flReloadTime = GetOFWpnData().m_WeaponModeInfo[m_iWeaponMode].m_flTimeReloadStart;
+			}
+			else
+			{
+				flReloadTime = SequenceDuration();
+			}
+	
+			SetReloadTimer( flReloadTime );
+			m_iReloadStage.Set( OF_RELOAD_STAGE_START );
+			m_iOldClip = Clip1();
+			return true;
+		}
+		break;
+		case OF_RELOAD_STAGE_START:
+		{
+			if( m_flTimeWeaponIdle > gpGlobals->curtime )
+				return false;
+
+			PlayerAnimEvent_t iAnimEvent;
+			if( Clip1() == m_iOldClip ) 
+			{
+				iAnimEvent = PLAYERANIMEVENT_RELOAD;
+			}
+			else 
+			{
+				iAnimEvent = PLAYERANIMEVENT_RELOAD_LOOP;
+			}
+//			This still crashes for some reason
+//			pPlayer->DoAnimationEvent( iAnimEvent );
+
+			m_bAnimReload = false;
+
+			float flReloadTime;
+			
+			if ( !SendWeaponAnim( ACT_VM_RELOAD ) ) 
+			{
+				flReloadTime = GetOFWpnData().m_WeaponModeInfo[m_iWeaponMode].m_flTimeReload;
+			}
+			else 
+			{
+				if( GetWeaponID() == 0x17 ) 
+				{
+					flReloadTime = GetOFWpnData().m_WeaponModeInfo[m_iWeaponMode].m_flTimeReload;
+				}
+				else 
+				{
+					flReloadTime = SequenceDuration();
+				}
+			}
+
+			SetReloadTimer( flReloadTime );
+			WeaponSound( RELOAD );
+			m_iReloadStage.Set( OF_RELOAD_STAGE_LOOP );
+			return true;
+		}
+		break;
+		case OF_RELOAD_STAGE_LOOP:
+		{
+			if( m_flTimeWeaponIdle > gpGlobals->curtime ) 
+				return false;
+
+			IncrementAmmo();
+
+			if ( !IsEnergyWeapon() )
+			{
+				bool bCanOverload = false; //AttribHookValue<int>(0,"can_overload",(CBaseEntity *)this,(CUtlVector *)0x0,true);
+				if( !bCanOverload && ( Clip1() == GetMaxClip1() || pPlayer->GetAmmoCount(m_iPrimaryAmmoType) <= 0 ) ) 
+					m_iReloadStage.Set( OF_RELOAD_STAGE_END );
+				else
+					m_iReloadStage.Set( OF_RELOAD_STAGE_START );
+			}
+			else 
+			{
+				float flMaxEnergy = 20.0f / Energy_GetShotCost();
+				if( flMaxEnergy * Energy_GetShotCost() <= m_flEnergy ) // Ditto from previous function, Maybe turn into a Func - Kay
+				{
+					m_iReloadStage.Set( OF_RELOAD_STAGE_END );
+				}
+				else 
+				{
+					m_iReloadStage.Set( OF_RELOAD_STAGE_START );
+				}
+			}
+			return true;
+		}
+		break;
+		default:
+		case OF_RELOAD_STAGE_END:
+		{
+			SendWeaponAnim( ACT_RELOAD );
+//			This still crashes for some reason
+//			pPlayer->DoAnimationEvent(PLAYERANIMEVENT_RELOAD_END);
+			m_iReloadStage.Set( OF_RELOAD_STAGE_NONE );	
+			return true;
+		}
+		break;
+	}
+}
+
+//OFSTATUS: COMPLETE
+// ----------------------------------------------------------------------------- //
+// Purpoise: Increment the ammo if possible
+// ----------------------------------------------------------------------------- //
+void COFWeaponBase::IncrementAmmo()
+{
+	if( m_bAnimReload != false ) 
+		return;
+	
+/*
+	We dont have energy weapons so ignore for now - Kay
+	if( IsEnergyWeapon() ) 
+	{
+		Energy_Recharge(this);
+		return;
+	}
+*/
+    COFPlayer *pPlayer = GetOFPlayerOwner();
+	if( !pPlayer ) 
+		return;
+  
+/*
+	This also doesnt exist shut up - Kay
+	if( CheckReloadMisfire() ) 
+		return;
+*/
+	int iAmmoCount = pPlayer->GetAmmoCount(m_iPrimaryAmmoType);
+	if( iAmmoCount <= 0 )
+		return;
+
+	if( m_iClip1 + 1 < GetMaxClip1() )
+	{
+		m_iClip1 += 1;
+	}
+	else 
+	{
+		m_iClip1 = GetMaxClip1();
+	}
+
+	pPlayer->RemoveAmmo( 1, m_iPrimaryAmmoType );
+}
+
+//OFSTATUS: INCOMPLETE 85% done
+// ----------------------------------------------------------------------------- //
+// Purpoise: Set the next reload and the viewmodel playback rate
+// ----------------------------------------------------------------------------- //
+void COFWeaponBase::SetReloadTimer( float flReloadTime )
+{
+	COFPlayer *pPlayer = GetOFPlayerOwner();
+	if( !pPlayer ) 
+		return;
+
+	float flStartReloadTime = flReloadTime;
+
+/*	Atribute stuff not needed - Kay
+	AttribHookValue<float>(flReloadTime,"mult_reload_time",(CBaseEntity *)this,(CUtlVector *)0x0,true);
+	AttribHookValue<float>(flReloadTime,"mult_reload_time_hidden",(CBaseEntity *)this,(CUtlVector *)0x0,true);
+	AttribHookValue<float>(flReloadTime,"fast_reload",(CBaseEntity *)this,(CUtlVector *)0x0,true);
+	AttribHookValue<float>(flReloadTime,"hwn_mult_reload_time",(CBaseEntity *)pPlayer,(CUtlVector *)0x0,true);
+*/
+
+/*
+	We dont have m_Shared yet, nor Mann Power Powerups ( runes ) nor conds, so just skip for now - Kay
+	
+	float flReloadTimeMultiplier = 1.0f;
+	
+	if( pPlayer->m_Shared.GetCarryingRuneType() == 1 ) 
+	{
+		flReloadTimeMultiplier = 0.50000000;
+	}
+	else if( pPlayer->m_Shared.GetCarryingRuneType() == 9 || pPlayer->m_Shared.InCond( m_Shared,TF_COND_KING_BUFFED ) ) 
+	{
+		flReloadTimeMultiplier = 0.75000000;
+	}
+
+	flReloadTime = flReloadTime * flReloadTimeMultiplier;
+*/
+/*
+	None of this makes sense, all the weird stuff at the start is probably something getting the healer?
+	Anyways we dont need this since its all attribute stuff - Kay
+	(*this->vtable->CTFWeaponBase::GetReloadSpeedScale)(this);
+	auVar8 = ZEXT416((uint)(flReloadTime * (float)GetReloadSpeedScale())) &
+           (undefined  [16])0xffffffffffffffff;
+	if (*(int *)&pPlayer->field_0x1b40 == 1) 
+	{
+		flHealedReloadTime =
+         AttribHookValue<float>
+                   (SUB164(auVar8,0),"mult_reload_time_while_healed",(CBaseEntity *)pPlayer,
+                    (CUtlVector *)0x0,true);
+		auVar8 = ZEXT416((uint)flHealedReloadTime);
+	}
+	auVar8 = maxss(auVar8,0x3727c5ac);
+	flFinalReloadTime = SUB164(auVar8,0);
+	*/
+
+	// Change to COFViewmodel whenver we have that
+	CBaseViewModel *pViewmodel = pPlayer->GetViewModel(0);
+	if( pViewmodel ) 
+	{
+		// This really looks like a calculation to get how quick the anim should be
+		// So im gonna make a big assumption and say that all of the scribble below 
+		// Is the network var for the anim speed updating
+		float flAnimSpeed = flStartReloadTime / flReloadTime;
+		pViewmodel->SetPlaybackRate( flAnimSpeed );
+    }
+
+	pViewmodel = pPlayer->GetViewModel(1);
+	if( pViewmodel ) 
+	{
+		// This really looks like a calculation to get how quick the anim should be
+		// So im gonna make a big assumption and say that all of the scribble below 
+		// Is the network var for the anim speed updating
+		float flAnimSpeed = flStartReloadTime / flReloadTime;
+		pViewmodel->SetPlaybackRate( flAnimSpeed );
+    }
+
+	m_flOldPrimaryAttack = m_flNextPrimaryAttack;
+
+	flReloadTime = flReloadTime + gpGlobals->curtime;
+
+	pPlayer->m_flNextAttack = flReloadTime;
+
+	flReloadTime = Max( (float)flReloadTime, (float)m_flOldPrimaryAttack );
+
+	m_flNextPrimaryAttack = flReloadTime;
+
+	SetWeaponIdleTime( flReloadTime );
 }
 
 //OFSTATUS: COMPLETE

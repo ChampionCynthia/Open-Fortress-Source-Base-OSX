@@ -21,6 +21,8 @@ public:
 	void DoAnimationEvent( PlayerAnimEvent_t event, int nData = 0 );
 	C_OFWeaponBase 	*GetActiveOFWeapon( void ) const;
 
+	bool ShouldAutoReload(){ return false; };
+
 	virtual void FireBullet( 
 						   Vector vecSrc,	// shooting postion
 						   const QAngle &shootAngles,  //shooting angle
@@ -37,10 +39,13 @@ public:
 	COFPlayerAnimState *m_PlayerAnimState;
 };
 
-inline C_OFPlayer *ToOFPlayer( CBaseEntity *pEntity )
+inline C_OFPlayer *ToOFPlayer( C_BaseEntity *pEntity )
 {
-	if ( !pEntity || !pEntity->IsPlayer() )
+	if ( !pEntity )
+		return nullptr;
+	
+	if( !pEntity->IsPlayer() )
 		return nullptr;
 
-	return assert_cast<C_OFPlayer*>( pEntity );
+	return static_cast< C_OFPlayer* >( pEntity );
 }
