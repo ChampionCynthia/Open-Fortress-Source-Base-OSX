@@ -1,8 +1,21 @@
+# My notes
+Cleaning up warnings would be nice.
+
+Running a Mac build would also be nice, but takes a bit of time.
+
+I should set up a way of building Windows binaries.
+
+## Modified Source Source Header
+```
 // Open Fortress Modifications (CC-BY-NC-CA)
 // * 
+```
 
-Fix all warnings
-remember to add the note saying what's changed before commiting.
-c_team.cpp
-c_team.h
+## New OF Source Header
 
+```
+// ========= Copyright Open Fortress Developers, CC-BY-NC-SA ============
+// Purpose: 
+// Author(s): Nopey
+//
+```
