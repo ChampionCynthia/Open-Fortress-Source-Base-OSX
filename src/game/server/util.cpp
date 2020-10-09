@@ -4,6 +4,9 @@
 //
 // $NoKeywords: $
 //=============================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Change Assert for re-registration of entity factories to an AssertMsg,
+//		so the pClassName in question shows up in the output.
 
 #include "cbase.h"
 #include "saverestore.h"
@@ -148,7 +151,11 @@ IEntityFactory *CEntityFactoryDictionary::FindFactory( const char *pClassName )
 //-----------------------------------------------------------------------------
 void CEntityFactoryDictionary::InstallFactory( IEntityFactory *pFactory, const char *pClassName )
 {
-	Assert( FindFactory( pClassName ) == NULL );
+	AssertMsg(
+		FindFactory( pClassName ) == NULL,
+		"Entity Factory \"%s\" registered multiple times",
+		pClassName
+	);
 	m_Factories.Insert( pClassName, pFactory );
 }
 
