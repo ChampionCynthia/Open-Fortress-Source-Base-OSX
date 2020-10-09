@@ -1,4 +1,8 @@
-#include "cbase.h"
+// ========= Copyright Open Fortress Developers, CC-BY-NC-SA ============
+// Purpose: 
+// Author(s): MaartenS11
+//
+#pragma once
 
 class COFTeamSpawn : public CBaseEntity
 {
