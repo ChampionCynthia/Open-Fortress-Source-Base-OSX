@@ -27,6 +27,8 @@ $Project
 			$File	"$SHARED/of/of_weapon_parse.h"
 			$File	"$SHARED/of/of_weapon_base.cpp"
 			$File	"$SHARED/of/of_weapon_base.h"
+			$File	"$SHARED/of/of_objectiveresource.h"
+			$File	"$SHARED/of/of_objectiveresource.cpp"
 
 			$File	"$SHARED/of/of_usermessages.cpp"
 		}

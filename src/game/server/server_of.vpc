@@ -3,18 +3,18 @@
 // Author(s): ficool2, Fenteale, Nopey
 //
 
-$Macro SRCDIR		"..\.."
+$Macro SRCDIR		"../.."
 $Macro GAMENAME 	"open_fortress"
 
-$Include "$SRCDIR\game\server\server_base.vpc"
-$Include "$SRCDIR\game\shared\shared_of.vpc"
-//$Include "$SRCDIR\game\server\nav_mesh.vpc"
+$Include "$SRCDIR/game/server/server_base.vpc"
+$Include "$SRCDIR/game/shared/shared_of.vpc"
+//$Include "$SRCDIR/game/server/nav_mesh.vpc"
 
 $Configuration
 {
 	$Compiler
 	{
-		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\game\shared\hl2,.\hl2,.\of,$SRCDIR\game\shared\of"
+		$AdditionalIncludeDirectories	"$BASE;$SRCDIR/game/shared/hl2,./hl2,./of,$SRCDIR/game/shared/of"
 		$PreprocessorDefinitions		"$BASE;OF_DLL"
 	}
 }

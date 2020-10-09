@@ -28,6 +28,7 @@
 	#include "gameinterface.h"
 	#include "of_bot_temp.h"
 	#include "team.h"
+	#include "team_objectiveresource.h"
 #endif
 
 REGISTER_GAMERULES_CLASS( COFGameRules );
@@ -142,7 +143,13 @@ COFGameRules::~COFGameRules( void )
 void COFGameRules::CreateStandardEntities( void )
 {
 #ifndef CLIENT_DLL
+	// g_pPlayerResource = CBaseEntity::Create( "tf_player_manager", vec3_origin, vec3_angle );
+	g_pObjectiveResource = (CBaseTeamObjectiveResource *) CBaseEntity::Create( "tf_objective_resource", vec3_origin, vec3_angle );
+	// g_pMonsterResource = CBaseEntity::Create( "monster_resource", vec3_origin, vec3_angle );
+
+	// Create the gamerules *proxy*
 	CBaseEntity::Create( "tf_gamerules", vec3_origin, vec3_angle );
+	// ... there's more function to RE
 #endif
 }
 

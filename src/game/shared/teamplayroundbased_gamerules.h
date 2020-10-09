@@ -6,6 +6,7 @@
 // Open Fortress Modifications (CC-BY-NC-CA)
 // * added check for OF_DLL and OF_CLIENT_DLL defines
 // * Replace OVERRIDE macro with override, as defining override to nothing is prettier.
+// * Replace static_cast with dbg_cast to check that the gamerules supports teamplay.
 
 #ifndef TEAMPLAYROUNDBASED_GAMERULES_H
 #define TEAMPLAYROUNDBASED_GAMERULES_H
@@ -612,7 +613,7 @@ bool FindInList( const char **pStrings, const char *pToFind );
 
 inline CTeamplayRoundBasedRules* TeamplayRoundBasedRules()
 {
-	return static_cast<CTeamplayRoundBasedRules*>(g_pGameRules);
+	return assert_cast<CTeamplayRoundBasedRules*>(g_pGameRules);
 }
 
 #endif // TEAMPLAYROUNDBASED_GAMERULES_H
