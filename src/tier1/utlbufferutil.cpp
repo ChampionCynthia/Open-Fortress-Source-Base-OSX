@@ -5,6 +5,11 @@
 //
 // Serialization buffer
 //===========================================================================//
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * Lower (indirect) assertion in Unserialize to DevMsg of level 3,
+//    as particles.a hits that assertion quite a bit.
+//   (Also previously it may have said the buffer is valid when it wasn't
+//   			null terminated, which seems dangerous)
 
 #pragma warning (disable : 4514)
 
@@ -550,6 +555,10 @@ bool Serialize( CUtlBuffer &buf, const CUtlString &src )
 bool Unserialize( CUtlBuffer &buf, CUtlString &dest )
 {
 	int nLen = buf.PeekDelimitedStringLength( s_pConv );
+	if (nLen == 0){
+		DevMsg(3, "Couldn't unserialize string from buffer. unexpected EOF");
+		return false;
+	}
 	dest.SetLength( nLen - 1 );	// -1 because the length returned includes space for \0
 	buf.GetDelimitedString( s_pConv, dest.GetForModify(), nLen );
 	return buf.IsValid();

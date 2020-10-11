@@ -107,6 +107,25 @@ static const char *s_PreserveEnts[] =
 	END_SEND_TABLE()
 #endif
 
+
+//OFSTATUS: INCOMPLETE
+void COFGameRulesProxy::FireGameEvent( IGameEvent *pEvent )
+{
+#ifdef GAME_DLL
+	// Fire one of two outputs, depending on which team won.
+	if (Q_stricmp(pEvent->GetName(), "teamplay_round_win") == 0) {
+		switch (pEvent->GetInt("team", TEAM_UNASSIGNED)) {
+		case OF_TEAM_BLUE: // 3
+			// ((COutputEvent *)this + 0xe3)->FireOutput(this, this, 0.0);
+			break;
+		case OF_TEAM_RED: // 2
+			// ((COutputEvent *)this + 0xdd)->FireOutput(this, this, 0.0);
+			break;
+		}
+	}
+#endif
+}
+
 // Called by world.cpp, is a NOP in both SDK and TF2.
 // OFSTATUS: COMPLETE.
 void InitBodyQue()
@@ -144,11 +163,13 @@ void COFGameRules::CreateStandardEntities( void )
 {
 #ifndef CLIENT_DLL
 	// g_pPlayerResource = CBaseEntity::Create( "tf_player_manager", vec3_origin, vec3_angle );
-	g_pObjectiveResource = (CBaseTeamObjectiveResource *) CBaseEntity::Create( "tf_objective_resource", vec3_origin, vec3_angle );
+	CBaseEntity *objres;
+	Assert((objres = CBaseEntity::Create( "tf_objective_resource", vec3_origin, vec3_angle )));
+	g_pObjectiveResource = (CBaseTeamObjectiveResource *) objres;
 	// g_pMonsterResource = CBaseEntity::Create( "monster_resource", vec3_origin, vec3_angle );
 
 	// Create the gamerules *proxy*
-	CBaseEntity::Create( "tf_gamerules", vec3_origin, vec3_angle );
+	Assert(CBaseEntity::Create( "tf_gamerules", vec3_origin, vec3_angle ));
 	// ... there's more function to RE
 #endif
 }
@@ -423,9 +444,16 @@ bool COFGameRules::ClientCommand( CBaseEntity *pEdict, const CCommand &args )
 	return false;
 }
 
-//OFSTATUS: Incomplete, and low priority
-bool COFGameRules::IsPlayingSpecialDeliveryMode( void ) {
-	return false;
+//OFSTATUS: INCOMPLETE
+void COFGameRules::FireGameEvent( IGameEvent *pEvent )
+{
+	// LOTS OF STUFF IN HERE
+	// Does some Achievement related things..
+	// calls a function called "BeginHaunting"
+	//  (is that the spooky ghost on harvest?)
+	// looks like it also handled setup-time events
+	
+	CTeamplayRoundBasedRules::FireGameEvent( pEvent );
 }
 
 ConVar ammo_max( "ammo_max", "5000", FCVAR_GAMEDLL | FCVAR_REPLICATED );
