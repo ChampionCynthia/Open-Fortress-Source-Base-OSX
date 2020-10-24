@@ -1,6 +1,6 @@
 // ========= Copyright Open Fortress Developers, CC-BY-NC-SA ============
 // Purpose: Impl COFWeaponBase, the root of all OF weapons
-// Author(s): Nopey, Fenteale
+// Author(s): Nopey, Fenteale, KaydemonLP
 //
 #include "cbase.h"
 #ifdef CLIENT_DLL
@@ -157,6 +157,9 @@ bool COFWeaponBase::CanHolster() const
 //OFSTATUS: INCOMPLETE
 void COFWeaponBase::SetWeaponVisible(bool visible)
 {
+	BaseClass::SetWeaponVisible( visible );
+	return;
+
     if(!visible)
     {
         AddEffects(EF_NODRAW);
@@ -358,7 +361,7 @@ void COFWeaponBase::ItemPostFrame()
 // ----------------------------------------------------------------------------- //
 void COFWeaponBase::ReloadSinglyPostFrame()
 {
-	if( gpGlobals->curtime < m_flTimeWeaponIdle )
+	if( gpGlobals->curtime < m_flNextPrimaryAttack )
 		return;
 
 	if( IsEnergyWeapon() ) 
@@ -427,11 +430,8 @@ bool COFWeaponBase::Reload()
 // ----------------------------------------------------------------------------- //
 bool COFWeaponBase::ReloadSingly()
 {
-	DevMsg("Reload Singly()");
 	if( m_flNextPrimaryAttack > gpGlobals->curtime )
 		return false;
-
-	DevMsg("Passed first\n");
 	
 	COFPlayer *pPlayer = GetOFPlayerOwner();
 	if( !pPlayer ) 
@@ -444,7 +444,6 @@ bool COFWeaponBase::ReloadSingly()
 	if( ( AutoFiresFullClip() && Clip1() > 0 && m_iReloadStage == OF_RELOAD_STAGE_NONE ) 
 	|| ( bAutoFiresWhenFull && Clip1() == GetMaxClip1() || pPlayer->GetAmmoCount(m_iPrimaryAmmoType) <= 0 ) ) 
 	{
-		DevMsg("Oh no\n");
 		PrimaryAttack();
 		//*(undefined *)&this->field_0x5b6 = 1; Does this mark the start of firing a barrage? - Kay
 		return false;
@@ -455,7 +454,7 @@ bool COFWeaponBase::ReloadSingly()
 		case OF_RELOAD_STAGE_NONE:
 		{
 			float flReloadTime;
-			if ( !SendWeaponAnim(0x42) ) // Figure out what this enum is
+			if ( !SendWeaponAnim(ACT_RELOAD_START) ) // Figure out what this enum is // Adendum: Probably just ACT_VM_RELOAD_START
 			{
 				flReloadTime = GetOFWpnData().m_WeaponModeInfo[m_iWeaponMode].m_flTimeReloadStart;
 			}
@@ -472,7 +471,7 @@ bool COFWeaponBase::ReloadSingly()
 		break;
 		case OF_RELOAD_STAGE_START:
 		{
-			if( m_flTimeWeaponIdle > gpGlobals->curtime )
+			if( m_flNextPrimaryAttack > gpGlobals->curtime )
 				return false;
 
 			PlayerAnimEvent_t iAnimEvent;
@@ -515,7 +514,7 @@ bool COFWeaponBase::ReloadSingly()
 		break;
 		case OF_RELOAD_STAGE_LOOP:
 		{
-			if( m_flTimeWeaponIdle > gpGlobals->curtime ) 
+			if( m_flNextPrimaryAttack > gpGlobals->curtime ) 
 				return false;
 
 			IncrementAmmo();
@@ -546,7 +545,8 @@ bool COFWeaponBase::ReloadSingly()
 		default:
 		case OF_RELOAD_STAGE_END:
 		{
-			SendWeaponAnim( ACT_RELOAD );
+			SendWeaponAnim( ACT_RELOAD_FINISH );
+			SetWeaponIdleTime( gpGlobals->curtime + SequenceDuration() );
 //			This still crashes for some reason
 //			pPlayer->DoAnimationEvent(PLAYERANIMEVENT_RELOAD_END);
 			m_iReloadStage.Set( OF_RELOAD_STAGE_NONE );	

@@ -127,6 +127,8 @@ void COFWeaponBaseGun::PrimaryAttack()
 	// CBaseEntity *pProjectile =
 	FireProjectile( pPlayer );
 	
+	m_iReloadStage.Set( OF_RELOAD_STAGE_NONE );	
+	
 	//ModifyProjectile( pProjectile );
 
 	// (*this_01->vtable[1].CBaseEntity::NetworkStateChanged_m_hGroundEntity)(this_01,5); Whats this used for?? We like, change our ground state or what? -Kay
@@ -140,7 +142,7 @@ void COFWeaponBaseGun::PrimaryAttack()
 	}
 	*/
 
-	SetWeaponIdleTime( SequenceDuration() );
+	SetWeaponIdleTime( gpGlobals->curtime + SequenceDuration() );
 	
 /*	Uncomment when we have these functions
 	if( ShouldRemoveDisguiseOnPrimaryAttack() )

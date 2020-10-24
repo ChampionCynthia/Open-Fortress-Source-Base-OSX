@@ -261,6 +261,7 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
 	
 public:
 	int m_iWeaponMode; // Used in stuff like airblast 'n similar
+	CNetworkVar( int, m_iReloadStage );
 private:
 	CNetworkVar( bool, m_bAnimReload );
 	CNetworkVar( bool, m_bInAttack );
@@ -268,6 +269,5 @@ private:
 	CNetworkVar( float, m_flEnergy );
 	CNetworkVar( int, m_iConsecutiveShots );
 	CNetworkVar( int, m_iOldClip );
-	CNetworkVar( int, m_iReloadStage );
 	CNetworkVar( float, m_flOldPrimaryAttack );
 };
