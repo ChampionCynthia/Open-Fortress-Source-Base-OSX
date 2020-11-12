@@ -2129,12 +2129,12 @@ bool CAI_ScriptedSentence::AcceptableSpeaker( CAI_BaseNPC *pNPC )
 			if ( pNPC->GetTarget() == NULL || !pNPC->GetTarget()->IsPlayer() )
 				return false;
 		}
-		bool override;
+		bool bOverride;
 		if ( m_spawnflags & SF_SENTENCE_INTERRUPT )
-			override = true;
+			bOverride = true;
 		else
-			override = false;
-		if ( pNPC->CanPlaySentence( override ) )
+			bOverride = false;
+		if ( pNPC->CanPlaySentence( bOverride ) )
 			return true;
 	}
 	return false;

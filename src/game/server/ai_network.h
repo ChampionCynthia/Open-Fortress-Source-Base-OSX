@@ -86,7 +86,7 @@ public:
 // Purpose: Stores a node graph through which an AI may pathfind
 //-----------------------------------------------------------------------------
 
-class CAI_Network final : public IPartitionEnumerator
+class CAI_Network : public IPartitionEnumerator
 {
 public:
 	CAI_Network();

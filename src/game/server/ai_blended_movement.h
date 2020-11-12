@@ -232,9 +232,9 @@ public:
 
 	float MaxYawSpeed( void )
 	{
-		float override = GetBlendedMotor()->OverrideMaxYawSpeed( this->GetActivity() );
-		if ( override != -1 )
-			return override;
+		float result = GetBlendedMotor()->OverrideMaxYawSpeed( this->GetActivity() );
+		if ( result != -1 )
+			return result;
 		return BaseClass::MaxYawSpeed();
 	}
 
