@@ -13,6 +13,8 @@ $Project
 		{
 			$File	"$SHARED/teamplay_round_timer.cpp"
 			$File	"$SHARED/teamplay_round_timer.h"
+			$File	"$SHARED/of/of_fx_shared.cpp"
+			$File	"$SHARED/of/of_fx_shared.h"
 			$File	"$SHARED/of/of_gamemovement.cpp"
 			$File	"$SHARED/of/of_gamemovement.h"
 			$File	"$SHARED/of/of_gamerules.cpp"
@@ -27,6 +29,10 @@ $Project
 			$File	"$SHARED/of/of_weapon_parse.h"
 			$File	"$SHARED/of/of_weapon_base.cpp"
 			$File	"$SHARED/of/of_weapon_base.h"
+			$File	"$SHARED/of/of_weapon_base_gun.cpp"
+			$File	"$SHARED/of/of_weapon_base_gun.h"
+			$File	"$SHARED/of/of_weapon_smg.cpp"
+			$File	"$SHARED/of/of_weapon_smg.h"
 
 			$File	"$SHARED/of/of_usermessages.cpp"
 		}

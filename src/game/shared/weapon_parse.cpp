@@ -144,21 +144,29 @@ WEAPON_FILE_INFO_HANDLE GetInvalidWeaponInfoHandle( void )
 	return (WEAPON_FILE_INFO_HANDLE)m_WeaponInfoDatabase.InvalidIndex();
 }
 
-#if 0
 void ResetFileWeaponInfoDatabase( void )
 {
-	int c = m_WeaponInfoDatabase.Count(); 
-	for ( int i = 0; i < c; ++i )
+	for( unsigned int i = 0; i < m_WeaponInfoDatabase.Count(); i++ )
 	{
-		delete m_WeaponInfoDatabase[ i ];
+		WEAPON_FILE_INFO_HANDLE hHandle = i;
+		ReadWeaponDataFromFileForSlot( filesystem, m_WeaponInfoDatabase[i]->szClassName, &hHandle, g_pGameRules->GetEncryptionKey() );
 	}
-	m_WeaponInfoDatabase.RemoveAll();
-
 #ifdef _DEBUG
 	memset(g_bUsedWeaponSlots, 0, sizeof(g_bUsedWeaponSlots));
 #endif
-}
+
+#ifndef GAME_DLL
+	engine->ExecuteClientCmd( "schema_reload_weapons_server" );
 #endif
+}
+
+static ConCommand schema_reload_weapons( 
+#ifdef CLIENT_DLL
+"schema_reload_weapons", 
+#else
+"schema_reload_weapons_server", 
+#endif
+ResetFileWeaponInfoDatabase, "Re-Parses weapon scripts", FCVAR_CHEAT );
 
 void PrecacheFileWeaponInfoDatabase( IFileSystem *filesystem, const unsigned char *pICEKey )
 {

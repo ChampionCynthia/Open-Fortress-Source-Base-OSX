@@ -32,13 +32,16 @@ $Project "Client (Open Fortress)"
 		$File	"of/of_clientmode.cpp"
 		$File	"of/of_clientmode.h"
 		$File	"of/of_hud_chat.cpp"
-		$File	"of/of_hud_chat.h"		
+		$File	"of/of_hud_chat.h"	
+		$File	"of/of_hud_weaponselection.cpp"	
 		$File	"of/of_in_main.cpp"
 		$File	"of/of_prediction.cpp"	
 		$File	"of/c_of_player.cpp"
 		$File	"of/c_of_player.h"
 		$File	"of/c_of_team.cpp"
 		$File	"of/c_of_team.h"
+		
+		$File	"of/c_te_firebullets.cpp"
 
 		// NOPEY: They're located in shared, but aren't in our server. dunno why
 		$File	"$SRCDIR\game\shared\predicted_viewmodel.cpp"

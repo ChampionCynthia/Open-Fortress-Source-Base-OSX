@@ -13,6 +13,11 @@
 #include "tier0/vprof.h"
 #include "entity_ofstart.h"
 #include "viewport_panel_names.h"
+#include "effect_dispatch_data.h"
+#include "te_effect_dispatch.h"
+#include "engine/ivdebugoverlay.h"
+#include "of_weapon_base.h"
+
 
 ConVar sv_motd_unload_on_dismissal( "sv_motd_unload_on_dismissal", "0", 0, "If enabled, the MOTD contents will be unloaded when the player closes the MOTD." );
 ConVar tf_playerstatetransitions( "tf_playerstatetransitions", "-2", FCVAR_DEVELOPMENTONLY, "tf_playerstatetransitions <ent index or -1 for all>. Show player state transitions." );
@@ -166,7 +171,7 @@ void COFPlayer::StateEnterWELCOME()
 //OFSTATUS: Incomplete
 void COFPlayer::Spawn()
 {
-    Precache();
+    Precache(); //this wasnt in kay's code.  maybe its called automatically?
     
     //start line 276 CTFPlayer::Spawn
     SetModelScale( 1.0f );
@@ -174,6 +179,8 @@ void COFPlayer::Spawn()
     SetMoveType( MOVETYPE_WALK );
     BaseClass::Spawn();
     //end line 286 CTFPlayer::Spawn
+    RemoveSolidFlags( FSOLID_NOT_SOLID );
+    m_hRagdoll = NULL;
 
     if ( m_iPlayerState == TF_STATE_WELCOME )
     {
@@ -204,6 +211,7 @@ void COFPlayer::PreCacheKart()
 void COFPlayer::PreCacheMvM()
 {
 }
+
 
 //OFSTATUS: Nearly complete, only missing vprof(but that doesn't make any difference ingame)
 void COFPlayer::Precache()
@@ -239,6 +247,11 @@ void COFPlayer::Precache()
     PrecacheOFPlayer();
     PrecacheParticleSystem("achieved");
     BaseClass::Precache();
+
+    //Code from Kay's branch, probably has to do with the following
+    //decompiled code
+    PreCacheKart();
+	PreCacheMvM();
     /*if ((iVar2 != 0) && ((puVar3[0x1010] == '\0' || (*(int*)(puVar3 + 0x100c) != 0)))) {
         iVar2 = *(int*)(puVar3 + 0x19b8);
         iVar7 = _ThreadGetCurrentId();
@@ -467,6 +480,7 @@ void COFPlayer::PrecachePlayerModels()
     PrecacheModel("models/player/scout.mdl"); //TEMPORARY FOR TESTING ONLY
 }
 
+
 //OFSTATUS: Incomplete, only handles jointeam and in jointeam it only handles actual numbers.
 bool COFPlayer::ClientCommand( const CCommand& args )
 {
@@ -540,4 +554,137 @@ void COFPlayer::UpdateModel()
 	BaseClass::SetModel("models/player/scout.mdl"); //TEMPORARY FOR TESTING ONLY
 	SetCollisionBounds(BaseClass::GetPlayerMins(), BaseClass::GetPlayerMaxs());
     //m_PlayerAnimState->OnNewModel(); //Crashes so disabled for now
+}
+
+COFWeaponBase *COFPlayer::GetActiveOFWeapon(void) const
+{
+	return dynamic_cast< COFWeaponBase* >(GetActiveWeapon());
+}
+
+extern ConVar friendlyfire;
+extern ConVar sv_showimpacts;
+
+// OFTODO: Move this to Shared Player
+void COFPlayer::FireBullet( 
+						   Vector vecSrc,	// shooting postion
+						   const QAngle &shootAngles,  //shooting angle
+						   float vecSpread, // spread vector
+						   int iDamage, // base damage
+						   int iBulletType, // ammo type
+						   CBaseEntity *pevAttacker, // shooter
+						   bool bDoEffects,	// create impact effect ?
+						   float x,	// spread x factor
+						   float y	// spread y factor
+						   )
+{
+	float fCurrentDamage = iDamage;   // damage of the bullet at it's current trajectory
+	float flCurrentDistance = 0.0;  //distance that the bullet has traveled so far
+
+	Vector vecDirShooting, vecRight, vecUp;
+	AngleVectors( shootAngles, &vecDirShooting, &vecRight, &vecUp );
+
+	if ( !pevAttacker )
+		pevAttacker = this;  // the default attacker is ourselves
+
+	// add the spray 
+	Vector vecDir = vecDirShooting +
+		x * vecSpread * vecRight +
+		y * vecSpread * vecUp;
+
+	VectorNormalize( vecDir );
+
+	float flMaxRange = 8000;
+
+	Vector vecEnd = vecSrc + vecDir * flMaxRange; // max bullet range is 10000 units
+
+	trace_t tr; // main enter bullet trace
+
+	UTIL_TraceLine( vecSrc, vecEnd, MASK_SOLID|CONTENTS_DEBRIS|CONTENTS_HITBOX, this, COLLISION_GROUP_NONE, &tr );
+
+		if ( tr.fraction == 1.0f )
+			return; // we didn't hit anything, stop tracing shoot
+
+	if ( sv_showimpacts.GetBool() )
+	{
+#ifdef CLIENT_DLL
+		// draw red client impact markers
+		debugoverlay->AddBoxOverlay( tr.endpos, Vector(-2,-2,-2), Vector(2,2,2), QAngle( 0, 0, 0), 255,0,0,127, 4 );
+
+		if ( tr.m_pEnt && tr.m_pEnt->IsPlayer() )
+		{
+			C_BasePlayer *player = ToBasePlayer( tr.m_pEnt );
+			player->DrawClientHitboxes( 4, true );
+		}
+#else
+		// draw blue server impact markers
+		NDebugOverlay::Box( tr.endpos, Vector(-2,-2,-2), Vector(2,2,2), 0,0,255,127, 4 );
+
+		if ( tr.m_pEnt && tr.m_pEnt->IsPlayer() )
+		{
+			CBasePlayer *player = ToBasePlayer( tr.m_pEnt );
+			player->DrawServerHitboxes( 4, true );
+		}
+#endif
+	}
+
+		//calculate the damage based on the distance the bullet travelled.
+		flCurrentDistance += tr.fraction * flMaxRange;
+
+		// damage get weaker of distance
+		fCurrentDamage *= pow ( 0.85f, (flCurrentDistance / 500));
+
+		int iDamageType = DMG_BULLET | DMG_NEVERGIB;
+
+		if( bDoEffects )
+		{
+			// See if the bullet ended up underwater + started out of the water
+			if ( enginetrace->GetPointContents( tr.endpos ) & (CONTENTS_WATER|CONTENTS_SLIME) )
+			{	
+				trace_t waterTrace;
+				UTIL_TraceLine( vecSrc, tr.endpos, (MASK_SHOT|CONTENTS_WATER|CONTENTS_SLIME), this, COLLISION_GROUP_NONE, &waterTrace );
+
+				if( waterTrace.allsolid != 1 )
+				{
+					CEffectData	data;
+					data.m_vOrigin = waterTrace.endpos;
+					data.m_vNormal = waterTrace.plane.normal;
+					data.m_flScale = random->RandomFloat( 8, 12 );
+
+					if ( waterTrace.contents & CONTENTS_SLIME )
+					{
+						data.m_fFlags |= FX_WATER_IN_SLIME;
+					}
+
+					DispatchEffect( "gunshotsplash", data );
+				}
+			}
+			else
+			{
+				//Do Regular hit effects
+
+				// Don't decal nodraw surfaces
+				if ( !( tr.surface.flags & (SURF_SKY|SURF_NODRAW|SURF_HINT|SURF_SKIP) ) )
+				{
+					CBaseEntity *pEntity = tr.m_pEnt;
+					if ( !( !friendlyfire.GetBool() && pEntity && pEntity->IsPlayer() && pEntity->GetTeamNumber() == GetTeamNumber() ) )
+					{
+						UTIL_ImpactTrace( &tr, iDamageType );
+					}
+				}
+			}
+		} // bDoEffects
+
+		// add damage to entity that we hit
+
+#ifdef GAME_DLL
+		ClearMultiDamage();
+
+		CTakeDamageInfo info( pevAttacker, pevAttacker, fCurrentDamage, iDamageType );
+		CalculateBulletDamageForce( &info, iBulletType, vecDir, tr.endpos );
+		tr.m_pEnt->DispatchTraceAttack( info, vecDir, &tr );
+
+		TraceAttackToTriggers( info, tr.startpos, tr.endpos, vecDir );
+
+		ApplyMultiDamage();
+#endif
 }
