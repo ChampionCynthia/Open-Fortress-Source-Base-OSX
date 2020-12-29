@@ -14,6 +14,8 @@
 
 // Open Fortress Modifications (CC-BY-NC-CA)
 // * added check for OF_CLIENT_DLL define
+// * Modify Assert in LoadHudAnimations to print the file it fails to open,
+//     and the manifest that listed the file it failed to load.
 
 #pragma warning( disable : 4800  )  // disable forcing int to bool performance warning
 
@@ -146,10 +148,11 @@ bool CBaseViewport::LoadHudAnimations( void )
 		if ( !Q_stricmp( sub->GetName(), "file" ) )
 		{
 			// Add it
-			if ( m_pAnimController->SetScriptFile( GetVPanel(), sub->GetString(), bClearScript ) == false )
-			{
-				Assert( 0 );
-			}
+			AssertMsg (
+				m_pAnimController->SetScriptFile( GetVPanel(), sub->GetString(), bClearScript ),
+				"Couldn't load hudanimations script \"%s\" listed in \"%s\"",
+				sub->GetString(), HUDANIMATION_MANIFEST_FILE
+			);
 
 			bClearScript = false;
 			continue;

@@ -1,3 +1,7 @@
+// ========= Copyright Open Fortress Developers, CC-BY-NC-SA ============
+// Purpose: 
+// Author(s): MaartenS11
+//
 #include "cbase.h"
 #include "entity_ofstart.h"
 
