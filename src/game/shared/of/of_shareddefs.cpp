@@ -6,6 +6,45 @@
 #include "cbase.h"
 #include "of_shareddefs.h"
 
+const char *g_aWeaponModePrefix[] =
+{
+	"", // Primary parse doesnt use any prefixes
+	"secondary_", // Primary parse doesnt use any prefixes
+};
+
+const char *g_aProjectileTypeNames[] =
+{
+	"projectile_none",
+	"projectile_bullet",
+	"projectile_rocket",
+	"projectile_pipe",
+	"projectile_pipe_remote",
+	"projectile_syringe",
+	"projectile_flare",
+	"projectile_jar",
+	"projectile_arrow",
+	"projectile_flamerocket",
+	"projectile_jar_milk",
+	"projectile_healing_bolt",
+	"projectile_energy_ball",
+	"projectile_energy_ring",
+	"projectile_stickyjumper",
+	"projectile_cleaver",
+	"projectile_unknown1",
+	"projectile_cannonball",
+	"projectile_ranger",
+	"projectile_arrow_festive",
+	"projectile_unknown2",
+	"projectile_unknown3",
+	"projectile_jarate_festive",
+	"projectile_crossbow_festive",
+	"projectile_jarate_bread",
+	"projectile_madmilk_bread",
+	"tf_projectile_grapplinghook",
+	"tf_projectile_balloffire",
+	"projectile_jar_gas",
+};
+
 const char *g_aAmmoNames[] =
 {
 	"DUMMY AMMO", // This ammo is skipped

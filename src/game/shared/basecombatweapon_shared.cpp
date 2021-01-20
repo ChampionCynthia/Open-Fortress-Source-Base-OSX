@@ -1193,7 +1193,7 @@ void CBaseCombatWeapon::SetViewModel()
 	if ( vm == NULL )
 		return;
 	Assert( vm->ViewModelIndex() == m_nViewModelIndex );
-	vm->SetWeaponModel( GetViewModel( m_nViewModelIndex ), this );
+	vm->SetWeaponModel( GetViewModel( m_nViewModelIndex ), this );	
 }
 
 //-----------------------------------------------------------------------------
