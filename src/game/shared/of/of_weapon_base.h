@@ -156,7 +156,7 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // IHasOwner::
     CBaseEntity *GetOwnerViaInterface () override;
 
-    // virtual void StartHolsterAnim();
+    virtual void StartHolsterAnim();
     // virtual void UpdateHands();
     // virtual bool OwnerCanTaunt();
     // virtual bool CanBeCritBoosted();
@@ -213,15 +213,19 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // virtual float GetMuzzleFlashModelLifetime();
     // virtual const char *GetMuzzleFlashParticleEffect();
     // virtual const char *GetInventoryModel();
-    // virtual float GetSpeedMod();
+    virtual float GetSpeedMod();
     // virtual bool CanFireCriticalShot();
     // virtual bool CanFireRandomCriticalShot(CBaseEntity *);
     // Probably the MvM rottenburg cap stun :P
-    // virtual void OnControlStunned();
-    // virtual bool HideWhileStunned();
-    // virtual bool IsViewModelFlipped();
-    // virtual int GetMaxHealthMod();
-    // virtual float GetLastDeployTime();
+    #ifdef CLIENT_DLL
+    virtual void OnControlStunned();
+    #endif
+    #ifdef GAME_DLL
+    virtual bool HideWhileStunned();
+    virtual bool IsViewModelFlipped();
+    virtual int GetMaxHealthMod();
+    virtual float GetLastDeployTime();
+    #endif
     virtual bool IsEnergyWeapon() const { return false; };
     // virtual bool IsBlastImpactWeapon();
 	// OFSTATUS: COMPLETE

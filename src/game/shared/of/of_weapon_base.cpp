@@ -779,6 +779,97 @@ bool COFWeaponBase::CanAttack()
     return true;
 }
 
+//OFSTATUS: INCOMPLETE
+void COFWeaponBase::StartHolsterAnim()
+{
+	// (**(code **)(*(int *)this + 0x414))(this, 0);
+	// return;
+}
+
+//OFSTATUS: COMPLETE
+float COFWeaponBase::GetSpeedMod()
+{
+	return 1.0f;
+}
+
+//OFSTATUS: INCOMPLETE
+#ifdef CLIENT_DLL
+void COFWeaponBase::OnControlStunned()
+{
+	/*
+
+	(**(code **)(*(int *)this + 0x560))(this);
+	(**(code **)(*(int *)this + 0x514))(this, 0);
+	return;
+
+	*/
+}
+#endif 
+
+//OFSTATUS: COMPLETE
+#ifdef GAME_DLL
+bool COFWeaponBase::HideWhileStunned()
+{
+	return 1;
+}
+
+//OFSTATUS: INCOMPLETE
+bool COFWeaponBase::IsViewModelFlipped()
+{
+	// Who uses flipped viewmodels anyways?
+
+	return false;
+	
+	/*
+	char cVar1;
+	int iVar2;
+	int *piVar3;
+	bool bVar4;
+
+	iVar2 = CBaseCombatWeapon::GetOwner((CBaseCombatWeapon *)this);
+	if (iVar2 == 0)
+	{
+		bVar4 = false;
+	}
+	else
+	{
+		piVar3 = (int *)__symbol_stub::___dynamic_cast(iVar2, PTR_typeinfo_00e34140, PTR_typeinfo_00e34088, 0);
+		if (piVar3 == (int *)0x0)
+		{
+			bVar4 = false;
+		}
+		else
+		{
+			cVar1 = (**(code **)(*piVar3 + 0x144))(piVar3);
+			if (cVar1 == '\0')
+			{
+				bVar4 = false;
+			}
+			else
+			{
+				bVar4 = this[0x61c] != *(CTFWeaponBase *)(piVar3 + 0x7f3);
+			}
+		}
+	}
+	return bVar4;
+	*/
+}
+
+//OFSTATUS: COMPLETE
+int COFWeaponBase::GetMaxHealthMod()
+{
+	return 0;
+}
+
+//OFSTATUS: INCOMPLETE
+float COFWeaponBase::GetLastDeployTime()
+{
+	// (float10)*(float *)(this + 0x6e8);
+	// WIP answer - bry
+	//return (float) this->m_fUnknownFloat;
+}
+#endif
+
 //-----------------------------------------------------------------------------
 // Purpose: Get my data in the file weapon info array
 //-----------------------------------------------------------------------------
