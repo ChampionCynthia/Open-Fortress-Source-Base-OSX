@@ -69,17 +69,21 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     COFWeaponBase();
 
     // CBaseEntity::
-    // virtual const char *GetTracerType() override;
+    virtual const char *GetTracerType() override;
 
     // CBaseCombatWeapon::
-    // virtual void Spawn() override;
-    // virtual void Activate() override;
+    virtual void Spawn() override;
+    #ifdef GAME_DLL
+    virtual void Activate() override;
+    #endif
 
     // CBaseEntity::
-    #ifdef GAME_DLL
-    // virtual void Precache() override;
+    #ifdef CLIENT_DLL
+    virtual void Precache() override;
     #endif
-    // virtual void ChangeTeam(int iTeamNum) override;
+    #ifdef GAME_DLL
+    virtual void ChangeTeam(int iTeamNum) override;
+    #endif
     // virtual void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
     // virtual void UpdateOnRemove() override;
     // virtual CBaseEntity *Respawn ( void ) override;
@@ -118,7 +122,9 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // virtual void FinishReload() override;
     // virtual void AbortReload() override;
     // virtual bool Reload() override;
-    // virtual void AutoFiresFullClip() const override;
+    #ifdef CLIENT_DLL
+    virtual bool AutoFiresFullClip() const override { return false; };
+    #endif
     // virtual void PrimaryAttack() override;
     // virtual void SecondaryAttack() override;
     // virtual const Vector &GetBulletSpread();
@@ -132,7 +138,9 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // virtual int Clip2() override;
     // virtual Activity ActivityOverride( Activity baseAct, bool *pRequired );
     // virtual acttable_t* ActivityList( int &iActivityCount );
-    // virtual void FallInit() override;
+    #ifdef CLIENT_DLL
+    virtual void FallInit() override { /*Intentionally blank*/ };
+    #endif
     // virtual void Materialize() override;
     // virtual void CheckRespawn() override;
     // virtual void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator ) override;
@@ -159,7 +167,7 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     virtual void StartHolsterAnim();
     // virtual void UpdateHands();
     // virtual bool OwnerCanTaunt();
-    // virtual bool CanBeCritBoosted();
+    virtual bool CanBeCritBoosted();
     // OFTODO: this is almost certainly not an int pointer.
     // virtual int *GetTauntItem();
     // warning: massive chonkey function
@@ -202,9 +210,9 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // virtual bool DeflectEntity(CBaseEntity *,CTFPlayer *,Vector *);
     // virtual void PlayDeflectionSound(bool);
     // virtual float GetDeflectionRadius();
-    // virtual float GetJarateTime();
+    virtual float GetJarateTime() { return 0.0f };
     virtual bool CanAttack();
-    // virtual int GetCanAttackFlags();
+    virtual bool GetCanAttackFlags() const { return false; };
     // virtual void WeaponReset();
     // virtual void WeaponRegenerate();
     // virtual const char *GetMuzzleFlashEffectName_3rd();
@@ -227,32 +235,34 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     virtual float GetLastDeployTime();
     #endif
     virtual bool IsEnergyWeapon() const { return false; };
-    // virtual bool IsBlastImpactWeapon();
+    virtual bool IsBlastImpactWeapon() const { return false; };
 	// OFSTATUS: COMPLETE
     virtual float Energy_GetShotCost(){ return 4.0f; };
 	// OFSTATUS: COMPLETE
     virtual float Energy_GetRechargeCost(){ return 4.0f; };
-    // virtual Vector GetParticleColor(int);
-    // virtual bool HasLastShotCritical();
-    // virtual bool UseServerRandomSeed();
-    // virtual bool IsBroken();
-    // virtual void SetBroken(bool);
+    virtual Vector GetParticleColor(int iColor);
+    virtual bool HasLastShotCritical() const { return false; };
+    virtual bool UseServerRandomSeed() const { return true; };
+    virtual bool IsBroken() const { return false; };
+    virtual void SetBroken(bool bsetBroken);
     // int param is probs a bool or an enum
     // void OnBulletFire(int);
     // virtual void OnPlayerKill(CTFPlayer *pSmellyUnfortunate, CTakeDamageInfo *);
     // virtual float GetLastHitTime();
-    // virtual int GetDropSkinOverride();
-    // virtual float GetInitialAfterburnDuration();
-    // virtual float GetAfterburnRateOnHit();
+    #ifdef GAME_DLL
+    virtual int GetDropSkinOverride() { return -1; };
+    #endif
+    virtual float GetInitialAfterburnDuration() { return 0.0f; };
+    virtual float GetAfterburnRateOnHit() { return 0.0f; };
     // return value is probably the model's skin index
     // virtual uint GetSkin();
     // virtual float GetEffectBarProgress();
-    // virtual bool CanPickupOtherWeapon();
-    // virtual bool ShouldRemoveInvisibilityOnPrimaryAttack();
+    virtual bool CanPickupOtherWeapon() const { return true; };
+    virtual bool ShouldRemoveInvisibilityOnPrimaryAttack() const { return true; };
     // virtual int GetEffectBarAmmo();
-    // virtual float InternalGetEffectBarRechargeTime();
-    // virtual bool CanInspect();
-    // virtual void HookAttributes();
+    virtual float InternalGetEffectBarRechargeTime() { return 0.0f; };
+    virtual bool CanInspect() { return true; } ;
+    virtual void HookAttributes();
 
     // NOTE: This MvM function literally just calls HookAttributes, unless ghidra is malfunctioning.
     // (oh, and it doesn't have any overrides)
