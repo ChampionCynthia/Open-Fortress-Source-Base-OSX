@@ -1388,23 +1388,7 @@ Vector COFWeaponBase::GetParticleColor(int iColor)
 }
 
 //OFSTATUS: COMPLETE(?)
-void COFWeaponBase::SetBroken(bool bsetBroken)
-{
-    // Intentionally blank
-}
-
-//OFSTATUS: COMPLETE(?)
 void COFWeaponBase::HookAttributes()
 {
     // Intentionally Blank
-}
-
-//OFSTATUS: INCOMPLETE
-bool COFWeaponBase::CanBeCritBoosted()
-{
-    /*
-    float fVar1;
-    fVar1 = CAttributeManager::AttribHookValue<float>(0.0, "no_crit_boost", (CBaseEntity *)this, (CUtlVector *)0x0, true);
-    return (int)fVar1 == 0;
-    */
 }
