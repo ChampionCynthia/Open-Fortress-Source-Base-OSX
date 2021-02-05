@@ -105,6 +105,7 @@ LINK_ENTITY_TO_CLASS( tf_weapon_base, COFWeaponBase );
 COFWeaponBase::COFWeaponBase()
 {
 	m_iWeaponMode = OF_WEAPON_MODE_PRIMARY;
+	m_flLastDeployTime = 0.0f;
 }
 
 //OFSTATUS: COMPLETE
@@ -779,11 +780,11 @@ bool COFWeaponBase::CanAttack()
     return true;
 }
 
-//OFSTATUS: INCOMPLETE
+//OFSTATUS: COMPLETE
 void COFWeaponBase::StartHolsterAnim()
 {
-	// (**(code **)(*(int *)this + 0x414))(this, 0);
-	// return;
+	Holster();
+	return;
 }
 
 //OFSTATUS: COMPLETE
@@ -792,22 +793,15 @@ float COFWeaponBase::GetSpeedMod()
 	return 1.0f;
 }
 
-//OFSTATUS: INCOMPLETE
-#ifdef CLIENT_DLL
+//OFSTATUS: COMPLETE
+// finished this as i had already done the code for it by accident, can be removed safely if for MvM - cherry
 void COFWeaponBase::OnControlStunned()
 {
-	/*
-
-	(**(code **)(*(int *)this + 0x560))(this);
-	(**(code **)(*(int *)this + 0x514))(this, 0);
-	return;
-
-	*/
+	AbortReload();
+	SetWeaponVisible(false);
 }
-#endif 
 
 //OFSTATUS: COMPLETE
-#ifdef GAME_DLL
 bool COFWeaponBase::HideWhileStunned()
 {
 	return 1;
@@ -861,14 +855,11 @@ int COFWeaponBase::GetMaxHealthMod()
 	return 0;
 }
 
-//OFSTATUS: INCOMPLETE
+//OFSTATUS: COMPLETE
 float COFWeaponBase::GetLastDeployTime()
 {
-	// (float10)*(float *)(this + 0x6e8);
-	// WIP answer - bry
-	//return (float) this->m_fUnknownFloat;
+	return m_flLastDeployTime;
 }
-#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: Get my data in the file weapon info array
