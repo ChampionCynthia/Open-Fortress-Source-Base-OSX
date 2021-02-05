@@ -210,7 +210,7 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // virtual bool DeflectEntity(CBaseEntity *,CTFPlayer *,Vector *);
     // virtual void PlayDeflectionSound(bool);
     // virtual float GetDeflectionRadius();
-    virtual float GetJarateTime() { return 0.0f };
+	virtual float GetJarateTime() { return 0.0f; }
     virtual bool CanAttack();
     virtual bool GetCanAttackFlags() const { return false; };
     // virtual void WeaponReset();
@@ -225,9 +225,7 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // virtual bool CanFireCriticalShot();
     // virtual bool CanFireRandomCriticalShot(CBaseEntity *);
     // Probably the MvM rottenburg cap stun :P
-    #ifdef CLIENT_DLL
     virtual void OnControlStunned();
-    #endif
     #ifdef GAME_DLL
     virtual bool HideWhileStunned();
     virtual bool IsViewModelFlipped();
@@ -282,4 +280,5 @@ private:
 	CNetworkVar( int, m_iConsecutiveShots );
 	CNetworkVar( int, m_iOldClip );
 	CNetworkVar( float, m_flOldPrimaryAttack );
+	float m_flLastDeployTime; // i'm not 100% if this is a cnetworkvar but it doesnt seem to be, do correct me if i'm wrong! - cherry
 };
