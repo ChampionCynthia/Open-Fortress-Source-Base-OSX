@@ -167,7 +167,9 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     CBaseEntity *GetOwnerViaInterface () override;
 
     virtual void StartHolsterAnim();
-    // virtual void UpdateHands();
+	#ifdef CLIENT_DLL
+    // virtual void UpdateHands(); // ignored! - cherry
+	#endif
     // virtual bool OwnerCanTaunt();
     // virtual bool CanBeCritBoosted();
     // OFTODO: this is almost certainly not an int pointer.
@@ -188,7 +190,7 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // some of these could be references. (Any that aren't null checked, make into refs.)
     // virtual void GetProjectileFireSetup (CTFPlayer *,Vector,Vector *,QAngle *, bool, float);
     // This return type is almost certainly incorrect.
-    // virtual void GetSpreadAngles();
+    virtual void GetSpreadAngles();
     virtual bool IsFiring() const;
     virtual bool AreRandomCritsEnabled();
     // virtual bool DefaultReload( int iClipSize1, int iClipSize2, int iActivity );
@@ -246,7 +248,7 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     virtual bool HasLastShotCritical() const { return false; };
     virtual bool UseServerRandomSeed() const { return true; };
     // int param is probs a bool or an enum
-    // void OnBulletFire(int);
+    void OnBulletFire(); // removed the int
     // virtual void OnPlayerKill(CTFPlayer *pSmellyUnfortunate, CTakeDamageInfo *);
     // virtual float GetLastHitTime();
     #ifdef GAME_DLL
