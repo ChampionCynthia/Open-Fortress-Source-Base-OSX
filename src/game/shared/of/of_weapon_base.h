@@ -67,7 +67,9 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     //OFTODO: Compare COFWeaponBase members to client.dylib CTFWeaponBase
 
     COFWeaponBase();
-
+    #ifdef CLIENT_DLL
+    ~COFWeaponBase();
+    #endif
     // CBaseEntity::
     virtual const char *GetTracerType() override;
 
@@ -86,7 +88,7 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     #endif
     // virtual void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
     // virtual void UpdateOnRemove() override;
-    // virtual CBaseEntity *Respawn ( void ) override;
+    virtual CBaseEntity *Respawn () override;
     // virtual int GetDamageType() override;
 
     // virtual void ReapplyProvision();
@@ -97,8 +99,8 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     virtual OFWeaponID  GetWeaponID() const { return WEAPON_NONE; }
 
     // CBaseCombatWeapon::
-    // virtual void Equip( CBaseCombatCharacter *pOwner ) override;
-    // virtual void Drop( const Vector &vecVelocity ) override;
+    virtual void Equip( CBaseCombatCharacter *pOwner ) override;
+    virtual void Drop( const Vector &vecVelocity ) override;
     virtual bool VisibleInWeaponSelection() override;
     virtual bool HasAmmo() override;
     // virtual bool SendWeaponAnim( int iActivity ) override;
@@ -210,10 +212,12 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // virtual bool DeflectEntity(CBaseEntity *,CTFPlayer *,Vector *);
     // virtual void PlayDeflectionSound(bool);
     // virtual float GetDeflectionRadius();
-	virtual float GetJarateTime() { return 0.0f; }
+	virtual float GetJarateTime() { return 0.0f; };
+    #ifdef CLIENT_DLL
     virtual bool CanAttack();
+    #endif
     virtual bool GetCanAttackFlags() const { return false; };
-    // virtual void WeaponReset();
+    virtual void WeaponReset();
     // virtual void WeaponRegenerate();
     // virtual const char *GetMuzzleFlashEffectName_3rd();
     // virtual const char *GetMuzzleFlashEffectName_1st();
@@ -259,7 +263,10 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     virtual float InternalGetEffectBarRechargeTime() { return 0.0f; };
     virtual bool CanInspect() { return true; } ;
     virtual void HookAttributes();
-
+    #ifdef GAME_DLL
+    virtual bool YouForgotToImplementOrDeclareServerClass() const { return 0; };
+    virtual m_DataMap *GetDataDescMap() const { return &m_DataMap; };
+    #endif
     // NOTE: This MvM function literally just calls HookAttributes, unless ghidra is malfunctioning.
     // (oh, and it doesn't have any overrides)
     // or in other words, all my homies hate CTFWeaponBase::OnUpgraded
@@ -281,4 +288,5 @@ private:
 	CNetworkVar( int, m_iOldClip );
 	CNetworkVar( float, m_flOldPrimaryAttack );
 	float m_flLastDeployTime; // i'm not 100% if this is a cnetworkvar but it doesnt seem to be, do correct me if i'm wrong! - cherry
+    bool m_bCanDropWeapon;
 };
