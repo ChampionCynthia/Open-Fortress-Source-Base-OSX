@@ -177,7 +177,7 @@ CBaseEntity *COFWeaponBase::GetOwnerViaInterface ()
 bool COFWeaponBase::VisibleInWeaponSelection()
 {
     //NOTE: Trimmed code related to checking if the game is in training mode.
-    return CBaseCombatWeapon::VisibleInWeaponSelection();
+    return BaseClass::VisibleInWeaponSelection();
 }
 
 //OFSTATUS: COMPLETE
@@ -328,6 +328,87 @@ void COFWeaponBase::SetWeaponVisible(bool visible)
 void COFWeaponBase::Detach() 
 {
     return;
+}
+
+//OFSTATUS: INCOMPLETE
+void COFWeaponBase::GetSpreadAngles()
+{
+/*
+	char cVar1;
+	int iVar2;
+	int *piVar3;
+	undefined8 *puVar4;
+	int iVar5;
+	int iVar6;
+	int *piVar7;
+	float fVar8;
+	float fVar9;
+	float fVar10;
+	float fVar11;
+	float fVar12;
+	undefined8 *in_stack_00000004;
+	int *in_stack_00000008;
+
+	iVar2 = this->GetOwner();
+	piVar7 = (int *)0x0;
+	if ((iVar2 != 0) &&
+		(piVar3 = (int *)__symbol_stub::___dynamic_cast
+		(iVar2, PTR_typeinfo_00e34140, PTR_typeinfo_00e34088, 0),
+		piVar3 != (int *)0x0)) {
+		cVar1 = (**(code **)(*piVar3 + 0x144))(piVar3);
+		piVar7 = (int *)0x0;
+		if (cVar1 != '\0') {
+			piVar7 = piVar3;
+		}
+	}
+	puVar4 = (undefined8 *)(**(code **)(*piVar7 + 0x210))(piVar7);
+	*(float *)(in_stack_00000004 + 1) = *(float *)(puVar4 + 1);
+	*in_stack_00000004 = *puVar4;
+	fVar12 = CAttributeManager::AttribHookValue<float>
+		(0.0, "projectile_spread_angle", (CBaseEntity *)in_stack_00000008,
+		(CUtlVector *)0x0, true);
+	if (fVar12 != 0.0) {
+		iVar2 = _rand();
+		fVar8 = (float)iVar2 * fVar12 * 6.103702e-05 - fVar12;
+		iVar2 = _rand();
+		fVar12 = (float)iVar2 * fVar12 * 6.103702e-05 - fVar12;
+		_rand();
+		if ((((*(CTFGameRules **)PTR__g_pGameRules_00e340a8 == (CTFGameRules *)0x0) ||
+			(cVar1 = CTFGameRules::GameModeUsesUpgrades(*(CTFGameRules **)PTR__g_pGameRules_00e340a8),
+			cVar1 == '\0')) ||
+			(iVar2 = CAttributeManager::AttribHookValue<int>
+			(0, "can_overload", (CBaseEntity *)in_stack_00000008, (CUtlVector *)0x0, true
+			), iVar2 == 0)) ||
+			(((cVar1 = (**(code **)(*in_stack_00000008 + 0x46c))(in_stack_00000008), cVar1 == '\0' ||
+			(iVar2 = (**(code **)(*in_stack_00000008 + 0x55c))(in_stack_00000008), iVar2 != 1)) ||
+			((*(char *)((int)in_stack_00000008 + 0x5b6) != '\0' ||
+			(fVar9 = *(float *)(*(int *)PTR__gpGlobals_00e34080 + 0xc) -
+			(float)in_stack_00000008[0x1dd], 0.9 <= fVar9)))))) {
+			fVar9 = 0.0;
+		}
+		else {
+			fVar9 = (fVar9 + -0.4) * 2.0;
+			if (fVar9 <= 0.0) {
+				fVar9 = 0.0;
+			}
+			if (1.0 <= fVar9) {
+				fVar9 = 1.0;
+			}
+			fVar10 = fVar9 * -5.0 + 6.0;
+			iVar2 = _rand();
+			fVar11 = fVar9 * -0.0003051851 + 0.0003662221;
+			iVar5 = _rand();
+			iVar6 = _rand();
+			fVar9 = (float)iVar6 * fVar11 - fVar10;
+			fVar8 = (fVar8 - fVar10) + (float)iVar2 * fVar11;
+			fVar12 = (fVar12 - fVar10) + (float)iVar5 * fVar11;
+		}
+		*(float *)in_stack_00000004 = fVar8 + *(float *)in_stack_00000004;
+		*(float *)((int)in_stack_00000004 + 4) = fVar12 + *(float *)((int)in_stack_00000004 + 4);
+		*(float *)(in_stack_00000004 + 1) = fVar9 + *(float *)(in_stack_00000004 + 1);
+	}
+	*/
+	return;
 }
 
 /* OFTODO: AAAAAAAA - Kay */
@@ -948,6 +1029,27 @@ float COFWeaponBase::GetLastDeployTime()
 {
 	return m_flLastDeployTime;
 }
+
+#ifdef GAME_DLL
+//OFSTATUS: INCOMPLETE
+// trimmed as that int is just used no where - cherry
+void COFWeaponBase::OnBulletFire()
+{
+	/*
+	this->field_0x788 = this->field_0x788 + 1;
+	this->field_0x784 = gpGlobals->absoluteframetime;
+
+	this->field_0x78c = this->field_0x78c + 1;
+	return;
+	*/
+}
+
+//OFSTATUS: INCOMPLETE
+//float COFWeaponBase::GetLastHitTime()
+//{
+//	//return this->
+//}
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: Get my data in the file weapon info array
