@@ -167,7 +167,7 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     virtual void StartHolsterAnim();
     // virtual void UpdateHands();
     // virtual bool OwnerCanTaunt();
-    virtual bool CanBeCritBoosted();
+    // virtual bool CanBeCritBoosted();
     // OFTODO: this is almost certainly not an int pointer.
     // virtual int *GetTauntItem();
     // warning: massive chonkey function
@@ -243,8 +243,6 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     virtual Vector GetParticleColor(int iColor);
     virtual bool HasLastShotCritical() const { return false; };
     virtual bool UseServerRandomSeed() const { return true; };
-    virtual bool IsBroken() const { return false; };
-    virtual void SetBroken(bool bsetBroken);
     // int param is probs a bool or an enum
     // void OnBulletFire(int);
     // virtual void OnPlayerKill(CTFPlayer *pSmellyUnfortunate, CTakeDamageInfo *);
