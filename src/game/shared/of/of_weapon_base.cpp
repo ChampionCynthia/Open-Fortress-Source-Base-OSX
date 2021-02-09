@@ -1074,13 +1074,13 @@ const char *COFWeaponBase::GetTracerType()
 {
 	OFWeaponID uVar1;
 	FileWeaponInfo_t p_iwpnData;
-    int iVar3; // it might be CBaseCombatCharacter *iVar3; but i dont think so?????
+    int iVar3;
     undefined3 extraout_var;
     int iVar4;
     uint uVar5;
     CBaseEntity *this_00;
     undefined3 extraout_var_00;
-    undefined4 *puVar6;
+    char *puVar6;
     char *pcVar7;
     uint uVar8;
     char *pcVar9;
@@ -1121,26 +1121,22 @@ const char *COFWeaponBase::GetTracerType()
 		
         if (*pcVar9 != '\0')
         {
-            puVar6 = &this->field_0x6ec; // aaaaa i dont know what you are - cherry
-            if (*(char *)&this->field_0x6ec != '\0')
+			// seems to be econ related - cherry
+            //puVar6 = &this->field_0x6ec;
+            //if (*(char *)&this->field_0x6ec != '\0')
+            //{
+            //    return puVar6;
+            //}
+			if (CBaseCombatWeapon::GetOwner())
             {
-                return puVar6;
+				iVar3 = CBaseCombatWeapon::GetOwner()->CBaseEntity::GetTeamNumber();
+				if (iVar3 == OF_TEAM_RED) pcVar7 = "red";
+				if (iVar3 == OF_TEAM_BLUE) pcVar7 = "blue";
             }
-			iVar3 = CBaseCombatWeapon::GetOwner(); // this is wrong, but it's what ghidra says /shrug -cherry
-            if (!iVar3)
-            {
-                pcVar7 = "blue";
-            }
-            else
-            {
-                //this_00 = (CBaseEntity *)CBaseCombatWeapon::GetOwner();
-				iVar3 = CBaseEntity::GetTeamNumber(); // CBaseEntity::GetTeamNumber(this_00) GetTeamNumber doesnt need an argument ? -cherry
-                pcVar7 = "blue";
-                if (iVar3 == 2)
-                {
-                    pcVar7 = "red";
-                }
-            }
+			else
+			{
+				pcVar7 = "blue";
+			}
             Q_snprintf(puVar6, sizeof(puVar6), "%s_%s", pcVar9, pcVar7);
             return puVar6;
         }
