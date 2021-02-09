@@ -1072,12 +1072,9 @@ COFPlayer *COFWeaponBase::GetOFPlayerOwner() const
 // OFSTATUS: INCOMPLETE
 const char *COFWeaponBase::GetTracerType()
 {
-    /*
-    // Econ Stuff
-    //undefined uVar1;
-
-    CBaseCombatWeapon p_iwpnData;
-    int iVar3;
+	OFWeaponID uVar1;
+	FileWeaponInfo_t p_iwpnData;
+    int iVar3; // it might be CBaseCombatCharacter *iVar3; but i dont think so?????
     undefined3 extraout_var;
     int iVar4;
     uint uVar5;
@@ -1087,68 +1084,75 @@ const char *COFWeaponBase::GetTracerType()
     char *pcVar7;
     uint uVar8;
     char *pcVar9;
+	//#ifdef CLIENT_DLL
+	//int3 extraout_var_01; - econ
+	//#endif
 
-    p_iwpnData = CBaseCombatWeapon::GetWpnData((CBaseCombatWeapon *)this);
+	p_iwpnData = CBaseCombatWeapon::GetWpnData();
+
+	// i have zero clue what is happening here - cherry
     iVar3 = __symbol_stub::___dynamic_cast(p_iwpnData, PTR_typeinfo_00e34714, PTR_typeinfo_00e346fc, 0);
+
     if (*(int *)(*(int *)(PTR__tf_useparticletracers_00e347bc + 0x1c) + 0x30) != 0)
     {
-
+		pcVar9 = (char *)(iVar3 + 0x890);
+		// econ stuff - cherry
         // uVar1 = (*this->vtable->CEconEntity::GetAttributeContainer)((CEconEntity *)this);
-        pcVar9 = (char *)(iVar3 + 0x890);
-        if (*(char *)(CONCAT31(extraout_var, uVar1) + 0xb0) != '\0')
-        {
-            iVar4 = CEconItemView::GetStaticData((CEconItemView *)(CONCAT31(extraout_var, uVar1) + 0x5c));
-            uVar5 = CBaseEntity::GetTeamNumber((CBaseEntity *)this);
-            pcVar7 = (char *)0x0;
-            uVar8 = 0;
-            if ((uVar5 < 5) && (((int)uVar5 < 1 || (uVar8 = 0, *(int *)(iVar4 + 0xa8 + uVar5 * 4) != 0))))
-            {
-                uVar8 = uVar5;
-            }
-            iVar4 = *(int *)(iVar4 + 0xa8 + uVar8 * 4);
-            if (iVar4 != 0)
-            {
-                pcVar7 = *(char **)(iVar4 + 0x110);
-            }
-            if (pcVar7 != (char *)0x0)
-            {
-                pcVar9 = pcVar7;
-            }
-        }
+        //if (*(char *)(CONCAT31(extraout_var, uVar1) + 0xb0) != '\0')
+        //{
+        //    iVar4 = CEconItemView::GetStaticData((CEconItemView *)(CONCAT31(extraout_var, uVar1) + 0x5c));
+        //    uVar5 = CBaseEntity::GetTeamNumber((CBaseEntity *)this);
+        //    pcVar7 = (char *)0x0;
+        //    uVar8 = 0;
+        //    if ((uVar5 < 5) && (((int)uVar5 < 1 || (uVar8 = 0, *(int *)(iVar4 + 0xa8 + uVar5 * 4) != 0))))
+        //    {
+        //        uVar8 = uVar5;
+        //    }
+        //    iVar4 = *(int *)(iVar4 + 0xa8 + uVar8 * 4);
+        //    if (iVar4 != 0)
+        //    {
+        //       pcVar7 = *(char **)(iVar4 + 0x110);
+        //    }
+        //    if (pcVar7 != (char *)0x0)
+        //   {
+        //        pcVar9 = pcVar7;
+        //    }
+        //}
+		
         if (*pcVar9 != '\0')
         {
-            puVar6 = &this->field_0x6ec;
+            puVar6 = &this->field_0x6ec; // aaaaa i dont know what you are - cherry
             if (*(char *)&this->field_0x6ec != '\0')
             {
                 return puVar6;
             }
-            iVar3 = CBaseCombatWeapon::GetOwner((CBaseCombatWeapon *)this);
-            if (iVar3 == 0)
+			iVar3 = CBaseCombatWeapon::GetOwner(); // this is wrong, but it's what ghidra says /shrug -cherry
+            if (!iVar3)
             {
                 pcVar7 = "blue";
             }
             else
             {
-                this_00 = (CBaseEntity *)CBaseCombatWeapon::GetOwner((CBaseCombatWeapon *)this);
-                iVar3 = CBaseEntity::GetTeamNumber(this_00);
+                //this_00 = (CBaseEntity *)CBaseCombatWeapon::GetOwner();
+				iVar3 = CBaseEntity::GetTeamNumber(); // CBaseEntity::GetTeamNumber(this_00) GetTeamNumber doesnt need an argument ? -cherry
                 pcVar7 = "blue";
                 if (iVar3 == 2)
                 {
                     pcVar7 = "red";
                 }
             }
-            V_snprintf((char *)puVar6, 0x80, "%s_%s", pcVar9, pcVar7);
+            Q_snprintf(puVar6, sizeof(puVar6), "%s_%s", pcVar9, pcVar7);
             return puVar6;
         }
     }
-    uVar1 = (*this->vtable->CTFWeaponBase::GetWeaponID)(this);
+    uVar1 = GetWeaponID();
     if (CONCAT31(extraout_var_00, uVar1) == 0x12)
     {
-        return (undefined4 *)"BrightTracer";
+        return "BrightTracer";
     }
-    puVar6 = (undefined4 *)CBaseEntity::GetTracerType();
-    return puVar6;
-    */
+	// trimmed - cherry
+    //puVar6 = CBaseEntity::GetTracerType();
+    return NULL;
 }
 
 //OFSTATUS: INCOMPLETE
@@ -1884,6 +1888,8 @@ Vector COFWeaponBase::GetParticleColor(int iColor)
     *(undefined4 *)(iColor + 4) = 0;
     *(undefined4 *)(iColor + 8) = 0;
     */
+
+	return Vector(0, 0, 0); // TEMPORARY - cherry
 }
 
 //OFSTATUS: COMPLETE(?)

@@ -75,9 +75,7 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
 
     // CBaseCombatWeapon::
     virtual void Spawn() override;
-    #ifdef GAME_DLL
     virtual void Activate() override;
-    #endif
 
     // CBaseEntity::
     #ifdef CLIENT_DLL
@@ -88,7 +86,9 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     #endif
     // virtual void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
     // virtual void UpdateOnRemove() override;
+	#ifdef GAME_DLL
     virtual CBaseEntity *Respawn () override;
+	#endif
     // virtual int GetDamageType() override;
 
     // virtual void ReapplyProvision();
@@ -141,7 +141,7 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // virtual Activity ActivityOverride( Activity baseAct, bool *pRequired );
     // virtual acttable_t* ActivityList( int &iActivityCount );
     #ifdef CLIENT_DLL
-    virtual void FallInit() override { /*Intentionally blank*/ };
+    virtual void FallInit() { /*Intentionally blank*/ };
     #endif
     // virtual void Materialize() override;
     // virtual void CheckRespawn() override;
@@ -232,12 +232,10 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // virtual bool CanFireRandomCriticalShot(CBaseEntity *);
     // Probably the MvM rottenburg cap stun :P
     virtual void OnControlStunned();
-    #ifdef GAME_DLL
-    virtual bool HideWhileStunned();
     virtual bool IsViewModelFlipped();
+	virtual bool HideWhileStunned();
     virtual int GetMaxHealthMod();
     virtual float GetLastDeployTime();
-    #endif
     virtual bool IsEnergyWeapon() const { return false; };
     virtual bool IsBlastImpactWeapon() const { return false; };
 	// OFSTATUS: COMPLETE
