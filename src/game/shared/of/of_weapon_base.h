@@ -86,9 +86,9 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     #endif
     // virtual void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
     // virtual void UpdateOnRemove() override;
-	#ifdef GAME_DLL
-    virtual CBaseEntity *Respawn () override;
-	#endif
+	//#ifdef GAME_DLL
+    //virtual CBaseEntity *Respawn () override;
+	//#endif
     // virtual int GetDamageType() override;
 
     // virtual void ReapplyProvision();
@@ -215,9 +215,7 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // virtual void PlayDeflectionSound(bool);
     // virtual float GetDeflectionRadius();
 	virtual float GetJarateTime() { return 0.0f; };
-    #ifdef CLIENT_DLL
     virtual bool CanAttack();
-    #endif
     virtual bool GetCanAttackFlags() const { return false; };
     virtual void WeaponReset();
     // virtual void WeaponRegenerate();
@@ -265,7 +263,7 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     virtual void HookAttributes();
     #ifdef GAME_DLL
     virtual bool YouForgotToImplementOrDeclareServerClass() const { return 0; };
-    virtual m_DataMap *GetDataDescMap() const { return &m_DataMap; };
+	virtual datamap_t *GetDataDescMap() const { return &m_DataMap; };
     #endif
     // NOTE: This MvM function literally just calls HookAttributes, unless ghidra is malfunctioning.
     // (oh, and it doesn't have any overrides)
@@ -289,4 +287,5 @@ private:
 	CNetworkVar( float, m_flOldPrimaryAttack );
 	float m_flLastDeployTime; // i'm not 100% if this is a cnetworkvar but it doesnt seem to be, do correct me if i'm wrong! - cherry
     bool m_bCanDropWeapon;
+	char m_szTracerTypeName[128];
 };
