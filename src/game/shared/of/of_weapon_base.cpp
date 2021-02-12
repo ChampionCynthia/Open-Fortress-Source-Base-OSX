@@ -914,7 +914,6 @@ bool COFWeaponBase::AllowTaunts() const {
     return true;
 }
 
-#ifdef CLIENT_DLL
 //OFSTATUS: INCOMPLETE, only temp for now
 bool COFWeaponBase::CanAttack()
 {
@@ -947,7 +946,6 @@ bool COFWeaponBase::CanAttack()
     */
     return true;
 }
-#endif
 
 //OFSTATUS: COMPLETE
 void COFWeaponBase::StartHolsterAnim()
@@ -1070,85 +1068,43 @@ COFPlayer *COFWeaponBase::GetOFPlayerOwner() const
 }
 
 // OFSTATUS: INCOMPLETE
+// --------------------------------------
+// Econ stuff removed + "complete" but we still gotta figure out where to define convar tf_useparticletracers and that weapon at the bottom - cherry
+// --------------------------------------
 const char *COFWeaponBase::GetTracerType()
 {
-    /*
-    // Econ Stuff
-    //undefined uVar1;
+	// OFTODO: this is a convar but we haven't defined it yet and im not sure where'd it gets defined,
+	// and with testing in live tf2 it seems to be true by default, its also a hidden server convar too
+	// so for the time being it'll be true - cherry
 
-    CBaseCombatWeapon p_iwpnData;
-    int iVar3;
-    undefined3 extraout_var;
-    int iVar4;
-    uint uVar5;
-    CBaseEntity *this_00;
-    undefined3 extraout_var_00;
-    undefined4 *puVar6;
-    char *pcVar7;
-    uint uVar8;
-    char *pcVar9;
-
-    p_iwpnData = CBaseCombatWeapon::GetWpnData((CBaseCombatWeapon *)this);
-    iVar3 = __symbol_stub::___dynamic_cast(p_iwpnData, PTR_typeinfo_00e34714, PTR_typeinfo_00e346fc, 0);
-    if (*(int *)(*(int *)(PTR__tf_useparticletracers_00e347bc + 0x1c) + 0x30) != 0)
+	//if (tf_useparticletracers.GetBool())
+	if (true)
     {
+		if (GetOFWpnData().m_szTracerParticle)
+		{
+			if (CBaseCombatWeapon::GetOwner())
+			{
+				if (GetOwner()->GetTeamNumber() == OF_TEAM_RED) Q_snprintf(m_szTracerTypeName, sizeof(m_szTracerTypeName), "%s_%s", GetOFWpnData().m_szTracerParticle, "red");
+				if (GetOwner()->GetTeamNumber() == OF_TEAM_BLUE) Q_snprintf(m_szTracerTypeName, sizeof(m_szTracerTypeName), "%s_%s", GetOFWpnData().m_szTracerParticle, "blue");
+			}
+			else
+			{
+				Q_snprintf(m_szTracerTypeName, sizeof(m_szTracerTypeName), "%s_%s", GetOFWpnData().m_szTracerParticle, "blue");
+			}
+			return m_szTracerTypeName;
+		}
+    }
 
-        // uVar1 = (*this->vtable->CEconEntity::GetAttributeContainer)((CEconEntity *)this);
-        pcVar9 = (char *)(iVar3 + 0x890);
-        if (*(char *)(CONCAT31(extraout_var, uVar1) + 0xb0) != '\0')
-        {
-            iVar4 = CEconItemView::GetStaticData((CEconItemView *)(CONCAT31(extraout_var, uVar1) + 0x5c));
-            uVar5 = CBaseEntity::GetTeamNumber((CBaseEntity *)this);
-            pcVar7 = (char *)0x0;
-            uVar8 = 0;
-            if ((uVar5 < 5) && (((int)uVar5 < 1 || (uVar8 = 0, *(int *)(iVar4 + 0xa8 + uVar5 * 4) != 0))))
-            {
-                uVar8 = uVar5;
-            }
-            iVar4 = *(int *)(iVar4 + 0xa8 + uVar8 * 4);
-            if (iVar4 != 0)
-            {
-                pcVar7 = *(char **)(iVar4 + 0x110);
-            }
-            if (pcVar7 != (char *)0x0)
-            {
-                pcVar9 = pcVar7;
-            }
-        }
-        if (*pcVar9 != '\0')
-        {
-            puVar6 = &this->field_0x6ec;
-            if (*(char *)&this->field_0x6ec != '\0')
-            {
-                return puVar6;
-            }
-            iVar3 = CBaseCombatWeapon::GetOwner((CBaseCombatWeapon *)this);
-            if (iVar3 == 0)
-            {
-                pcVar7 = "blue";
-            }
-            else
-            {
-                this_00 = (CBaseEntity *)CBaseCombatWeapon::GetOwner((CBaseCombatWeapon *)this);
-                iVar3 = CBaseEntity::GetTeamNumber(this_00);
-                pcVar7 = "blue";
-                if (iVar3 == 2)
-                {
-                    pcVar7 = "red";
-                }
-            }
-            V_snprintf((char *)puVar6, 0x80, "%s_%s", pcVar9, pcVar7);
-            return puVar6;
-        }
-    }
-    uVar1 = (*this->vtable->CTFWeaponBase::GetWeaponID)(this);
-    if (CONCAT31(extraout_var_00, uVar1) == 0x12)
-    {
-        return (undefined4 *)"BrightTracer";
-    }
-    puVar6 = (undefined4 *)CBaseEntity::GetTracerType();
-    return puVar6;
-    */
+    // previous: uVar1 = GetWeaponID();
+    // previous: if (CONCAT31(extraout_var_00, uVar1) == 0x12)
+	// some weapon but we dont know which - cherry
+	//if (GetWeaponID() == extraout_var_00)
+    //{
+    //    return "BrightTracer";
+    //}
+
+	// trimmed - cherry
+    return NULL;
 }
 
 //OFSTATUS: INCOMPLETE
@@ -1733,17 +1689,17 @@ LAB_00372efa:
     */
 }
 
+/*
 #ifdef GAME_DLL
 //OFSTATUS: INCOMPLETE
 CBaseEntity *COFWeaponBase::Respawn()
 {
-    /*
     float fVar1;
     undefined *puVar2;
     CBaseEntity *pCVar3;
     char *pcVar4;
     float10 fVar5;
-    undefined4 *puVar6;
+	QAngle *puVar6;
     undefined4 uVar7;
     undefined4 uVar8;
     undefined4 uVar9;
@@ -1758,11 +1714,11 @@ CBaseEntity *COFWeaponBase::Respawn()
     (**(code **)(**(int **)PTR__g_pGameRules_00e340a8 + 0x16c))(local_1c, *(int **)PTR__g_pGameRules_00e340a8, this);
     if ((*(byte *)((int)&this->field_0x128 + 1) & 8) != 0)
     {
-        CBaseEntity::CalcAbsolutePosition((CBaseEntity *)this);
+        CBaseEntity::CalcAbsolutePosition();
     }
     puVar6 = &this->field_0x320;
-    pCVar3 = (CBaseEntity *)CBaseCombatWeapon::GetOwner((CBaseCombatWeapon *)this);
-    pCVar3 = (CBaseEntity *)CBaseEntity::Create(pcVar4, local_1c, (QAngle *)puVar6, pCVar3);
+    pCVar3 = CBaseCombatWeapon::GetOwner();
+    pCVar3 = CBaseEntity::Create(pcVar4, local_1c, puVar6, pCVar3);
     if (pCVar3 == (CBaseEntity *)0x0)
     {
         pcVar4 = "";
@@ -1770,7 +1726,7 @@ CBaseEntity *COFWeaponBase::Respawn()
         {
             pcVar4 = (char *)this->field_0x64;
         }
-        __symbol_stub::_Msg("Respawn failed to create %s!\n", pcVar4, puVar6);
+        Msg("Respawn failed to create %s!\n", pcVar4, puVar6);
     }
     else
     {
@@ -1787,10 +1743,10 @@ CBaseEntity *COFWeaponBase::Respawn()
         CBaseEntity::SetNextThink(pCVar3, fVar1 + (float)fVar5, (char *)0x0);
     }
     return pCVar3;
-    */
+
 }
 #endif
-
+*/
 
 //OFSTATUS: INCOMPLETE
 Vector COFWeaponBase::GetParticleColor(int iColor)
@@ -1884,6 +1840,8 @@ Vector COFWeaponBase::GetParticleColor(int iColor)
     *(undefined4 *)(iColor + 4) = 0;
     *(undefined4 *)(iColor + 8) = 0;
     */
+
+	return Vector(0, 0, 0); // TEMPORARY - cherry
 }
 
 //OFSTATUS: COMPLETE(?)
