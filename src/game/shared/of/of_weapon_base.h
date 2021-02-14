@@ -86,9 +86,9 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     #endif
     // virtual void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
     // virtual void UpdateOnRemove() override;
-	//#ifdef GAME_DLL
-    //virtual CBaseEntity *Respawn () override;
-	//#endif
+	#ifdef GAME_DLL
+    virtual CBaseEntity *Respawn () override;
+	#endif
     // virtual int GetDamageType() override;
 
     // virtual void ReapplyProvision();

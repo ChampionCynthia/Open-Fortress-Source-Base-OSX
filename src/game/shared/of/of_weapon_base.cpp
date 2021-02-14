@@ -1689,64 +1689,33 @@ LAB_00372efa:
     */
 }
 
-/*
 #ifdef GAME_DLL
-//OFSTATUS: INCOMPLETE
+//OFSTATUS: COMPLETE
 CBaseEntity *COFWeaponBase::Respawn()
 {
-    float fVar1;
-    undefined *puVar2;
-    CBaseEntity *pCVar3;
-    char *pcVar4;
-    float10 fVar5;
-	QAngle *puVar6;
-    undefined4 uVar7;
-    undefined4 uVar8;
-    undefined4 uVar9;
-    Vector local_1c[12];
+	const char *pWeaponName = WeaponIDToAlias( GetWeaponID() );
+	if (!pWeaponName)
+	{
+		pWeaponName = "";
+	}
 
-    puVar2 = PTR__g_pGameRules_00e340a8;
-    pcVar4 = (char *)this->field_0x64;
-    if ((char *)this->field_0x64 == (char *)0x0)
-    {
-        pcVar4 = "";
-    }
-    (**(code **)(**(int **)PTR__g_pGameRules_00e340a8 + 0x16c))(local_1c, *(int **)PTR__g_pGameRules_00e340a8, this);
-    if ((*(byte *)((int)&this->field_0x128 + 1) & 8) != 0)
-    {
-        CBaseEntity::CalcAbsolutePosition();
-    }
-    puVar6 = &this->field_0x320;
-    pCVar3 = CBaseCombatWeapon::GetOwner();
-    pCVar3 = CBaseEntity::Create(pcVar4, local_1c, puVar6, pCVar3);
-    if (pCVar3 == (CBaseEntity *)0x0)
-    {
-        pcVar4 = "";
-        if ((char *)this->field_0x64 != (char *)0x0)
-        {
-            pcVar4 = (char *)this->field_0x64;
-        }
-        Msg("Respawn failed to create %s!\n", pcVar4, puVar6);
-    }
-    else
-    {
-        CBaseEntity::AddEffects(pCVar3, 0x20);
-        *(undefined4 *)(pCVar3 + 0xe4) = 0;
-        *(undefined4 *)(pCVar3 + 0xe0) = 0;
-        uVar9 = 0;
-        uVar8 = 0;
-        CBaseEntity::ThinkSet((FuncDef3 *)pCVar3, (float)AttemptToMaterialize, (char *)0x0);
-        uVar7 = 0;
-        UTIL_DropToFloor((CBaseEntity *)this, 0x200400b, (CBaseEntity *)0x0);
-        fVar1 = *(float *)(*(int *)PTR__gpGlobals_00e34080 + 0xc);
-        fVar5 = (float10)(**(code **)(**(int **)puVar2 + 0x164))(*(int **)puVar2, this, uVar7, uVar8, uVar9);
-        CBaseEntity::SetNextThink(pCVar3, fVar1 + (float)fVar5, (char *)0x0);
-    }
-    return pCVar3;
+	CBaseEntity *pWeapon = CBaseEntity::Create(pWeaponName, g_pGameRules->VecWeaponRespawnSpot(this), CBaseEntity::GetAbsAngles(), CBaseCombatWeapon::GetOwner());
 
+	if (pWeapon)
+	{
+		pWeapon->AddEffects(EF_NODRAW);
+		pWeapon->SetThink(&CBaseCombatWeapon::AttemptToMaterialize);
+		UTIL_DropToFloor(this, MASK_SOLID, NULL);
+		pWeapon->SetNextThink(gpGlobals->absoluteframetime + g_pGameRules->FlWeaponRespawnTime(this), NULL);
+	}
+	else
+	{
+		// cutted out GetAbsAngles/puVar6, doesnt really make sense to have it there - cherry
+		Msg("Respawn failed to create %s!\n", WeaponIDToAlias(GetWeaponID()));
+	}
+	return pWeapon;
 }
 #endif
-*/
 
 //OFSTATUS: INCOMPLETE
 Vector COFWeaponBase::GetParticleColor(int iColor)
