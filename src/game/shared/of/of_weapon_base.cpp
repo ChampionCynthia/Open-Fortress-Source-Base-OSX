@@ -1110,49 +1110,15 @@ const char *COFWeaponBase::GetTracerType()
 //OFSTATUS: COMPLETE
 void COFWeaponBase::Spawn()
 {
-	//ChangeTeam *pCVar1;
-	//undefined *puVar2;
-	//undefined *puVar3;
-	//undefined uVar4;
-	//ushort uVar5;
-	//char *pcVar6;
-	//int iVar7;
-	//int *piVar8;
-	//undefined3 extraout_var;
-	//undefined4 uVar9;
-
-	// econ
-	/*
-	C_EconEntity::InitializeAttributes((C_EconEntity *)this);
-	if (*(char *)&this->field_0xc00 != '\0') {
-		*(undefined *)&this->field_0xc00 = 0;
-	}
-	if (this->field_0xc04 != 0) {
-		this->field_0xc04 = 0;
-	}
-	if (this->field_0xc08 != 0) {
-		this->field_0xc08 = 0;
-	}
-	*/
-
 	CBaseCombatWeapon::Spawn();
 	CBaseEntity::SetCollisionGroup(COLLISION_GROUP_WEAPON);
-	//pcVar6 = (char *)C_BaseEntity::GetClassname((C_BaseEntity *)this);
-	//uVar5 = LookupWeaponInfoSlot(pcVar6);
-	//iVar7 = GetFileWeaponInfoFromHandle(uVar5);
-	//uVar9 = 0;
 	COFWeaponInfo *pWeaponInfo;
-	//if (iVar7 != 0)
 	FileWeaponInfo_t *pFileWeaponInfo = GetFileWeaponInfoFromHandle( LookupWeaponInfoSlot(CBaseEntity::GetClassname()) );
 	if (pFileWeaponInfo)
 	{
-		//uVar9 = __symbol_stub::___dynamic_cast(iVar7,PTR_typeinfo_00f8a6d4,PTR_typeinfo_00f8a6cc,0);
 		pWeaponInfo = dynamic_cast<COFWeaponInfo*>(pFileWeaponInfo);
 	}
 
-	// mentioned many times, and actually used!
-	// seems to just store the weaponinfo, makes sense since we are spawning the weapon here - cherry
-	//this->field_0xb10 = uVar9;
 	m_pWeaponInfo = pWeaponInfo;
 
 	if (CBaseCombatWeapon::GetOwner())
@@ -1161,36 +1127,13 @@ void COFWeaponBase::Spawn()
 	}
 
 	#ifdef GAME_DLL
-	// dont need this, its already done in GetAbsOrigin - cherry
-	//if ((*(byte *)((int)&this->field_0x128 + 1) & 8) != 0)
-	//{
-	//	CBaseEntity::CalcAbsolutePosition((CBaseEntity *)this);
-	//}
 
 	Vector org = GetAbsOrigin();
 	CBaseEntity::SetAbsOrigin( Vector(org[0], org[1], org[2] + 5.0f) );
 
-	// these seem econ related, they lead to things like some medigun and the pomson - cherry
-	// followup: defintly econ related: "Pomson 6000: On Hit: Victim loses up to 10% Medigun charge"
-	//this->field_0x790 = 0;
-	//this->field_0x794 = 0xffffffff;
-	//this->field_0x7a0 = 0xbf800000;
-
 	#endif
 
-	// i knew i seen field_0xb48 before >:) - cherry
-	//*(undefined *)&this->field_0xb48 = 0;
 	m_szTracerTypeName[0] = 0;
-
-	// ECON MY ASS - cherry
-	/*
-	uVar4 = (*this->vtable->C_EconEntity::GetAttributeContainer)((C_EconEntity *)this);
-	iVar7 = C_EconItemView::GetStaticData((C_EconItemView *)(CONCAT31(extraout_var,uVar4) + 0x60));
-	if ((iVar7 != 0) && (*(int *)(iVar7 + 300) != 0)) {
-		(*this->vtable->C_BaseCombatWeapon::SetSubType)
-			((C_BaseCombatWeapon *)this,*(int *)(iVar7 + 300));
-	}
-	*/
 }
 
 #ifdef CLIENT_DLL
