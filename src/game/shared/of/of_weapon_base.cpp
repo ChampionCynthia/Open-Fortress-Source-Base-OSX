@@ -1133,7 +1133,7 @@ void COFWeaponBase::Spawn()
 
 	#endif
 
-	m_szTracerTypeName[0] = 0;
+	m_szTracerTypeName[0] = '\0';
 }
 
 #ifdef CLIENT_DLL
