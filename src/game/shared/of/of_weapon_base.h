@@ -288,4 +288,5 @@ private:
 	float m_flLastDeployTime; // i'm not 100% if this is a cnetworkvar but it doesnt seem to be, do correct me if i'm wrong! - cherry
     bool m_bCanDropWeapon;
 	char m_szTracerTypeName[128];
+	COFWeaponInfo *m_pWeaponInfo;
 };

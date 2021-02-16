@@ -1107,119 +1107,90 @@ const char *COFWeaponBase::GetTracerType()
     return NULL;
 }
 
-//OFSTATUS: INCOMPLETE
+//OFSTATUS: COMPLETE
 void COFWeaponBase::Spawn()
 {
-    /*
-    ushort uVar1;
-    ushort uVar2;
-    uint *this_00;
-    ushort *puVar3;
-    code *pcVar4;
-    ushort *puVar5;
-    uint uVar6;
-    uint uVar7;
-    int iVar8;
-    undefined4 uVar9;
-    uint uVar10;
-    uint local_28;
-    int local_18;
-    undefined4 local_14;
+	//ChangeTeam *pCVar1;
+	//undefined *puVar2;
+	//undefined *puVar3;
+	//undefined uVar4;
+	//ushort uVar5;
+	//char *pcVar6;
+	//int iVar7;
+	//int *piVar8;
+	//undefined3 extraout_var;
+	//undefined4 uVar9;
 
-    CBaseEntity::IsPrecacheAllowed();
-    (**(code **)(*(int *)this + 0x60))(this);
-    CBaseAnimating::Spawn();
-    CCollisionProperty::SetSolid((CCollisionProperty *)(this + 0x170), 2);
-    *(undefined4 *)(this + 0x5c0) = 0;
-    this[0x12a] = (CBaseCombatWeapon)((byte)this[0x12a] & 0xfb);
-    local_18 = 0;
-    CNetworkVarBase<int, CBaseCombatWeapon::NetworkVar_m_iState>::operator=((CNetworkVarBase<int, CBaseCombatWeapon::NetworkVar_m_iState> *)(this + 0x5dc), &local_18);
-    local_14 = 0;
-    if (*(int *)(this + 0x5a4) == 0)
-        goto LAB_000447c0;
-    if (this[0x5c] == (CBaseCombatWeapon)0x0)
-    {
-        this_00 = *(uint **)(this + 0x20);
-        if ((this_00 != (uint *)0x0) && ((*this_00 & 0x100) == 0))
-        {
-            *this_00 = *this_00 | 1;
-            puVar5 = (ushort *)CBaseEdict::GetChangeAccessor((CBaseEdict *)this_00);
-            puVar3 = *(ushort **)PTR__g_pSharedChangeInfo_00e34128;
-            uVar1 = *puVar3;
-            if (puVar5[1] == uVar1)
-            {
-                uVar6 = (uint)*puVar5;
-                uVar10 = (uint)puVar3[uVar6 * 0x14 + 0x14];
-                local_28 = 0;
-                if (uVar10 != 0)
-                {
-                    uVar7 = 0;
-                    do
-                    {
-                        if (puVar3[uVar6 * 0x14 + uVar7 + 1] == 0x5a4)
-                            goto LAB_000447b7;
-                        uVar7 = uVar7 + 1;
-                    } while (uVar7 < uVar10);
-                    local_28 = uVar10;
-                    if (uVar10 == 0x13)
-                        goto LAB_0004477b;
-                }
-                puVar3[uVar6 * 0x14 + 0x14] = (short)local_28 + 1;
-                puVar3[uVar6 * 0x14 + local_28 + 1] = 0x5a4;
-            }
-            else
-            {
-                uVar2 = puVar3[0x7d1];
-                uVar6 = (uint)uVar2;
-                if (uVar6 == 100)
-                {
-                LAB_0004477b:
-                    puVar5[1] = 0;
-                    *(CBaseEdict *)((int)this_00 + 1) =
-                        (CBaseEdict)((byte) * (CBaseEdict *)((int)this_00 + 1) | 1);
-                }
-                else
-                {
-                    *puVar5 = uVar2;
-                    puVar3[0x7d1] = uVar2 + 1;
-                    puVar5[1] = uVar1;
-                    puVar3[uVar6 * 0x14 + 1] = 0x5a4;
-                    puVar3[uVar6 * 0x14 + 0x14] = 1;
-                }
-            }
-        }
-    }
-    else
-    {
-        this[0x60] = (CBaseCombatWeapon)((byte)this[0x60] | 1);
-    }
-LAB_000447b7:
-    *(undefined4 *)(this + 0x5a4) = 0;
-LAB_000447c0:
-    GiveDefaultAmmo(this);
-    iVar8 = (**(code **)(*(int *)this + 0x504))(this);
-    if (iVar8 != 0)
-    {
-        pcVar4 = *(code **)(*(int *)this + 100);
-        uVar9 = (**(code **)(*(int *)this + 0x504))(this);
-        (*pcVar4)(this, uVar9);
-    }
-    (**(code **)(*(int *)this + 0x590))(this);
-    CBaseEntity::SetCollisionGroup((CBaseEntity *)this, 0xb);
-    if (this[0x10d] != (CBaseCombatWeapon)0x1)
-    {
-        (**(code **)(*(int *)this + 0x1fc))(this, this + 0x10d);
-        this[0x10d] = (CBaseCombatWeapon)0x1;
-    }
-    CBaseEntity::SetBlocksLOS((CBaseEntity *)this, false);
-    this[0x5d0] = (CBaseCombatWeapon)0x0;
-    CCollisionProperty::UseTriggerBounds((CCollisionProperty *)(this + 0x170), true, 36.0, false);
-    CBaseEntity::AddEffects((CBaseEntity *)this, 0x80);
-    *(undefined4 *)(this + 0x628) = 0;
-    *(undefined4 *)(this + 0x624) = 0;
-    *(undefined4 *)(this + 0x634) = 0;
-    return;
-    */
+	// econ
+	/*
+	C_EconEntity::InitializeAttributes((C_EconEntity *)this);
+	if (*(char *)&this->field_0xc00 != '\0') {
+		*(undefined *)&this->field_0xc00 = 0;
+	}
+	if (this->field_0xc04 != 0) {
+		this->field_0xc04 = 0;
+	}
+	if (this->field_0xc08 != 0) {
+		this->field_0xc08 = 0;
+	}
+	*/
+
+	CBaseCombatWeapon::Spawn();
+	CBaseEntity::SetCollisionGroup(COLLISION_GROUP_WEAPON);
+	//pcVar6 = (char *)C_BaseEntity::GetClassname((C_BaseEntity *)this);
+	//uVar5 = LookupWeaponInfoSlot(pcVar6);
+	//iVar7 = GetFileWeaponInfoFromHandle(uVar5);
+	//uVar9 = 0;
+	COFWeaponInfo *pWeaponInfo;
+	//if (iVar7 != 0)
+	FileWeaponInfo_t *pFileWeaponInfo = GetFileWeaponInfoFromHandle( LookupWeaponInfoSlot(CBaseEntity::GetClassname()) );
+	if (pFileWeaponInfo)
+	{
+		//uVar9 = __symbol_stub::___dynamic_cast(iVar7,PTR_typeinfo_00f8a6d4,PTR_typeinfo_00f8a6cc,0);
+		pWeaponInfo = dynamic_cast<COFWeaponInfo*>(pFileWeaponInfo);
+	}
+
+	// mentioned many times, and actually used!
+	// seems to just store the weaponinfo, makes sense since we are spawning the weapon here - cherry
+	//this->field_0xb10 = uVar9;
+	m_pWeaponInfo = pWeaponInfo;
+
+	if (CBaseCombatWeapon::GetOwner())
+	{
+		COFWeaponBase::ChangeTeam( CBaseCombatWeapon::GetOwner()->CBaseEntity::GetTeamNumber() );
+	}
+
+	#ifdef GAME_DLL
+	// dont need this, its already done in GetAbsOrigin - cherry
+	//if ((*(byte *)((int)&this->field_0x128 + 1) & 8) != 0)
+	//{
+	//	CBaseEntity::CalcAbsolutePosition((CBaseEntity *)this);
+	//}
+
+	Vector org = GetAbsOrigin();
+	CBaseEntity::SetAbsOrigin( Vector(org[0], org[1], org[2] + 5.0f) );
+
+	// these seem econ related, they lead to things like some medigun and the pomson - cherry
+	// followup: defintly econ related: "Pomson 6000: On Hit: Victim loses up to 10% Medigun charge"
+	//this->field_0x790 = 0;
+	//this->field_0x794 = 0xffffffff;
+	//this->field_0x7a0 = 0xbf800000;
+
+	#endif
+
+	// i knew i seen field_0xb48 before >:) - cherry
+	//*(undefined *)&this->field_0xb48 = 0;
+	m_szTracerTypeName[0] = 0;
+
+	// ECON MY ASS - cherry
+	/*
+	uVar4 = (*this->vtable->C_EconEntity::GetAttributeContainer)((C_EconEntity *)this);
+	iVar7 = C_EconItemView::GetStaticData((C_EconItemView *)(CONCAT31(extraout_var,uVar4) + 0x60));
+	if ((iVar7 != 0) && (*(int *)(iVar7 + 300) != 0)) {
+		(*this->vtable->C_BaseCombatWeapon::SetSubType)
+			((C_BaseCombatWeapon *)this,*(int *)(iVar7 + 300));
+	}
+	*/
 }
 
 #ifdef CLIENT_DLL
