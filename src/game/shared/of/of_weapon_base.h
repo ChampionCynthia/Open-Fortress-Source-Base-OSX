@@ -86,9 +86,9 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     #endif
     // virtual void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
     // virtual void UpdateOnRemove() override;
-	//#ifdef GAME_DLL
-    //virtual CBaseEntity *Respawn () override;
-	//#endif
+	#ifdef GAME_DLL
+    virtual CBaseEntity *Respawn () override;
+	#endif
     // virtual int GetDamageType() override;
 
     // virtual void ReapplyProvision();
@@ -288,4 +288,5 @@ private:
 	float m_flLastDeployTime; // i'm not 100% if this is a cnetworkvar but it doesnt seem to be, do correct me if i'm wrong! - cherry
     bool m_bCanDropWeapon;
 	char m_szTracerTypeName[128];
+	COFWeaponInfo *m_pWeaponInfo;
 };

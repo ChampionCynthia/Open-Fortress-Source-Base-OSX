@@ -1107,119 +1107,33 @@ const char *COFWeaponBase::GetTracerType()
     return NULL;
 }
 
-//OFSTATUS: INCOMPLETE
+//OFSTATUS: COMPLETE
 void COFWeaponBase::Spawn()
 {
-    /*
-    ushort uVar1;
-    ushort uVar2;
-    uint *this_00;
-    ushort *puVar3;
-    code *pcVar4;
-    ushort *puVar5;
-    uint uVar6;
-    uint uVar7;
-    int iVar8;
-    undefined4 uVar9;
-    uint uVar10;
-    uint local_28;
-    int local_18;
-    undefined4 local_14;
+	CBaseCombatWeapon::Spawn();
+	CBaseEntity::SetCollisionGroup(COLLISION_GROUP_WEAPON);
+	COFWeaponInfo *pWeaponInfo;
+	FileWeaponInfo_t *pFileWeaponInfo = GetFileWeaponInfoFromHandle( LookupWeaponInfoSlot(CBaseEntity::GetClassname()) );
+	if (pFileWeaponInfo)
+	{
+		pWeaponInfo = dynamic_cast<COFWeaponInfo*>(pFileWeaponInfo);
+	}
 
-    CBaseEntity::IsPrecacheAllowed();
-    (**(code **)(*(int *)this + 0x60))(this);
-    CBaseAnimating::Spawn();
-    CCollisionProperty::SetSolid((CCollisionProperty *)(this + 0x170), 2);
-    *(undefined4 *)(this + 0x5c0) = 0;
-    this[0x12a] = (CBaseCombatWeapon)((byte)this[0x12a] & 0xfb);
-    local_18 = 0;
-    CNetworkVarBase<int, CBaseCombatWeapon::NetworkVar_m_iState>::operator=((CNetworkVarBase<int, CBaseCombatWeapon::NetworkVar_m_iState> *)(this + 0x5dc), &local_18);
-    local_14 = 0;
-    if (*(int *)(this + 0x5a4) == 0)
-        goto LAB_000447c0;
-    if (this[0x5c] == (CBaseCombatWeapon)0x0)
-    {
-        this_00 = *(uint **)(this + 0x20);
-        if ((this_00 != (uint *)0x0) && ((*this_00 & 0x100) == 0))
-        {
-            *this_00 = *this_00 | 1;
-            puVar5 = (ushort *)CBaseEdict::GetChangeAccessor((CBaseEdict *)this_00);
-            puVar3 = *(ushort **)PTR__g_pSharedChangeInfo_00e34128;
-            uVar1 = *puVar3;
-            if (puVar5[1] == uVar1)
-            {
-                uVar6 = (uint)*puVar5;
-                uVar10 = (uint)puVar3[uVar6 * 0x14 + 0x14];
-                local_28 = 0;
-                if (uVar10 != 0)
-                {
-                    uVar7 = 0;
-                    do
-                    {
-                        if (puVar3[uVar6 * 0x14 + uVar7 + 1] == 0x5a4)
-                            goto LAB_000447b7;
-                        uVar7 = uVar7 + 1;
-                    } while (uVar7 < uVar10);
-                    local_28 = uVar10;
-                    if (uVar10 == 0x13)
-                        goto LAB_0004477b;
-                }
-                puVar3[uVar6 * 0x14 + 0x14] = (short)local_28 + 1;
-                puVar3[uVar6 * 0x14 + local_28 + 1] = 0x5a4;
-            }
-            else
-            {
-                uVar2 = puVar3[0x7d1];
-                uVar6 = (uint)uVar2;
-                if (uVar6 == 100)
-                {
-                LAB_0004477b:
-                    puVar5[1] = 0;
-                    *(CBaseEdict *)((int)this_00 + 1) =
-                        (CBaseEdict)((byte) * (CBaseEdict *)((int)this_00 + 1) | 1);
-                }
-                else
-                {
-                    *puVar5 = uVar2;
-                    puVar3[0x7d1] = uVar2 + 1;
-                    puVar5[1] = uVar1;
-                    puVar3[uVar6 * 0x14 + 1] = 0x5a4;
-                    puVar3[uVar6 * 0x14 + 0x14] = 1;
-                }
-            }
-        }
-    }
-    else
-    {
-        this[0x60] = (CBaseCombatWeapon)((byte)this[0x60] | 1);
-    }
-LAB_000447b7:
-    *(undefined4 *)(this + 0x5a4) = 0;
-LAB_000447c0:
-    GiveDefaultAmmo(this);
-    iVar8 = (**(code **)(*(int *)this + 0x504))(this);
-    if (iVar8 != 0)
-    {
-        pcVar4 = *(code **)(*(int *)this + 100);
-        uVar9 = (**(code **)(*(int *)this + 0x504))(this);
-        (*pcVar4)(this, uVar9);
-    }
-    (**(code **)(*(int *)this + 0x590))(this);
-    CBaseEntity::SetCollisionGroup((CBaseEntity *)this, 0xb);
-    if (this[0x10d] != (CBaseCombatWeapon)0x1)
-    {
-        (**(code **)(*(int *)this + 0x1fc))(this, this + 0x10d);
-        this[0x10d] = (CBaseCombatWeapon)0x1;
-    }
-    CBaseEntity::SetBlocksLOS((CBaseEntity *)this, false);
-    this[0x5d0] = (CBaseCombatWeapon)0x0;
-    CCollisionProperty::UseTriggerBounds((CCollisionProperty *)(this + 0x170), true, 36.0, false);
-    CBaseEntity::AddEffects((CBaseEntity *)this, 0x80);
-    *(undefined4 *)(this + 0x628) = 0;
-    *(undefined4 *)(this + 0x624) = 0;
-    *(undefined4 *)(this + 0x634) = 0;
-    return;
-    */
+	m_pWeaponInfo = pWeaponInfo;
+
+	if (CBaseCombatWeapon::GetOwner())
+	{
+		COFWeaponBase::ChangeTeam( CBaseCombatWeapon::GetOwner()->CBaseEntity::GetTeamNumber() );
+	}
+
+	#ifdef GAME_DLL
+
+	Vector org = GetAbsOrigin();
+	CBaseEntity::SetAbsOrigin( Vector(org[0], org[1], org[2] + 5.0f) );
+
+	#endif
+
+	m_szTracerTypeName[0] = '\0';
 }
 
 #ifdef CLIENT_DLL
@@ -1689,64 +1603,33 @@ LAB_00372efa:
     */
 }
 
-/*
 #ifdef GAME_DLL
-//OFSTATUS: INCOMPLETE
+//OFSTATUS: COMPLETE
 CBaseEntity *COFWeaponBase::Respawn()
 {
-    float fVar1;
-    undefined *puVar2;
-    CBaseEntity *pCVar3;
-    char *pcVar4;
-    float10 fVar5;
-	QAngle *puVar6;
-    undefined4 uVar7;
-    undefined4 uVar8;
-    undefined4 uVar9;
-    Vector local_1c[12];
+	const char *pWeaponName = WeaponIDToAlias( GetWeaponID() );
+	if (!pWeaponName)
+	{
+		pWeaponName = "";
+	}
 
-    puVar2 = PTR__g_pGameRules_00e340a8;
-    pcVar4 = (char *)this->field_0x64;
-    if ((char *)this->field_0x64 == (char *)0x0)
-    {
-        pcVar4 = "";
-    }
-    (**(code **)(**(int **)PTR__g_pGameRules_00e340a8 + 0x16c))(local_1c, *(int **)PTR__g_pGameRules_00e340a8, this);
-    if ((*(byte *)((int)&this->field_0x128 + 1) & 8) != 0)
-    {
-        CBaseEntity::CalcAbsolutePosition();
-    }
-    puVar6 = &this->field_0x320;
-    pCVar3 = CBaseCombatWeapon::GetOwner();
-    pCVar3 = CBaseEntity::Create(pcVar4, local_1c, puVar6, pCVar3);
-    if (pCVar3 == (CBaseEntity *)0x0)
-    {
-        pcVar4 = "";
-        if ((char *)this->field_0x64 != (char *)0x0)
-        {
-            pcVar4 = (char *)this->field_0x64;
-        }
-        Msg("Respawn failed to create %s!\n", pcVar4, puVar6);
-    }
-    else
-    {
-        CBaseEntity::AddEffects(pCVar3, 0x20);
-        *(undefined4 *)(pCVar3 + 0xe4) = 0;
-        *(undefined4 *)(pCVar3 + 0xe0) = 0;
-        uVar9 = 0;
-        uVar8 = 0;
-        CBaseEntity::ThinkSet((FuncDef3 *)pCVar3, (float)AttemptToMaterialize, (char *)0x0);
-        uVar7 = 0;
-        UTIL_DropToFloor((CBaseEntity *)this, 0x200400b, (CBaseEntity *)0x0);
-        fVar1 = *(float *)(*(int *)PTR__gpGlobals_00e34080 + 0xc);
-        fVar5 = (float10)(**(code **)(**(int **)puVar2 + 0x164))(*(int **)puVar2, this, uVar7, uVar8, uVar9);
-        CBaseEntity::SetNextThink(pCVar3, fVar1 + (float)fVar5, (char *)0x0);
-    }
-    return pCVar3;
+	CBaseEntity *pWeapon = CBaseEntity::Create(pWeaponName, g_pGameRules->VecWeaponRespawnSpot(this), CBaseEntity::GetAbsAngles(), CBaseCombatWeapon::GetOwner());
 
+	if (pWeapon)
+	{
+		pWeapon->AddEffects(EF_NODRAW);
+		pWeapon->SetThink(&CBaseCombatWeapon::AttemptToMaterialize);
+		UTIL_DropToFloor(this, MASK_SOLID, NULL);
+		pWeapon->SetNextThink(gpGlobals->absoluteframetime + g_pGameRules->FlWeaponRespawnTime(this), NULL);
+	}
+	else
+	{
+		// cutted out GetAbsAngles/puVar6, doesnt really make sense to have it there - cherry
+		Msg("Respawn failed to create %s!\n", WeaponIDToAlias(GetWeaponID()));
+	}
+	return pWeapon;
 }
 #endif
-*/
 
 //OFSTATUS: INCOMPLETE
 Vector COFWeaponBase::GetParticleColor(int iColor)
