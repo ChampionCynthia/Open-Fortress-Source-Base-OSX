@@ -1112,14 +1112,12 @@ void COFWeaponBase::Spawn()
 {
 	CBaseCombatWeapon::Spawn();
 	CBaseEntity::SetCollisionGroup(COLLISION_GROUP_WEAPON);
-	COFWeaponInfo *pWeaponInfo;
 	FileWeaponInfo_t *pFileWeaponInfo = GetFileWeaponInfoFromHandle( LookupWeaponInfoSlot(CBaseEntity::GetClassname()) );
 	if (pFileWeaponInfo)
 	{
-		pWeaponInfo = dynamic_cast<COFWeaponInfo*>(pFileWeaponInfo);
+		COFWeaponInfo *pWeaponInfo = dynamic_cast<COFWeaponInfo*>(pFileWeaponInfo);
+		m_pWeaponInfo = pWeaponInfo;
 	}
-
-	m_pWeaponInfo = pWeaponInfo;
 
 	if (CBaseCombatWeapon::GetOwner())
 	{
@@ -1136,153 +1134,96 @@ void COFWeaponBase::Spawn()
 	m_szTracerTypeName[0] = '\0';
 }
 
-#ifdef CLIENT_DLL
-//OFSTATUS: INCOMPLETE
+// OFSTATUS: INCOMPLETE
+// the client and server are the same for this function, just the econ parts that are diffrent but we dont care about those so - cherry
 void COFWeaponBase::Precache()
 {
-    /*
-    int *piVar1;
-    int *piVar2;
-    ushort *puVar3;
-    IFileSystem *pIVar4;
-    char cVar5;
-    int iVar6;
-    char *pcVar7;
-    uchar *puVar8;
-    CAmmoDef *pCVar9;
-    undefined4 uVar10;
-    int iVar11;
+	/*
+	undefined *puVar1;
+	undefined uVar2;
+	char cVar3;
+	undefined3 extraout_var;
+	undefined3 extraout_var_00;
+	undefined4 uVar4;
+	int iVar5;
+	undefined3 extraout_var_01;
+	undefined3 extraout_var_02;
+	undefined3 extraout_var_03;
+	int iVar6;
+	uint uVar7;
+	char *pcVar8;
+	uint uVar9;
+	char *pcVar10;
+	char local_114 [128];
+	char local_94 [128];
+	int local_14;
 
-    piVar1 = (int *)(this + 0xa84);
-    piVar2 = (int *)(this + 0xa88);
-    if (*(int *)(this + 0xa88) == -1)
-    {
-        iVar6 = *piVar2;
-    }
-    else
-    {
-        *piVar2 = -1;
-        iVar6 = -1;
-    }
-    if (*piVar1 != iVar6)
-    {
-        *piVar1 = iVar6;
-    }
-    pIVar4 = *(IFileSystem **)PTR__filesystem_00f8a194;
-    pcVar7 = (char *)C_BaseEntity::GetClassname((C_BaseEntity *)this);
-    puVar3 = (ushort *)(this + 0xabe);
-    puVar8 = (uchar *)(**(code **)(*(int *)this + 0x64c))(this);
-    cVar5 = ReadWeaponDataFromFileForSlot(pIVar4, pcVar7, puVar3, puVar8);
-    if (cVar5 == '\0')
-    {
-        uVar10 = C_BaseEntity::GetClassname((C_BaseEntity *)this);
-        __symbol_stub::_Warning("Error reading weapon data file for: %s\n", uVar10);
-    }
-    else
-    {
-        iVar6 = GetFileWeaponInfoFromHandle(*puVar3);
-        if (*(char *)(iVar6 + 0x180) != '\0')
-        {
-            pCVar9 = (CAmmoDef *)GetAmmoDef();
-            iVar6 = GetFileWeaponInfoFromHandle(*puVar3);
-            iVar6 = CAmmoDef::Index(pCVar9, (char *)(iVar6 + 0x180));
-            if (*piVar1 == iVar6)
-            {
-                iVar6 = *piVar1;
-            }
-            else
-            {
-                *piVar1 = iVar6;
-            }
-            if (iVar6 == -1)
-            {
-                uVar10 = C_BaseEntity::GetClassname((C_BaseEntity *)this);
-                iVar6 = GetFileWeaponInfoFromHandle(*(ushort *)(this + 0xabe));
-                __symbol_stub::_Msg("ERROR: Weapon (%s) using undefined primary ammo type (%s)\n", uVar10,
-                                    iVar6 + 0x180);
-            }
-            iVar6 = CAttributeManager::AttribHookValue<int>(0, "mod_use_metal_ammo_type", (C_BaseEntity *)this, (CUtlVector *)0x0, true);
-            if ((iVar6 != 0) && (*piVar1 != 3))
-            {
-                *piVar1 = 3;
-            }
-        }
-        iVar6 = GetFileWeaponInfoFromHandle(*puVar3);
-        if (*(char *)(iVar6 + 0x1a0) != '\0')
-        {
-            pCVar9 = (CAmmoDef *)GetAmmoDef();
-            iVar6 = GetFileWeaponInfoFromHandle(*puVar3);
-            iVar6 = CAmmoDef::Index(pCVar9, (char *)(iVar6 + 0x1a0));
-            if (*piVar2 == iVar6)
-            {
-                iVar6 = *piVar2;
-            }
-            else
-            {
-                *piVar2 = iVar6;
-            }
-            if (iVar6 == -1)
-            {
-                uVar10 = C_BaseEntity::GetClassname((C_BaseEntity *)this);
-                iVar6 = GetFileWeaponInfoFromHandle(*(ushort *)(this + 0xabe));
-                __symbol_stub::_Msg("ERROR: Weapon (%s) using undefined secondary ammo type (%s)\n", uVar10,
-                                    iVar6 + 0x1a0);
-            }
-        }
-        WeaponsResource::LoadWeaponSprites((WeaponsResource *)PTR__gWR_00f8a1c8, *(ushort *)(this + 0xabe));
-        piVar1 = (int *)(this + 0xa58);
-        if (*(int *)(this + 0xa58) != 0)
-        {
-            *piVar1 = 0;
-        }
-        piVar2 = (int *)(this + 0xa5c);
-        if (*(int *)(this + 0xa5c) != 0)
-        {
-            *piVar2 = 0;
-        }
-        iVar6 = (**(code **)(*(int *)this + 0x5fc))(this, 0);
-        if (iVar6 != 0)
-        {
-            pcVar7 = (char *)(**(code **)(*(int *)this + 0x5fc))(this, 0);
-            if (*pcVar7 != '\0')
-            {
-                pcVar7 = (char *)(**(code **)(*(int *)this + 0x5fc))(this, 0);
-                iVar6 = C_BaseEntity::PrecacheModel(pcVar7);
-                if (*piVar1 != iVar6)
-                {
-                    *piVar1 = iVar6;
-                }
-            }
-        }
-        iVar6 = (**(code **)(*(int *)this + 0x600))(this);
-        iVar11 = 0;
-        if (iVar6 != 0)
-        {
-            pcVar7 = (char *)(**(code **)(*(int *)this + 0x600))(this);
-            if (*pcVar7 != '\0')
-            {
-                pcVar7 = (char *)(**(code **)(*(int *)this + 0x600))(this);
-                iVar6 = C_BaseEntity::PrecacheModel(pcVar7);
-                if (*piVar2 != iVar6)
-                {
-                    *piVar2 = iVar6;
-                }
-            }
-        }
-        do
-        {
-            pcVar7 = (char *)(**(code **)(*(int *)this + 0x63c))(this, iVar11);
-            if ((pcVar7 != (char *)0x0) && (*pcVar7 != '\0'))
-            {
-                C_BaseEntity::PrecacheScriptSound(pcVar7);
-            }
-            iVar11 = iVar11 + 1;
-        } while (iVar11 != 0x10);
-    }
-    return;
-    */
+	int3 extraout_var_04;
+
+	puVar1 = __nl_symbol_ptr::___stack_chk_guard;
+	local_14 = *(int *)__nl_symbol_ptr::___stack_chk_guard;
+	*/
+	BaseClass::Precache();
+	/*
+	uVar2 = (COFWeaponBase::GetMuzzleFlashModel);
+	if (CONCAT31(extraout_var,uVar2) != 0)
+	{
+		uVar2 = (COFWeaponBase::GetMuzzleFlashModel);
+		CBaseEntity::PrecacheModel((char *)CONCAT31(extraout_var_00,uVar2));
+	}
+	uVar4 = CBaseCombatWeapon::GetWpnData();
+	iVar5 = __symbol_stub::___dynamic_cast(uVar4,PTR_typeinfo_00f8a6d4,PTR_typeinfo_00f8a6cc,0);
+	if (*(char *)(iVar5 + 0x991) != '\0')
+	{
+		CBaseEntity::PrecacheScriptSound((char *)(iVar5 + 0x991));
+	}
+	if (*(char *)(iVar5 + 0x911) != '\0')
+	{
+		CBaseEntity::PrecacheModel((char *)(iVar5 + 0x911));
+	}
+	uVar2 = (COFWeaponBase::GetMuzzleFlashParticleEffect);
+	if (CONCAT31(extraout_var_01,uVar2) != 0)
+	{
+		uVar2 = (COFWeaponBase::GetMuzzleFlashParticleEffect);
+		PrecacheParticleSystem((char *)CONCAT31(extraout_var_02,uVar2));
+	}
+	if (*(char *)(iVar5 + 0xa11) != '\0')
+	{
+		PrecacheParticleSystem((char *)(iVar5 + 0xa11));
+	}
+	if (*(char *)(iVar5 + 0xa91) != '\0')
+	{
+		PrecacheParticleSystem((char *)(iVar5 + 0xa91));
+	}
+	if (*(char *)(iVar5 + 0xb11) != '\0')
+	{
+		PrecacheParticleSystem((char *)(iVar5 + 0xb11));
+	}
+
+	// cut econ - cherry
+
+	if (*pcVar10 != '\0')
+	{
+		V_snprintf(local_94,0x80,"%s_red",pcVar10);
+		V_snprintf(local_114,0x80,"%s_red_crit",pcVar10);
+		PrecacheParticleSystem(local_94);
+		PrecacheParticleSystem(local_114);
+		V_snprintf(local_94,0x80,"%s_blue",pcVar10);
+		V_snprintf(local_114,0x80,"%s_blue_crit",pcVar10);
+		PrecacheParticleSystem(local_94);
+		PrecacheParticleSystem(local_114);
+	}
+
+	// mvm/econ cut - cherry
+
+	if (*(int *)puVar1 == local_14)
+	{
+		return;
+	}
+	// WARNING: Subroutine does not return
+	//__symbol_stub::___stack_chk_fail();
+	*/
 }
-#endif
 
 //OFSTATUS: COMPLETE
 void COFWeaponBase::Activate()
@@ -1318,7 +1259,9 @@ void COFWeaponBase::Equip( CBaseCombatCharacter *pOwner )
     CBaseCombatWeapon::SetOwner((CBaseCombatWeapon *)this, param_1);
     (*this->vtable->CBaseEntity::SetOwnerEntity)((CBaseEntity *)this, (CBaseEntity *)param_1);
     (*this->vtable->CTFWeaponBase::ReapplyProvision)(this);
-    CBaseCombatWeapon::Equip((CBaseCombatWeapon *)this, param_1);
+	*/
+    BaseClass::Equip(pOwner);
+	/*
     (*this->vtable->CTFWeaponBase::UpdateHands)(this);
     uVar6 = (*this->vtable->CEconEntity::GetAttributeContainer)((CEconEntity *)this);
     if (*(char *)(CONCAT31(extraout_var, uVar6) + 0xb0) == '\0')
@@ -1426,7 +1369,9 @@ LAB_0036c286:
     C_BaseCombatWeapon::SetOwner((C_BaseCombatWeapon *)this, param_1);
     C_BaseEntity::SetOwnerEntity((C_BaseEntity *)this, (C_BaseEntity *)param_1);
     (*this->vtable->C_TFWeaponBase::ReapplyProvision)(this);
-    C_BaseCombatWeapon::Equip((C_BaseCombatWeapon *)this, param_1);
+	*/
+    BaseClass::Equip(pOwner);
+	/*
     (*this->vtable->C_TFWeaponBase::UpdateHands)(this);
     uVar3 = (*this->vtable->C_EconEntity::GetAttributeContainer)((C_EconEntity *)this);
     if (*(char *)(CONCAT31(extraout_var, uVar3) + 0xfc) != '\0')

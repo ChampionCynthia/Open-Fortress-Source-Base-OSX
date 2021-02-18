@@ -78,9 +78,7 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     virtual void Activate() override;
 
     // CBaseEntity::
-    #ifdef CLIENT_DLL
     virtual void Precache() override;
-    #endif
     #ifdef GAME_DLL
     virtual void ChangeTeam(int iTeamNum) override;
     #endif
