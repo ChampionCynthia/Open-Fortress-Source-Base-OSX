@@ -165,12 +165,12 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     virtual void Drop( const Vector &vecVelocity ) override;
     virtual bool VisibleInWeaponSelection() override;
     virtual bool HasAmmo() override;
-    // virtual bool SendWeaponAnim( int iActivity ) override;
-    virtual bool CanHolster() const override;
+    //virtual bool SendWeaponAnim( int iActivity ) override; // overrided just to inspect your weapon, ignored
+    //virtual bool CanHolster() const override; // econ ignored
     virtual bool Deploy() override;
-    // virtual bool Holster( CBaseCombatWeapon *pSwitchingTo ) override;
+    virtual bool Holster( CBaseCombatWeapon *pSwitchingTo ) override;
     virtual void SetWeaponVisible( bool visible ) override;
-    // virtual void OnActiveStateChanged( int iOldState ) override;
+    //virtual void OnActiveStateChanged( int iOldState ) override; // econ ignored
     virtual void Detach() override;
     virtual void ItemPostFrame() override;
 	virtual void ReloadSinglyPostFrame();
@@ -178,30 +178,30 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
 	virtual bool ReloadSingly();
 	virtual void IncrementAmmo();
 	virtual void SetReloadTimer( float flReloadTime );
-    // virtual void ItemBusyFrame() override;
-    // virtual void ItemHolsterFrame() override;
-    // virtual void WeaponIdle() override;
+    virtual void ItemBusyFrame() override;
+    // virtual void ItemHolsterFrame() override; // ignore
+    virtual void WeaponIdle() override;
     virtual bool CanPerformSecondaryAttack() const override;
-    // virtual void CheckReload() override;
-    // virtual void FinishReload() override;
-    // virtual void AbortReload() override;
+    virtual void CheckReload() override;
+    virtual void FinishReload() override;
+    virtual void AbortReload() override;
     // virtual bool Reload() override;
     #ifdef CLIENT_DLL
     virtual bool AutoFiresFullClip() const override { return false; };
     #endif
-    // virtual void PrimaryAttack() override;
-    // virtual void SecondaryAttack() override;
-    // virtual const Vector &GetBulletSpread();
-    // virtual const char GetViewModel() const override;
-    // virtual const char GetWorldModel() const override;
-    // virtual int GetMaxClip1() const override;
-    // virtual int GetDefaultClip1() const override;
-    // virtual bool ForceWeaponSwitch() const override;
-    // virtual char const *GetShootSound( int iIndex ) const override;
-    // virtual int Clip1() override;
-    // virtual int Clip2() override;
-    // virtual Activity ActivityOverride( Activity baseAct, bool *pRequired );
-    // virtual acttable_t* ActivityList( int &iActivityCount );
+    virtual void PrimaryAttack() override;
+    virtual void SecondaryAttack() override;
+    virtual const Vector &GetBulletSpread();
+    virtual const char *GetViewModel() const;
+    virtual const char *GetWorldModel() const override;
+    // virtual int GetMaxClip1() const override; // ignore
+    virtual int GetDefaultClip1() const override;
+    //virtual bool ForceWeaponSwitch() const override; // ignore
+    virtual const char *GetShootSound( int iIndex ) const override;
+    virtual int Clip1() override;
+    virtual int Clip2() override;
+    //virtual Activity ActivityOverride( Activity baseAct, bool *pRequired ); // ignore, ghidra messed up
+    virtual acttable_t *ActivityList( int &iActivityCount );
     #ifdef CLIENT_DLL
     virtual void FallInit() { /*Intentionally blank*/ };
     #endif
@@ -262,7 +262,7 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     virtual bool CanDrop() const;
     virtual bool AllowTaunts() const;
     // virtual float ApplyFireDelay( float );
-    // virtual int GetActivityWeaponRole();
+    virtual int GetActivityWeaponRole() const;
     // virtual int GetViewModelWeaponRole();
     // virtual void AddAssociatedObject();
     // virtual void RemoveAssociatedObject();
@@ -306,12 +306,13 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     virtual bool HasLastShotCritical() const { return false; };
     virtual bool UseServerRandomSeed() const { return true; };
     // int param is probs a bool or an enum
-    void OnBulletFire(); // removed the int
+    // void OnBulletFire(int iPlayersHit); // ignored
     // virtual void OnPlayerKill(CTFPlayer *pSmellyUnfortunate, CTakeDamageInfo *);
-    // virtual float GetLastHitTime();
     #ifdef GAME_DLL
-    virtual int GetDropSkinOverride() { return -1; };
-    #endif
+    //virtual float GetLastHitTime(); // ignore
+	virtual int GetDropSkinOverride() { return -1; };
+	#endif
+	virtual bool WeaponShouldBeLowered();
     virtual float GetInitialAfterburnDuration() { return 0.0f; };
     virtual float GetAfterburnRateOnHit() { return 0.0f; };
     // return value is probably the model's skin index
@@ -352,4 +353,11 @@ private:
 	char m_szTracerTypeName[128];
 	COFWeaponInfo *m_pWeaponInfo;
 	int field_0x6cc; // OFTODO: RENAME ME IN THE FUTURE!
+	bool m_bLoweredWeapon;
+
+	static acttable_t m_acttableSecondary[];
+	static acttable_t m_acttableMelee[];
+	static acttable_t m_acttablePrimary[];
+	static acttable_t m_acttableBuilding[];
+	static acttable_t m_acttablePDA[];
 };
