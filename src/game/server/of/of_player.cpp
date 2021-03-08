@@ -8,6 +8,7 @@
 
 #include "cbase.h"
 #include "of_player.h"
+#include "of_player_shared.h"
 #include "of_playeranimstate.h"
 #include "of_shareddefs.h"
 #include "tier0/vprof.h"

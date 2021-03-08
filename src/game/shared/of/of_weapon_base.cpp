@@ -3,6 +3,7 @@
 // Author(s): Nopey, Fenteale, KaydemonLP
 //
 #include "cbase.h"
+#include "eventlist.h"
 #ifdef CLIENT_DLL
 #include "c_of_player.h"
 #include "c_baseviewmodel.h"
@@ -173,6 +174,7 @@ COFWeaponBase::COFWeaponBase()
 	m_iWeaponMode = OF_WEAPON_MODE_PRIMARY;
 	m_flLastDeployTime = 0.0f;
 	field_0x6cc = 0;
+	m_flCritDuration = 0;
 }
 
 #ifdef CLIENT_DLL
@@ -235,7 +237,7 @@ COFWeaponBase::~COFWeaponBase()
 #endif
 
 //OFSTATUS: COMPLETE
-CBaseEntity *COFWeaponBase::GetOwnerViaInterface ()
+CBaseEntity *COFWeaponBase::GetOwnerViaInterface()
 {
     return CBaseCombatWeapon::GetOwner();
 }
@@ -1160,28 +1162,21 @@ acttable_t COFWeaponBase::m_acttableMelee[] =
 	{ ACT_MP_ATTACK_SWIM_SECONDARYFIRE, ACT_MP_ATTACK_SWIM_MELEE, false },
 	{ ACT_MP_ATTACK_AIRWALK_SECONDARYFIRE, ACT_MP_ATTACK_AIRWALK_MELEE, false },
 
-	// THIS IS WRONG! figure out what it actually is
-	{ ACT_MP_ITEM2_GRENADE2_DRAW, ACT_MP_STAND_BUILDING, false },
+	{ ACT_MP_GESTURE_FLINCH, ACT_MP_GESTURE_FLINCH_MELEE, false },
 
-	// THIS IS WRONG! figure out what it actually is
-	{ ACT_MP_SWIM_BUILDING, ACT_MP_JUMP_LAND_BUILDING_DEPLOYED, false },
-	{ ACT_MP_ATTACK_STAND_BUILDING, ACT_MP_SWIM_BUILDING_DEPLOYED, false },
-	{ ACT_MP_ATTACK_CROUCH_BUILDING, ACT_MP_ATTACK_STAND_BUILDING_DEPLOYED, false },
-	{ ACT_MP_ATTACK_SWIM_BUILDING, ACT_MP_ATTACK_CROUCH_BUILDING_DEPLOYED, false },
-	{ ACT_MP_ATTACK_AIRWALK_BUILDING, ACT_MP_ATTACK_SWIM_BUILDING_DEPLOYED, false },
-	{ ACT_MP_ATTACK_STAND_GRENADE_BUILDING, ACT_MP_ATTACK_AIRWALK_BUILDING_DEPLOYED, false },
+	{ ACT_MP_GRENADE1_DRAW, ACT_MP_MELEE_GRENADE1_DRAW, false },
+	{ ACT_MP_GRENADE1_IDLE, ACT_MP_MELEE_GRENADE1_IDLE, false },
+	{ ACT_MP_GRENADE1_ATTACK, ACT_MP_MELEE_GRENADE1_ATTACK, false },
+	{ ACT_MP_GRENADE2_DRAW, ACT_MP_MELEE_GRENADE2_DRAW, false },
+	{ ACT_MP_GRENADE2_IDLE, ACT_MP_MELEE_GRENADE2_IDLE, false },
+	{ ACT_MP_GRENADE2_ATTACK, ACT_MP_MELEE_GRENADE2_ATTACK, false },
 
-	// THIS IS WRONG! figure out what it actually is
-	{ ACT_MP_GESTURE_VC_NODYES_PDA, ACT_PRIMARY_VM_RELOAD, false },
-	{ ACT_MP_GESTURE_VC_NODNO_PDA, ACT_PRIMARY_RELOAD_START, false },
-	{ ACT_MP_STUN_BEGIN, ACT_PRIMARY_RELOAD_FINISH, false },
-	{ ACT_MP_STUN_MIDDLE, ACT_PRIMARY_VM_DRYFIRE, false },
-	{ ACT_MP_STUN_END, ACT_PRIMARY_VM_IDLE_TO_LOWERED, false },
-	{ ACT_MP_PASSTIME_THROW_BEGIN, ACT_PRIMARY_VM_IDLE_LOWERED, false },
-
-	// doesn't exist :v
-	// can likely be safely removed
-	{ 1897, 1899, false }
+	{ ACT_MP_GESTURE_VC_HANDMOUTH, ACT_MP_GESTURE_VC_HANDMOUTH_MELEE, false },
+	{ ACT_MP_GESTURE_VC_FINGERPOINT, ACT_MP_GESTURE_VC_FINGERPOINT_MELEE, false },
+	{ ACT_MP_GESTURE_VC_FISTPUMP, ACT_MP_GESTURE_VC_FISTPUMP_MELEE, false },
+	{ ACT_MP_GESTURE_VC_THUMBSUP, ACT_MP_GESTURE_VC_THUMBSUP_MELEE, false },
+	{ ACT_MP_GESTURE_VC_NODYES, ACT_MP_GESTURE_VC_NODYES_MELEE, false },
+	{ ACT_MP_GESTURE_VC_NODNO, ACT_MP_GESTURE_VC_NODNO_MELEE, false },
 };
 
 acttable_t COFWeaponBase::m_acttableBuilding[] =
@@ -1198,24 +1193,22 @@ acttable_t COFWeaponBase::m_acttableBuilding[] =
 	{ ACT_MP_JUMP_LAND, ACT_MP_JUMP_LAND_BUILDING, false },
 	{ ACT_MP_SWIM, ACT_MP_SWIM_BUILDING, false },
 
-	// THIS IS WRONG! figure out what it actually is
-	{ ACT_MP_ATTACK_STAND_PRIMARYFIRE, ACT_MP_ATTACK_AIRWALK_GRENADE_BUILDING_DEPLOYED, false },
-	{ ACT_MP_ATTACK_CROUCH_PRIMARYFIRE, ACT_MP_JUMP_START_LOSERSTATE, false },
-	{ ACT_MP_ATTACK_SWIM_PRIMARYFIRE, ACT_MP_JUMP_FLOAT_LOSERSTATE, false },
-	{ ACT_MP_ATTACK_AIRWALK_PRIMARYFIRE, ACT_MP_JUMP_LAND_LOSERSTATE, false },
+	{ ACT_MP_ATTACK_STAND_PRIMARYFIRE, ACT_MP_ATTACK_STAND_BUILDING, false },
+	{ ACT_MP_ATTACK_CROUCH_PRIMARYFIRE, ACT_MP_ATTACK_CROUCH_BUILDING, false },
+	{ ACT_MP_ATTACK_SWIM_PRIMARYFIRE, ACT_MP_ATTACK_SWIM_BUILDING, false },
+	{ ACT_MP_ATTACK_AIRWALK_PRIMARYFIRE, ACT_MP_ATTACK_AIRWALK_BUILDING, false },
 
 	{ ACT_MP_ATTACK_STAND_GRENADE, ACT_MP_ATTACK_STAND_GRENADE_BUILDING, false },
 	{ ACT_MP_ATTACK_CROUCH_GRENADE, ACT_MP_ATTACK_STAND_GRENADE_BUILDING, false },
 	{ ACT_MP_ATTACK_SWIM_GRENADE, ACT_MP_ATTACK_STAND_GRENADE_BUILDING, false },
 	{ ACT_MP_ATTACK_AIRWALK_GRENADE, ACT_MP_ATTACK_STAND_GRENADE_BUILDING, false },
 
-	// THIS IS WRONG! figure out what it actually is
-	{ ACT_MP_GESTURE_VC_NODYES_PDA, ACT_SECONDARY_VM_PRIMARYATTACK, false },
-	{ ACT_MP_GESTURE_VC_NODNO_PDA, ACT_SECONDARY_VM_SECONDARYATTACK, false },
-	{ ACT_MP_STUN_BEGIN, ACT_SECONDARY_VM_RELOAD, false },
-	{ ACT_MP_STUN_MIDDLE, ACT_SECONDARY_RELOAD_START, false },
-	{ ACT_MP_STUN_END, ACT_SECONDARY_RELOAD_FINISH, false },
-	{ ACT_MP_PASSTIME_THROW_BEGIN, ACT_SECONDARY_VM_RELOAD2, false }
+	{ ACT_MP_GESTURE_VC_HANDMOUTH, ACT_MP_GESTURE_VC_HANDMOUTH_BUILDING, false },
+	{ ACT_MP_GESTURE_VC_FINGERPOINT, ACT_MP_GESTURE_VC_FINGERPOINT_BUILDING, false },
+	{ ACT_MP_GESTURE_VC_FISTPUMP, ACT_MP_GESTURE_VC_FISTPUMP_BUILDING, false },
+	{ ACT_MP_GESTURE_VC_THUMBSUP, ACT_MP_GESTURE_VC_THUMBSUP_BUILDING, false },
+	{ ACT_MP_GESTURE_VC_NODYES, ACT_MP_GESTURE_VC_NODYES_BUILDING, false },
+	{ ACT_MP_GESTURE_VC_NODNO, ACT_MP_GESTURE_VC_NODNO_BUILDING, false }
 };
 
 acttable_t COFWeaponBase::m_acttablePDA[] =
@@ -1232,24 +1225,19 @@ acttable_t COFWeaponBase::m_acttablePDA[] =
 	{ ACT_MP_JUMP_LAND, ACT_MP_JUMP_LAND_PDA, false },
 	{ ACT_MP_SWIM, ACT_MP_SWIM_PDA, false },
 
-	// THIS IS WRONG! figure out what it actually is
-	{ ACT_MP_ATTACK_STAND_PRIMARYFIRE, ACT_MP_GESTURE_VC_HANDMOUTH_ITEM1, false },
+	{ ACT_MP_ATTACK_STAND_PRIMARYFIRE, ACT_MP_ATTACK_STAND_PDA, false },
+	{ ACT_MP_ATTACK_SWIM_PRIMARYFIRE, ACT_MP_ATTACK_SWIM_PDA, false },
 
-	// THIS IS WRONG! figure out what it actually is
-	{ ACT_MP_ATTACK_SWIM_PRIMARYFIRE, ACT_MP_GESTURE_VC_FINGERPOINT_ITEM1, false },
-
-	// THIS IS WRONG! figure out what it actually is
-	{ ACT_MP_GESTURE_VC_NODYES_PDA, ACT_SECONDARY_VM_DRYFIRE, false },
-	{ ACT_MP_GESTURE_VC_NODNO_PDA, ACT_SECONDARY_VM_IDLE_TO_LOWERED , false },
-	{ ACT_MP_STUN_BEGIN, ACT_SECONDARY_VM_IDLE_LOWERED, false },
-	{ ACT_MP_STUN_MIDDLE, ACT_SECONDARY_VM_LOWERED_TO_IDLE, false },
-	{ ACT_MP_STUN_END, ACT_SECONDARY_VM_DRAW_2, false },
-	{ ACT_MP_PASSTIME_THROW_BEGIN, ACT_SECONDARY_VM_IDLE_2 , false }
+	{ ACT_MP_GESTURE_VC_HANDMOUTH, ACT_MP_GESTURE_VC_HANDMOUTH_PDA, false },
+	{ ACT_MP_GESTURE_VC_FINGERPOINT, ACT_MP_GESTURE_VC_FINGERPOINT_PDA, false },
+	{ ACT_MP_GESTURE_VC_FISTPUMP, ACT_MP_GESTURE_VC_FISTPUMP_PDA, false },
+	{ ACT_MP_GESTURE_VC_THUMBSUP, ACT_MP_GESTURE_VC_THUMBSUP_PDA, false },
+	{ ACT_MP_GESTURE_VC_NODYES, ACT_MP_GESTURE_VC_NODYES_PDA, false },
+	{ ACT_MP_GESTURE_VC_NODNO, ACT_MP_GESTURE_VC_NODNO_PDA, false }
 };
 
 // OFSTATUS: COMPLETE
 // trimmed those last ones as i believe their econ related
-// code is done but i still gotta solve those acttables - cherry
 acttable_t *COFWeaponBase::ActivityList(int &iActivityCount)
 {
 	int iWpnType = GetOFWpnData().m_iWeaponType;
@@ -1280,6 +1268,188 @@ acttable_t *COFWeaponBase::ActivityList(int &iActivityCount)
 		break;
 	}
 	return pActTable;
+}
+
+//OFSTATUS: COMPLETE
+// ghidra somehow turned 25 characters into 2000+ characters
+// gonna have nightmares about this once im old - cherry
+void COFWeaponBase::Materialize()
+{
+	if (IsEffectActive(EF_NODRAW))
+	{
+		RemoveEffects(EF_NODRAW);
+		CBaseAnimating::DoMuzzleFlash();
+	}
+	//CCollisionProperty::SetSolidFlags((CCollisionProperty *)&this->field_0x170, *(ushort *)&this->field_0x1ac | 8);
+	AddSolidFlags(FSOLID_TRIGGER);
+	//CBaseEntity::ThinkSet((FuncDef3 *)this, (float)PTR_SUB_Remove_00e34180, (char *)0x0);
+	SetThink(&COFWeaponBase::SUB_Remove);
+	//CBaseEntity::SetNextThink((CBaseEntity *)this, (*PTR__gpGlobals_00e34080)->curtime + 1.0, (char *)0x0);
+	SetNextThink(gpGlobals->curtime + 1, NULL);
+}
+
+//OFSTATUS: COMPLETE
+void COFWeaponBase::Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatCharacter *pOperator)
+{
+	if ((pEvent->type & AE_TYPE_NEWEVENTSYSTEM) && (pEvent->type == AE_WPN_INCREMENTAMMO))
+	{
+		IncrementAmmo();
+		m_bAnimReload = true;
+	}
+}
+
+//OFSTATUS: COMPLETE
+bool COFWeaponBase::Ready()
+{
+	//iVar2 = C_BaseAnimating::SelectWeightedSequence((C_BaseAnimating *)this, 0xcb);
+	if (CBaseAnimating::SelectWeightedSequence(ACT_VM_IDLE_LOWERED) == ACTIVITY_NOT_AVAILABLE)
+	{
+		//*(byte *)&this->field_0x6c = *(byte *)&this->field_0x6c & 0xdf;
+		RemoveEffects(EF_NODRAW);
+	}
+	//if (this->m_bLoweredWeapon != false) {
+	//	this->m_bLoweredWeapon = false;
+	//}
+	m_bLoweredWeapon = false;
+
+	//(*this->vtable->C_TFWeaponBase::SendWeaponAnim)(this, 0xad);
+	SendWeaponAnim(ACT_VM_IDLE);
+
+	/*
+	iVar2 = C_BaseCombatWeapon::GetOwner((C_BaseCombatWeapon *)this);
+	pCVar4 = (CStudioHdr *)0x0;
+	iVar3 = 0;
+	if (iVar2 != 0) {
+		iVar3 = __symbol_stub::___dynamic_cast(iVar2, PTR_typeinfo_00f8a488, PTR_typeinfo_00f8a508, 0);
+	}
+	fVar1 = *(float *)(*(int *)PTR__gpGlobals_00f8a098 + 0xc);
+	iVar2 = this->field_0x7e8;
+	if ((*(char *)((int)&this->field_0x878 + 1) == '\0') &&
+		(pCVar4 = (CStudioHdr *)this->field_0x880, pCVar4 == (CStudioHdr *)0x0)) {
+		C_BaseAnimating::LockStudioHdr((C_BaseAnimating *)this);
+		pCVar4 = (CStudioHdr *)this->field_0x880;
+	}
+	*/
+	COFPlayer *pPlayer = GetOFPlayerOwner();
+
+	//fVar5 = (float10)C_BaseAnimating::SequenceDuration((C_BaseAnimating *)this, pCVar4, iVar2);
+	//*(float *)(iVar3 + 0xc54) = fVar1 + (float)fVar5;
+	pPlayer->m_flNextAttack = gpGlobals->curtime + CBaseAnimating::SequenceDuration();
+
+	return true;
+}
+
+//OFSTATUS: COMPLETE
+bool COFWeaponBase::Lower()
+{
+	COFWeaponBase::AbortReload();
+	//iVar1 = C_BaseAnimating::SelectWeightedSequence((C_BaseAnimating *)this, 0xcb);
+	//if (iVar1 == -1) {
+	if (CBaseAnimating::SelectWeightedSequence(ACT_VM_IDLE_LOWERED) == ACTIVITY_NOT_AVAILABLE)
+	{
+		//C_BaseEntity::AddEffects((C_BaseEntity *)this, 0x20);
+		AddEffects(EF_NODRAW);
+	}
+	m_bLoweredWeapon = true;
+	//(*this->vtable->C_TFWeaponBase::SendWeaponAnim)(this, 0xcb);
+	COFWeaponBase::SendWeaponAnim(ACT_VM_IDLE_LOWERED);
+
+	return true;
+}
+
+//OFSTATUS: COMPLETE
+// OFTODO: once IsPlayerClass is done, uncomment the below stuff
+float COFWeaponBase::GetNextSecondaryAttackDelay()
+{
+	float fDelay = 0.5;
+	
+	//COFPlayer *pPlayer = GetOFPlayerOwner();
+	//if (pPlayer && COFPlayer::IsPlayerClass(4)) // forth class is demoman?
+	//	{
+	//		fDelay = 0.1;
+	//	}
+
+	return fDelay;
+}
+
+//OFSTATUS: INCOMPLETE
+bool COFWeaponBase::CalcIsAttackCriticalHelper()
+{
+		// GetOFPlayerOwner
+		COFPlayer *pPlayer = GetOFPlayerOwner();
+
+		if (!pPlayer) return false;
+
+		// CTFPlayerShared::GetCritMult needs to be finished!
+		float flCritMult = pPlayer->GetCritMult();
+
+		if (!COFWeaponBase::CanFireCriticalShot()) return false;
+
+		bool bRapidFireCrits = GetOFWpnData().m_WeaponModeInfo[m_iWeaponMode].m_bUseRapidFireCrits;
+
+		if ((bRapidFireCrits) && m_flCritDuration > gpGlobals->curtime) return true;
+
+		int iRandom = 0;
+
+		if (bRapidFireCrits)
+		{
+			// this is another thing wasting memory
+			/*
+			// likely a bool instead
+			if (*(int *)(DAT_0138c2d4 + 0x30) == 0)
+			{
+			if (gpGlobals->curtime < (float)this->field_0xb34 + 1.0f)
+			{
+			return false;
+			}
+
+			this->field_0xb34 = gpGlobals->curtime;
+			}
+			else
+			{
+			if (gpGlobals->curtime < (float)this->field_0xb40 + 1.0f)
+			{
+			return false;
+			}
+			this->field_0xb40 = gpGlobals->curtime;
+			}
+			*/
+			float fvar11 = clamp(TF_WEAPON_CRIT_CHANCE_RAPID * flCritMult, 0.01f, 0.99f);
+
+			float flCritDuration = TF_WEAPON_CRIT_DURATION;
+
+			float local_2c = 1.0f / ((flCritDuration / fvar11) - flCritDuration);
+
+			int uVar7 = (pPlayer->entindex() | entindex() << 8) ^ GetPredictionRandomSeed();
+			if (uVar7 != field_0xb3c)
+			{
+				field_0xb3c = uVar7;
+				RandomSeed(uVar7);
+			}
+
+			iRandom = RandomInt(0, TF_WEAPON_RANDOM_RANGE - 1.0);
+			if (local_2c * TF_WEAPON_RANDOM_RANGE > iRandom)
+			{
+				m_flCritDuration = gpGlobals->curtime + TF_WEAPON_CRIT_DURATION;
+				return true;
+				//bVar9 = true;
+			}
+		}
+		else
+		{
+			//local_2c = TF_WEAPON_CRIT_CHANCE_NORMAL * flCritMult;
+
+			uVar7 = (pPlayer->entindex | entindex() << 8) ^ GetPredictionRandomSeed();
+
+			if (uVar7 != field_0xb3c)
+			{
+				field_0xb3c = uVar7;
+				RandomSeed(uVar7);
+			}
+			iRandom = RandomInt(0, TF_WEAPON_RANDOM_RANGE - 1);
+			bVar9 = iRandom < (TF_WEAPON_CRIT_CHANCE_NORMAL * flCritMult) * TF_WEAPON_RANDOM_RANGE;
+		}
+	return bVar9;
 }
 
 //OFSTATUS: COMPLETE

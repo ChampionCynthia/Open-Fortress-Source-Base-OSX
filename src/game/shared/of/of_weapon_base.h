@@ -8,6 +8,7 @@
 #include "of_weapon_parse.h"
 #include "econ/ihasowner.h"
 #include "predictable_entity.h"
+#include "npcevent.h"
 
 #ifdef CLIENT_DLL
 #define COFPlayer C_OFPlayer
@@ -205,19 +206,19 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     #ifdef CLIENT_DLL
     virtual void FallInit() { /*Intentionally blank*/ };
     #endif
-    // virtual void Materialize() override;
+	virtual void Materialize();
     // virtual void CheckRespawn() override;
-    // virtual void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator ) override;
-    // virtual bool Ready() override;
-    // virtual bool Lower() override;
+    virtual void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+    virtual bool Ready() override;
+    virtual bool Lower() override;
     
     // ghidra says it returns a float10.. magical.
-    // virtual float GetNextSecondaryAttackDelay();
+    virtual float GetNextSecondaryAttackDelay();
     // probably returns an enum
-    // virtual int GetCustomDamageType();
-    
-    // CBaseCombatWeapon::
-    // virtual bool UsesPrimaryAmmo() override;
+	// nope! - cherry
+	virtual int GetCustomDamageType() { return 0; };
+	// energy weapons dont exist, so we can easily trim this
+	virtual bool UsesPrimaryAmmo() { return true; };
 
     // again with float10, ghidra. I wonder what it means..
     // virtual float UberChargeAmmoPerShot();
@@ -246,7 +247,7 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     virtual void Misfire();
     virtual void CalcIsAttackCritical();
     virtual void FireFullClipAtOnce(){ return; };
-    // virtual bool CalcIsAttackCriticalHelper();
+    virtual bool CalcIsAttackCriticalHelper();
     // virtual bool CalcIsAttackCriticalHelperNoCrits();
     // virtual int GetPenetrateType();
     // some of these could be references. (Any that aren't null checked, make into refs.)
@@ -288,7 +289,7 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     virtual const char *GetMuzzleFlashParticleEffect();
     // virtual const char *GetInventoryModel();
     virtual float GetSpeedMod();
-    // virtual bool CanFireCriticalShot();
+	virtual bool CanFireCriticalShot() { return true; };
     // virtual bool CanFireRandomCriticalShot(CBaseEntity *);
     // Probably the MvM rottenburg cap stun :P
     virtual void OnControlStunned();
@@ -353,6 +354,8 @@ private:
 	char m_szTracerTypeName[128];
 	COFWeaponInfo *m_pWeaponInfo;
 	int field_0x6cc; // OFTODO: RENAME ME IN THE FUTURE!
+	float field_0xb30;
+	int m_flCritDuration;
 	bool m_bLoweredWeapon;
 
 	static acttable_t m_acttableSecondary[];
