@@ -174,6 +174,7 @@ COFWeaponBase::COFWeaponBase()
 	m_iWeaponMode = OF_WEAPON_MODE_PRIMARY;
 	m_flLastDeployTime = 0.0f;
 	field_0x6cc = 0;
+	m_iCritSeed = -1;
 	m_flCritDuration = 0;
 }
 
@@ -1393,63 +1394,43 @@ bool COFWeaponBase::CalcIsAttackCriticalHelper()
 
 		if (bRapidFireCrits)
 		{
-			// this is another thing wasting memory
-			/*
-			// likely a bool instead
-			if (*(int *)(DAT_0138c2d4 + 0x30) == 0)
-			{
-			if (gpGlobals->curtime < (float)this->field_0xb34 + 1.0f)
-			{
-			return false;
-			}
+			// muliply by the player's damage done over time
+			float flCritMultCalc = clamp(TF_WEAPON_CRIT_CHANCE_RAPID * flCritMult, 0.01f, 0.99f);
 
-			this->field_0xb34 = gpGlobals->curtime;
-			}
-			else
-			{
-			if (gpGlobals->curtime < (float)this->field_0xb40 + 1.0f)
-			{
-			return false;
-			}
-			this->field_0xb40 = gpGlobals->curtime;
-			}
-			*/
-			float fvar11 = clamp(TF_WEAPON_CRIT_CHANCE_RAPID * flCritMult, 0.01f, 0.99f);
-
+			// the amount of time crits last
 			float flCritDuration = TF_WEAPON_CRIT_DURATION;
 
-			float local_2c = 1.0f / ((flCritDuration / fvar11) - flCritDuration);
+			// the crit chance percentage 
+			float flCritChance = 1.0f / ((flCritDuration / flCritMultCalc) - flCritDuration);
 
-			int uVar7 = (pPlayer->entindex() | entindex() << 8) ^ GetPredictionRandomSeed();
-			if (uVar7 != field_0xb3c)
+			// just to keep things randomized
+			int iSeed = (pPlayer->entindex() | entindex() << 8) ^ GetPredictionRandomSeed();
+			if (iSeed != m_iCritSeed)
 			{
-				field_0xb3c = uVar7;
-				RandomSeed(uVar7);
+				m_iCritSeed = iSeed;
+				RandomSeed(iSeed);
 			}
 
 			iRandom = RandomInt(0, TF_WEAPON_RANDOM_RANGE - 1.0);
-			if (local_2c * TF_WEAPON_RANDOM_RANGE > iRandom)
+			if (flCritChance * TF_WEAPON_RANDOM_RANGE > iRandom)
 			{
 				m_flCritDuration = gpGlobals->curtime + TF_WEAPON_CRIT_DURATION;
 				return true;
-				//bVar9 = true;
 			}
 		}
 		else
 		{
-			//local_2c = TF_WEAPON_CRIT_CHANCE_NORMAL * flCritMult;
-
-			uVar7 = (pPlayer->entindex | entindex() << 8) ^ GetPredictionRandomSeed();
-
-			if (uVar7 != field_0xb3c)
+			// just to keep things randomized
+			int iSeed = (pPlayer->entindex | entindex() << 8) ^ GetPredictionRandomSeed();
+			if (iSeed != m_iCritSeed)
 			{
-				field_0xb3c = uVar7;
-				RandomSeed(uVar7);
+				m_iCritSeed = iSeed;
+				RandomSeed(iSeed);
 			}
+
 			iRandom = RandomInt(0, TF_WEAPON_RANDOM_RANGE - 1);
-			bVar9 = iRandom < (TF_WEAPON_CRIT_CHANCE_NORMAL * flCritMult) * TF_WEAPON_RANDOM_RANGE;
+			return iRandom < (TF_WEAPON_CRIT_CHANCE_NORMAL * flCritMult) * TF_WEAPON_RANDOM_RANGE;
 		}
-	return bVar9;
 }
 
 //OFSTATUS: COMPLETE

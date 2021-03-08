@@ -17,6 +17,7 @@
 //OFSTATUS: INCOMPLETE
 COFPlayerShared::COFPlayerShared()
 {
+	field_0x324 = 0.0;
 }
 
 //OFSTATUS: INCOMPLETE
@@ -27,7 +28,7 @@ COFPlayerShared::~COFPlayerShared()
 //OFSTATUS: INCOMPLETE
 float COFPlayerShared::GetCritMult()
 {
-	float flCritCalc = unknownvariable * 0.003921569;
+	float flCritCalc = field_0x324 * 0.003921569;
 
 	flCritCalc = clamp(flCritCalc, 0, 1.0);
 

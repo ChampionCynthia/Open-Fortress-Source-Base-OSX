@@ -354,6 +354,7 @@ private:
 	char m_szTracerTypeName[128];
 	COFWeaponInfo *m_pWeaponInfo;
 	int field_0x6cc; // OFTODO: RENAME ME IN THE FUTURE!
+	int m_iCritSeed;
 	float m_flCritDuration;
 	bool m_bLoweredWeapon;
 

@@ -42,11 +42,13 @@ public:
 
 	void Init(OuterClass *pOuter);
 
+	virtual float GetCritMult();
+
 private:
 
 	OuterClass *m_pOuter;
 
-	virtual float GetCritMult();
+	float field_0x324;
 
 };
 
