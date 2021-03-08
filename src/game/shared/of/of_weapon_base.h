@@ -354,8 +354,7 @@ private:
 	char m_szTracerTypeName[128];
 	COFWeaponInfo *m_pWeaponInfo;
 	int field_0x6cc; // OFTODO: RENAME ME IN THE FUTURE!
-	float field_0xb30;
-	int m_flCritDuration;
+	float m_flCritDuration;
 	bool m_bLoweredWeapon;
 
 	static acttable_t m_acttableSecondary[];
