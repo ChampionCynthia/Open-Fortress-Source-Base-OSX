@@ -263,7 +263,7 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     virtual bool CanDrop() const;
     virtual bool AllowTaunts() const;
     // virtual float ApplyFireDelay( float );
-    virtual int GetActivityWeaponRole() const;
+    // virtual int GetActivityWeaponRole() const;
     // virtual int GetViewModelWeaponRole();
     // virtual void AddAssociatedObject();
     // virtual void RemoveAssociatedObject();

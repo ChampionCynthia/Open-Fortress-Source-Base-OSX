@@ -78,7 +78,8 @@ END_SEND_TABLE()
 BEGIN_DATADESC( COFPlayer )
 END_DATADESC()
 
-COFPlayer::COFPlayer() : BaseClass() {
+COFPlayer::COFPlayer() : BaseClass()
+{
 	m_PlayerAnimState = CreatePlayerAnimState(this);
 }
 

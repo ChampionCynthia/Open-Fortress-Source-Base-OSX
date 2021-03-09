@@ -1417,11 +1417,12 @@ bool COFWeaponBase::CalcIsAttackCriticalHelper()
 				m_flCritDuration = gpGlobals->curtime + TF_WEAPON_CRIT_DURATION;
 				return true;
 			}
+			return false;
 		}
 		else
 		{
 			// just to keep things randomized
-			int iSeed = (pPlayer->entindex | entindex() << 8) ^ GetPredictionRandomSeed();
+			int iSeed = (pPlayer->entindex() | entindex() << 8) ^ GetPredictionRandomSeed();
 			if (iSeed != m_iCritSeed)
 			{
 				m_iCritSeed = iSeed;

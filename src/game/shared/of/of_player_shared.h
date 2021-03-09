@@ -3,17 +3,15 @@
 // Author(s): Cherry!
 //
 
-#ifndef TF_PLAYER_SHARED_H
+#ifndef OF_PLAYER_SHARED_H
 
-#define TF_PLAYER_SHARED_H
+#define OF_PLAYER_SHARED_H
 
 #ifdef _WIN32
 #pragma once
 #endif
 
 #include "networkvar.h"
-#include "of_weapon_base.h"
-#include "of_shareddefs.h"
 
 #ifdef CLIENT_DLL
 	class C_OFPlayer;
@@ -28,7 +26,6 @@ public:
 #ifdef CLIENT_DLL
 	friend class C_OFPlayer;
 	typedef C_OFPlayer OuterClass;
-	DECLARE_PREDICTABLE();
 #else
 	friend class COFPlayer;
 	typedef COFPlayer OuterClass;
@@ -52,4 +49,4 @@ private:
 
 };
 
-#endif // !TF_PLAYER_SHARED_H
+#endif // !OF_PLAYER_SHARED_H

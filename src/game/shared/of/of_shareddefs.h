@@ -266,6 +266,7 @@ extern const char* s_ValveMaps[][3];
 extern const char* s_CommunityMaps[][3];
 
 // maybe rename to OF_ ? - cherry
+// nevermind! compatibility
 
 #define TF_DAMAGE_CRIT_MULTIPLIER	3
 #define TF_GAMETYPE_ESCORT			3

@@ -4,6 +4,8 @@
 //
 
 #include "cbase.h"
+#include "of_weapon_base.h"
+#include "of_shareddefs.h"
 #include "of_player_shared.h"
 #include "of_gamerules.h"
 
