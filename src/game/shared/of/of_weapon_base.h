@@ -280,17 +280,17 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     virtual bool AreRandomCritsEnabled();
 	virtual bool ShouldPlayClientReloadSound() { return false; }
     virtual bool DefaultReload( int iClipSize1, int iClipSize2, int iActivity );
-    // virtual bool IsReloading();
+    virtual bool IsReloading() const;
     virtual float GetReloadSpeedScale() const;
     virtual bool CheckReloadMisfire() const;
     virtual bool CanDrop() const;
     virtual bool AllowTaunts() const;
-    // virtual float ApplyFireDelay( float );
-    // virtual int GetActivityWeaponRole() const;
-    // virtual int GetViewModelWeaponRole();
-    // virtual void AddAssociatedObject();
-    // virtual void RemoveAssociatedObject();
-    // virtual void ApplyOnHitAttributes(CBaseEntity *,CTFPlayer *,CTakeDamageInfo *);
+    // virtual float ApplyFireDelay( float param_1 ); ignore: mannpower
+    // virtual int GetActivityWeaponRole() const; ignore: econ
+    virtual int GetViewModelWeaponRole();
+	virtual void AddAssociatedObject() { return; } // this may go unused?
+	virtual void RemoveAssociatedObject() { return; } // this may go unused?
+	// virtual void ApplyOnHitAttributes(CBaseEntity *param_1, COFPlayer *pPlayer, CTakeDamageInfo &info);
     // virtual void ApplyPostHitEffects(CTakeDamageInfo *, CTFPlayer *);
     // virtual void ApplyOnInjuredAttributes(CTFPlayer *,CTFPlayer *,CTakeDamageInfo *);
     // return types may be incorrect here
@@ -341,10 +341,10 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     virtual float GetAfterburnRateOnHit() { return 0.0f; };
     // return value is probably the model's skin index
     // virtual uint GetSkin();
-    // virtual float GetEffectBarProgress();
+    virtual float GetEffectBarProgress();
     virtual bool CanPickupOtherWeapon() const { return true; };
     virtual bool ShouldRemoveInvisibilityOnPrimaryAttack() const { return true; };
-    // virtual int GetEffectBarAmmo();
+    virtual int GetEffectBarAmmo();
     virtual float InternalGetEffectBarRechargeTime() { return 0.0f; };
     virtual bool CanInspect() { return true; } ;
     virtual void HookAttributes();

@@ -1553,23 +1553,39 @@ bool COFWeaponBase::DefaultReload(int iClipSize1, int iClipSize2, int iActivity)
 }
 
 //OFSTATUS: COMPLETE
-float COFWeaponBase::GetReloadSpeedScale() const {
+bool COFWeaponBase::IsReloading() const
+{
+	return m_iReloadStage != OF_RELOAD_STAGE_NONE;
+}
+
+//OFSTATUS: COMPLETE
+float COFWeaponBase::GetReloadSpeedScale() const
+{
     return 1.0f;
 }
 
 //OFSTATUS: COMPLETE
-bool COFWeaponBase::CheckReloadMisfire() const {
+bool COFWeaponBase::CheckReloadMisfire() const
+{
     return false;
 }
 
 //OFSTATUS: COMPLETE
-bool COFWeaponBase::CanDrop() const {
+bool COFWeaponBase::CanDrop() const
+{
     return false;
 }
 
 //OFSTATUS: COMPLETE
-bool COFWeaponBase::AllowTaunts() const {
+bool COFWeaponBase::AllowTaunts() const
+{
     return true;
+}
+
+//OFSTATUS: COMPLETE
+int COFWeaponBase::GetViewModelWeaponRole()
+{
+	return GetOFWpnData().m_iWeaponType;
 }
 
 //OFSTATUS: INCOMPLETE, only temp for now
@@ -2156,6 +2172,56 @@ Vector COFWeaponBase::GetParticleColor(int iColor)
     */
 
 	return Vector(0, 0, 0); // TEMPORARY - cherry
+}
+
+float COFWeaponBase::GetEffectBarProgress()
+{
+	code *pcVar1;
+	undefined uVar2;
+	int iVar3;
+	int *this_00;
+	undefined3 extraout_var;
+	int iVar4;
+	float10 extraout_ST0;
+	//float fVar5;
+
+	float fVar5 = 1.0;
+	/*
+	iVar3 = CBaseCombatWeapon::GetOwner((CBaseCombatWeapon *)this);
+	fVar5 = 1.0;
+	if ((iVar3 != 0) &&
+	(this_00 = (int *)__symbol_stub::___dynamic_cast
+	(iVar3, PTR_typeinfo_00e34140, PTR_typeinfo_00e3408c, 0),
+	this_00 != (int *)0x0))
+	*/
+
+	COFPlayer *pPlayer = GetOFPlayerOwner();
+
+	if (pPlayer)
+	{
+		pcVar1 = *(code **)(*this_00 + 0x40c);
+		uVar2 = (*this->vtable->CTFWeaponBase::GetEffectBarAmmo)(this);
+		iVar3 = (*pcVar1)(this_00, uVar2);
+		uVar2 = (*this->vtable->CTFWeaponBase::GetEffectBarAmmo)(this);
+		iVar4 = CTFPlayer::GetMaxAmmo((CTFPlayer *)this_00, CONCAT31(extraout_var, uVar2), -1);
+		fVar5 = 1.0;
+		//if (iVar3 < iVar4)
+
+		if (  )
+		{
+			(*this->vtable->CTFWeaponBase::InternalGetEffectBarRechargeTime)(this);
+			fVar5 = CAttributeManager::AttribHookValue<float>
+				((float)extraout_ST0, "effectbar_recharge_rate", (CBaseEntity *)this,
+				(CUtlVector *)0x0, true);
+			fVar5 = ((fVar5 - (float)this->field_0x6a4) + (*PTR__gpGlobals_00e34080)->curtime) / fVar5;
+		}
+	}
+	return (float10)fVar5;
+}
+
+int COFWeaponBase::GetEffectBarAmmo()
+{
+	return m_iPrimaryAmmoType;
 }
 
 //OFSTATUS: COMPLETE(?)
