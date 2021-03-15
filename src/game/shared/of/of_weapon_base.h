@@ -116,6 +116,28 @@ const char *WeaponIDToAlias( int id );
     GetChargeInterval
 */
 
+class CTraceFilterTeam : public CTraceFilterSimple
+{
+public:
+	DECLARE_CLASS(CTraceFilterTeam, CTraceFilterSimple);
+	CTraceFilterTeam(const IHandleEntity *passentity, int collisionGroup, int filterteam)
+		: CTraceFilterSimple(passentity, collisionGroup), m_iFilterTeam(filterteam)
+	{
+	}
+
+	virtual bool ShouldHitEntity(IHandleEntity *pHandleEntity, int contentsMask)
+	{
+		CBaseEntity *pEntity = EntityFromEntityHandle(pHandleEntity);
+		if (pEntity && pEntity->IsPlayer() && pEntity->GetTeamNumber() == m_iFilterTeam)
+		{
+			return false;
+		}
+		return true;
+	}
+
+	int m_iFilterTeam;
+};
+
 class COFPlayer;
 
 //OFTODO: Mark many COFWeaponBase getters const
@@ -248,15 +270,16 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     virtual void CalcIsAttackCritical();
     virtual void FireFullClipAtOnce(){ return; };
     virtual bool CalcIsAttackCriticalHelper();
-    // virtual bool CalcIsAttackCriticalHelperNoCrits();
-    // virtual int GetPenetrateType();
+    //virtual bool CalcIsAttackCriticalHelperNoCrits();
+    //virtual int GetPenetrateType();
     // some of these could be references. (Any that aren't null checked, make into refs.)
-    // virtual void GetProjectileFireSetup (CTFPlayer *,Vector,Vector *,QAngle *, bool, float);
+    virtual void GetProjectileFireSetup(COFPlayer *pPlayer, Vector param_2, Vector *param_3, QAngle *param_4, bool param_5, float param_6);
     // This return type is almost certainly incorrect.
-    virtual void GetSpreadAngles();
+    // virtual QAngle GetSpreadAngles(); NOTE: do pPlayer->EyeAngles() instead
     virtual bool IsFiring() const;
     virtual bool AreRandomCritsEnabled();
-    // virtual bool DefaultReload( int iClipSize1, int iClipSize2, int iActivity );
+	virtual bool ShouldPlayClientReloadSound() { return false; }
+    virtual bool DefaultReload( int iClipSize1, int iClipSize2, int iActivity );
     // virtual bool IsReloading();
     virtual float GetReloadSpeedScale() const;
     virtual bool CheckReloadMisfire() const;
@@ -357,6 +380,8 @@ private:
 	int m_iCritSeed;
 	float m_flCritDuration;
 	bool m_bLoweredWeapon;
+	int m_iLastCritCheck;
+	bool m_bAttackCritical;
 
 	static acttable_t m_acttableSecondary[];
 	static acttable_t m_acttableMelee[];

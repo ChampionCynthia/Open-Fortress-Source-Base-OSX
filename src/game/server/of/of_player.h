@@ -90,7 +90,7 @@ public:
 	CNetworkHandle( CBaseEntity, m_hRagdoll );	// networked entity handle 	
 	
 	CNetworkVarEmbedded(COFPlayerShared, m_Shared);
-	friend class CTFPlayerShared;
+	friend class COFPlayerShared;
 
 	virtual float GetCritMult() { return m_Shared.GetCritMult(); };
 

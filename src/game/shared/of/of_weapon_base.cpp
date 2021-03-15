@@ -11,6 +11,7 @@
 #include "of_player.h"
 #include "baseviewmodel.h"
 #endif
+#include "of_gamerules.h"
 #include "of_weapon_base.h"
 #include "in_buttons.h"
 #include "of_shareddefs.h"
@@ -162,6 +163,7 @@ LINK_ENTITY_TO_CLASS( tf_weapon_base, COFWeaponBase );
 
 #endif
 
+ConVar tf_weapon_criticals( "tf_weapon_criticals", "1", FCVAR_NOTIFY | FCVAR_REPLICATED, "");
 
 // ----------------------------------------------------------------------------- //
 // COFWeaponBase implementation. 
@@ -176,6 +178,8 @@ COFWeaponBase::COFWeaponBase()
 	field_0x6cc = 0;
 	m_iCritSeed = -1;
 	m_flCritDuration = 0;
+	m_iLastCritCheck = 0;
+	m_bAttackCritical = false;
 }
 
 #ifdef CLIENT_DLL
@@ -339,87 +343,6 @@ void COFWeaponBase::SetWeaponVisible(bool visible)
 void COFWeaponBase::Detach() 
 {
     return;
-}
-
-//OFSTATUS: INCOMPLETE
-void COFWeaponBase::GetSpreadAngles()
-{
-/*
-	char cVar1;
-	int iVar2;
-	int *piVar3;
-	undefined8 *puVar4;
-	int iVar5;
-	int iVar6;
-	int *piVar7;
-	float fVar8;
-	float fVar9;
-	float fVar10;
-	float fVar11;
-	float fVar12;
-	undefined8 *in_stack_00000004;
-	int *in_stack_00000008;
-
-	iVar2 = this->GetOwner();
-	piVar7 = (int *)0x0;
-	if ((iVar2 != 0) &&
-		(piVar3 = (int *)__symbol_stub::___dynamic_cast
-		(iVar2, PTR_typeinfo_00e34140, PTR_typeinfo_00e34088, 0),
-		piVar3 != (int *)0x0)) {
-		cVar1 = (**(code **)(*piVar3 + 0x144))(piVar3);
-		piVar7 = (int *)0x0;
-		if (cVar1 != '\0') {
-			piVar7 = piVar3;
-		}
-	}
-	puVar4 = (undefined8 *)(**(code **)(*piVar7 + 0x210))(piVar7);
-	*(float *)(in_stack_00000004 + 1) = *(float *)(puVar4 + 1);
-	*in_stack_00000004 = *puVar4;
-	fVar12 = CAttributeManager::AttribHookValue<float>
-		(0.0, "projectile_spread_angle", (CBaseEntity *)in_stack_00000008,
-		(CUtlVector *)0x0, true);
-	if (fVar12 != 0.0) {
-		iVar2 = _rand();
-		fVar8 = (float)iVar2 * fVar12 * 6.103702e-05 - fVar12;
-		iVar2 = _rand();
-		fVar12 = (float)iVar2 * fVar12 * 6.103702e-05 - fVar12;
-		_rand();
-		if ((((*(CTFGameRules **)PTR__g_pGameRules_00e340a8 == (CTFGameRules *)0x0) ||
-			(cVar1 = CTFGameRules::GameModeUsesUpgrades(*(CTFGameRules **)PTR__g_pGameRules_00e340a8),
-			cVar1 == '\0')) ||
-			(iVar2 = CAttributeManager::AttribHookValue<int>
-			(0, "can_overload", (CBaseEntity *)in_stack_00000008, (CUtlVector *)0x0, true
-			), iVar2 == 0)) ||
-			(((cVar1 = (**(code **)(*in_stack_00000008 + 0x46c))(in_stack_00000008), cVar1 == '\0' ||
-			(iVar2 = (**(code **)(*in_stack_00000008 + 0x55c))(in_stack_00000008), iVar2 != 1)) ||
-			((*(char *)((int)in_stack_00000008 + 0x5b6) != '\0' ||
-			(fVar9 = *(float *)(*(int *)PTR__gpGlobals_00e34080 + 0xc) -
-			(float)in_stack_00000008[0x1dd], 0.9 <= fVar9)))))) {
-			fVar9 = 0.0;
-		}
-		else {
-			fVar9 = (fVar9 + -0.4) * 2.0;
-			if (fVar9 <= 0.0) {
-				fVar9 = 0.0;
-			}
-			if (1.0 <= fVar9) {
-				fVar9 = 1.0;
-			}
-			fVar10 = fVar9 * -5.0 + 6.0;
-			iVar2 = _rand();
-			fVar11 = fVar9 * -0.0003051851 + 0.0003662221;
-			iVar5 = _rand();
-			iVar6 = _rand();
-			fVar9 = (float)iVar6 * fVar11 - fVar10;
-			fVar8 = (fVar8 - fVar10) + (float)iVar2 * fVar11;
-			fVar12 = (fVar12 - fVar10) + (float)iVar5 * fVar11;
-		}
-		*(float *)in_stack_00000004 = fVar8 + *(float *)in_stack_00000004;
-		*(float *)((int)in_stack_00000004 + 4) = fVar12 + *(float *)((int)in_stack_00000004 + 4);
-		*(float *)(in_stack_00000004 + 1) = fVar9 + *(float *)(in_stack_00000004 + 1);
-	}
-	*/
-	return;
 }
 
 /* OFTODO: AAAAAAAA - Kay */
@@ -654,7 +577,16 @@ bool COFWeaponBase::ReloadSingly()
 			}
 
 			SetReloadTimer( flReloadTime );
-			WeaponSound( RELOAD );
+
+		#ifdef CLIENT_DLL
+			if (ShouldPlayClientReloadSound())
+			{
+				WeaponSound(RELOAD);
+			}
+		#else
+			WeaponSound(RELOAD);
+		#endif
+
 			m_iReloadStage.Set( OF_RELOAD_STAGE_LOOP );
 			return true;
 		}
@@ -1373,65 +1305,110 @@ float COFWeaponBase::GetNextSecondaryAttackDelay()
 	return fDelay;
 }
 
-//OFSTATUS: INCOMPLETE
+
+//OFSTATUS: COMPLETE
 bool COFWeaponBase::CalcIsAttackCriticalHelper()
 {
-		// GetOFPlayerOwner
-		COFPlayer *pPlayer = GetOFPlayerOwner();
+	if (tf_weapon_criticals.GetBool() == false) return false;
 
-		if (!pPlayer) return false;
+	// GetOFPlayerOwner
+	COFPlayer *pPlayer = GetOFPlayerOwner();
 
-		// CTFPlayerShared::GetCritMult needs to be finished!
-		float flCritMult = pPlayer->GetCritMult();
+	if (!pPlayer) return false;
 
-		if (!COFWeaponBase::CanFireCriticalShot()) return false;
+	// CTFPlayerShared::GetCritMult needs to be finished!
+	float flCritMult = pPlayer->GetCritMult();
 
-		bool bRapidFireCrits = GetOFWpnData().m_WeaponModeInfo[m_iWeaponMode].m_bUseRapidFireCrits;
+	if (!COFWeaponBase::CanFireCriticalShot()) return false;
 
-		if ((bRapidFireCrits) && m_flCritDuration > gpGlobals->curtime) return true;
+	bool bRapidFireCrits = GetOFWpnData().m_WeaponModeInfo[m_iWeaponMode].m_bUseRapidFireCrits;
 
-		int iRandom = 0;
+	if ((bRapidFireCrits) && m_flCritDuration > gpGlobals->curtime) return true;
 
-		if (bRapidFireCrits)
+	int iRandom = 0;
+
+	if (bRapidFireCrits)
+	{
+		// muliply by the player's damage done over time
+		float flCritMultCalc = clamp(TF_WEAPON_CRIT_CHANCE_RAPID * flCritMult, 0.01f, 0.99f);
+
+		// the amount of time crits last
+		float flCritDuration = TF_WEAPON_CRIT_DURATION;
+
+		// the crit chance percentage 
+		float flCritChance = 1.0f / ((flCritDuration / flCritMultCalc) - flCritDuration);
+
+		// just to keep things randomized
+		int iSeed = (pPlayer->entindex() | entindex() << 8) ^ GetPredictionRandomSeed();
+		if (iSeed != m_iCritSeed)
 		{
-			// muliply by the player's damage done over time
-			float flCritMultCalc = clamp(TF_WEAPON_CRIT_CHANCE_RAPID * flCritMult, 0.01f, 0.99f);
-
-			// the amount of time crits last
-			float flCritDuration = TF_WEAPON_CRIT_DURATION;
-
-			// the crit chance percentage 
-			float flCritChance = 1.0f / ((flCritDuration / flCritMultCalc) - flCritDuration);
-
-			// just to keep things randomized
-			int iSeed = (pPlayer->entindex() | entindex() << 8) ^ GetPredictionRandomSeed();
-			if (iSeed != m_iCritSeed)
-			{
-				m_iCritSeed = iSeed;
-				RandomSeed(iSeed);
-			}
-
-			iRandom = RandomInt(0, TF_WEAPON_RANDOM_RANGE - 1.0);
-			if (flCritChance * TF_WEAPON_RANDOM_RANGE > iRandom)
-			{
-				m_flCritDuration = gpGlobals->curtime + TF_WEAPON_CRIT_DURATION;
-				return true;
-			}
-			return false;
+			m_iCritSeed = iSeed;
+			RandomSeed(iSeed);
 		}
-		else
+
+		iRandom = RandomInt(0, TF_WEAPON_RANDOM_RANGE - 1.0);
+		if (flCritChance * TF_WEAPON_RANDOM_RANGE > iRandom)
 		{
-			// just to keep things randomized
-			int iSeed = (pPlayer->entindex() | entindex() << 8) ^ GetPredictionRandomSeed();
-			if (iSeed != m_iCritSeed)
-			{
-				m_iCritSeed = iSeed;
-				RandomSeed(iSeed);
-			}
-
-			iRandom = RandomInt(0, TF_WEAPON_RANDOM_RANGE - 1);
-			return iRandom < (TF_WEAPON_CRIT_CHANCE_NORMAL * flCritMult) * TF_WEAPON_RANDOM_RANGE;
+			m_flCritDuration = gpGlobals->curtime + TF_WEAPON_CRIT_DURATION;
+			return true;
 		}
+		return false;
+	}
+	else
+	{
+		// just to keep things randomized
+		int iSeed = (pPlayer->entindex() | entindex() << 8) ^ GetPredictionRandomSeed();
+		if (iSeed != m_iCritSeed)
+		{
+			m_iCritSeed = iSeed;
+			RandomSeed(iSeed);
+		}
+
+		iRandom = RandomInt(0, TF_WEAPON_RANDOM_RANGE - 1);
+		return iRandom < (TF_WEAPON_CRIT_CHANCE_NORMAL * flCritMult) * TF_WEAPON_RANDOM_RANGE;
+	}
+}
+
+//OFSTATUS: COMPLETE
+void COFWeaponBase::GetProjectileFireSetup(COFPlayer *pPlayer, Vector param_2, Vector *param_3, QAngle *param_4, bool param_5, float param_6)
+{
+	QAngle angles = pPlayer->EyeAngles();
+
+	Vector vecForward, vecRight, vecUp;
+
+	AngleVectors(angles, &vecForward, &vecRight, &vecUp);
+
+	Vector vecShootPos = pPlayer->Weapon_ShootPosition();
+
+	Vector vecEndPos = param_6 * vecForward + vecShootPos;
+
+	trace_t tr;
+
+	if (param_5)
+	{
+		CTraceFilterSimple tracefilter(pPlayer, COLLISION_GROUP_NONE);
+
+		ITraceFilter *pTraceFilter = NULL;
+
+		CTraceFilterChain traceFilter(&tracefilter, pTraceFilter);
+		UTIL_TraceLine(vecShootPos, vecEndPos, MASK_SOLID, &traceFilter, &tr);
+	}
+	else
+	{
+		CTraceFilterTeam traceFilter(pPlayer, COLLISION_GROUP_NONE, pPlayer->GetTeamNumber());
+		UTIL_TraceLine(vecShootPos, vecEndPos, MASK_SOLID, &traceFilter, &tr);
+	}
+
+	*param_3 = (vecUp * param_2.z) + (vecRight * param_2.y) + (vecForward * param_2.x) + vecShootPos;
+
+	if (tr.fraction > 0.1)
+	{
+		VectorAngles(tr.endpos - *param_3, *param_4);
+	}
+	else
+	{
+		VectorAngles(vecEndPos - *param_3, *param_4);
+	}
 }
 
 //OFSTATUS: COMPLETE
@@ -1468,53 +1445,111 @@ void COFWeaponBase::Misfire()
     CalcIsAttackCritical();
 }
 
-//OFSTATUS: INCOMPLETE
+//OFSTATUS: COMPLETE
+// trimmed mvm stuff
 void COFWeaponBase::CalcIsAttackCritical()
 {
-    //This is a very large and fat method.
+	COFPlayer *pPlayer = GetOFPlayerOwner();
+	if (!pPlayer) return;
+
+	if (gpGlobals->framecount == m_iLastCritCheck) return;
+	m_iLastCritCheck = gpGlobals->framecount;
+
+	//field_0xb17 = 0; // unused? keeping it here just in case - cherry
+
+	if (OFGameRules()->State_Get() == GR_STATE_TEAM_WIN && OFGameRules()->GetWinningTeam() == pPlayer->GetTeamNumber())
+	{
+		m_bAttackCritical = true;
+		return;
+	}
+
+	if (AreRandomCritsEnabled())
+	{
+		m_bAttackCritical = CalcIsAttackCriticalHelper();
+	}
 }
 
 //OFSTATUS: COMPLETE
-bool COFWeaponBase::IsFiring() const {
+bool COFWeaponBase::IsFiring() const
+{
     return false;
 }
 
-//OFSTATUS: INCOMPLETE
+//OFSTATUS: COMPLETE
+// trimmed the matchmaking stuff
 bool COFWeaponBase::AreRandomCritsEnabled()
 {
-    //wtf is DAT_0105baec ?
-    //I will assume offset 0x30 is an integer pointer
+	return tf_weapon_criticals.GetBool();
+}
 
+//OFSTATUS: COMPLETE
+bool COFWeaponBase::DefaultReload(int iClipSize1, int iClipSize2, int iActivity)
+{
+	COFPlayer *pPlayer = GetOFPlayerOwner();
+	if (!pPlayer) return false;
 
-    return false;
+	CBaseCombatCharacter *pOwner = GetOwner();
+	if (!pOwner) return false;
 
-    //GetCurrentMatchGroup I think is a method of CTFGameRules.  Is this matchmaking stuff?
-    //Also there is a class "ETFMatchGroup" that we dont have created yet
-    /*
-    int iVar1;
-    bool bVar2;
-    int local_c;
+	bool bPrimaryReload = false;
+	bool bSecondaryReload = false;
 
-    if (*(int *)g_pGameRules == 0) {
-        bVar2 = *(DAT_0105baec + 0x30) == 0;
-    }
-    else {
-        if (*(char *)(*(int *)g_pGameRules + 0x961) != '\0') {
-            bVar2 = true;  
-        }
-        else
-        {
-            local_c = GetCurrentMatchGroup();
-            iVar1 = GetMatchGroupDescription((ETFMatchGroup *)&local_c);
-            if (iVar1 == 0)
-                bVar2 = *(DAT_0105baec + 0x30) == 0;
-            else
-                bVar2 = *(char *)(iVar1 + 0x43) == '\0';
-        }
-    }
-    bVar2 = !bVar2;
-    return (uint)bVar2;
-    */
+	// If you don't have clips, then don't try to reload them.
+	if ( UsesClipsForAmmo1() )
+	{
+		// need to reload primary clip?
+		int primary = MIN(iClipSize1 - m_iClip1, pOwner->GetAmmoCount(m_iPrimaryAmmoType));
+		if (primary != 0)
+		{
+			bPrimaryReload = true;
+		}
+	}
+
+	if (UsesClipsForAmmo2())
+	{
+		// need to reload secondary clip?
+		int secondary = MIN(iClipSize2 - m_iClip2, pOwner->GetAmmoCount(m_iSecondaryAmmoType));
+		if (secondary != 0)
+		{
+			bSecondaryReload = true;
+		}
+	}
+
+	if (!(bPrimaryReload || bSecondaryReload)) return false;
+
+	float flReloadTime;
+
+#ifdef CLIENT_DLL
+	if (ShouldPlayClientReloadSound())
+	{
+		WeaponSound(RELOAD);
+	}
+#else
+	WeaponSound(RELOAD);
+#endif
+
+	// OFTODO: this will crash the game apparently, figure out why!
+	//pPlayer->DoAnimationEvent(PLAYERANIMEVENT_RELOAD, 0);
+
+	if (SendWeaponAnim(iActivity))
+	{
+		flReloadTime = SequenceDuration() - 0.2;
+	}
+	else
+	{
+		if (bSecondaryReload)
+		{
+			flReloadTime = GetOFWpnData().m_WeaponModeInfo[OF_WEAPON_TYPE_SECONDARY].m_flTimeReload;
+		}
+		else
+		{
+			flReloadTime = GetOFWpnData().m_WeaponModeInfo[OF_WEAPON_TYPE_PRIMARY].m_flTimeReload;
+		}
+	}
+
+	SetReloadTimer(flReloadTime);
+	m_bInReload = true;
+	return true;
 }
 
 //OFSTATUS: COMPLETE
