@@ -2174,54 +2174,79 @@ Vector COFWeaponBase::GetParticleColor(int iColor)
 	return Vector(0, 0, 0); // TEMPORARY - cherry
 }
 
-float COFWeaponBase::GetEffectBarProgress()
+int COFWeaponBase::GetSkin()
 {
-	code *pcVar1;
-	undefined uVar2;
-	int iVar3;
-	int *this_00;
-	undefined3 extraout_var;
-	int iVar4;
-	float10 extraout_ST0;
-	//float fVar5;
+	//undefined uVar1;
+	//int iVar2;
+	//CBaseEntity *this_00;
+	//undefined3 extraout_var;
+	//undefined3 extraout_var_00;
+	//uint uVar3;
 
-	float fVar5 = 1.0;
-	/*
-	iVar3 = CBaseCombatWeapon::GetOwner((CBaseCombatWeapon *)this);
-	fVar5 = 1.0;
-	if ((iVar3 != 0) &&
-	(this_00 = (int *)__symbol_stub::___dynamic_cast
-	(iVar3, PTR_typeinfo_00e34140, PTR_typeinfo_00e3408c, 0),
-	this_00 != (int *)0x0))
-	*/
+	COFPlayer *this_00 = GetOFPlayerOwner();
+	if (!this_00) return 0;
 
-	COFPlayer *pPlayer = GetOFPlayerOwner();
+	//iVar2 = CBaseCombatWeapon::GetOwner((CBaseCombatWeapon *)this);
+	int iSkin = 0;
+	//if ((iVar2 != 0) &&
+	//	(this_00 = (CBaseEntity *)
+	//	__symbol_stub::___dynamic_cast(iVar2, PTR_typeinfo_00e34140, PTR_typeinfo_00e3408c, 0),
+	//	this_00 != (CBaseEntity *)0x0))
+	//if (this_00)
+	//{
 
-	if (pPlayer)
+#ifdef CLIENT_DLL
+	COFPlayer *piVar5 = C_OFPlayer::GetLocalOFPlayer();
+	//iVar3 = (**(code **)(*piVar5 + 0x1d4))(piVar5);
+	//if ((1 < iVar3) && (local_14 != iVar3))
+	//{
+	//	cVar1 = CTFPlayerShared::InCond((CTFPlayerShared *)(piVar4 + 0x5f3), 3);
+	//	if ((piVar5 != piVar4) && (cVar1 == 1))
+	//	{
+	//		local_14 = CTFPlayerShared::GetDisguiseTeam((CTFPlayerShared *)(piVar4 + 0x5f3));
+	//	}
+	//}
+#endif
+
+	int iTeam = GetTeamNumber();
+	int iSkinOverride = GetSkinOverride();
+	//uVar3 = CONCAT31(extraout_var, uVar1);
+	if (iSkinOverride == -1) //0xffffffff)
 	{
-		pcVar1 = *(code **)(*this_00 + 0x40c);
-		uVar2 = (*this->vtable->CTFWeaponBase::GetEffectBarAmmo)(this);
-		iVar3 = (*pcVar1)(this_00, uVar2);
-		uVar2 = (*this->vtable->CTFWeaponBase::GetEffectBarAmmo)(this);
-		iVar4 = CTFPlayer::GetMaxAmmo((CTFPlayer *)this_00, CONCAT31(extraout_var, uVar2), -1);
-		fVar5 = 1.0;
-		//if (iVar3 < iVar4)
+		// econ
+		//uVar1 = (*this->vtable->CEconEntity::GetAttributeContainer)((CEconEntity *)this);
+		//if ((*(char *)(CONCAT31(extraout_var_00, uVar1) + 0xb0) != '\0') &&
+		//	(uVar3 = CEconItemView::GetSkin
+		//	((CEconItemView *)(CONCAT31(extraout_var_00, uVar1) + 0x5c), iVar2, false),
+		//	uVar3 != 0xffffffff))
+		//{
+		//	return uVar3;
+		//}
 
-		if (  )
+		//OF_TEAM_RED;
+		//OF_TEAM_BLUE;
+
+		switch (iTeam)
 		{
-			(*this->vtable->CTFWeaponBase::InternalGetEffectBarRechargeTime)(this);
-			fVar5 = CAttributeManager::AttribHookValue<float>
-				((float)extraout_ST0, "effectbar_recharge_rate", (CBaseEntity *)this,
-				(CUtlVector *)0x0, true);
-			fVar5 = ((fVar5 - (float)this->field_0x6a4) + (*PTR__gpGlobals_00e34080)->curtime) / fVar5;
+		case OF_TEAM_RED:
+			iSkin = 0;
+			break;
+		case OF_TEAM_BLUE:
+			iSkin = 1;
+			break;
+		default:
+			iSkin = 1;
+			break;
 		}
-	}
-	return (float10)fVar5;
-}
 
-int COFWeaponBase::GetEffectBarAmmo()
-{
-	return m_iPrimaryAmmoType;
+		//uVar3 = 0;
+		//if (iTeam != 2)
+		//{
+		//	uVar3 = (uint)(iTeam == 3);
+		//}
+	}
+	//}
+	return iSkin;
 }
 
 //OFSTATUS: COMPLETE(?)

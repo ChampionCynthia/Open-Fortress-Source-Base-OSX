@@ -111,6 +111,11 @@ C_OFWeaponBase 	*C_OFPlayer::GetActiveOFWeapon(void) const
 	return dynamic_cast<C_OFWeaponBase*> (GetActiveWeapon());
 }
 
+C_OFPlayer* C_OFPlayer::GetLocalOFPlayer()
+{
+	return ToOFPlayer(BaseClass::GetLocalPlayer());
+}
+
 extern ConVar friendlyfire;
 extern ConVar sv_showimpacts;
 

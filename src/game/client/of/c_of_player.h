@@ -36,7 +36,8 @@ public:
 						   float y	// spread y factor
 						   );
 						   
-public:
+	static C_OFPlayer* GetLocalOFPlayer();
+
 	COFPlayerAnimState *m_PlayerAnimState;
 
 	COFPlayerShared m_Shared;

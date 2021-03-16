@@ -340,11 +340,11 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     virtual float GetInitialAfterburnDuration() { return 0.0f; };
     virtual float GetAfterburnRateOnHit() { return 0.0f; };
     // return value is probably the model's skin index
-    // virtual uint GetSkin();
-    virtual float GetEffectBarProgress();
+    virtual int GetSkin();
+    //virtual float GetEffectBarProgress();
     virtual bool CanPickupOtherWeapon() const { return true; };
     virtual bool ShouldRemoveInvisibilityOnPrimaryAttack() const { return true; };
-    virtual int GetEffectBarAmmo();
+    //virtual int GetEffectBarAmmo();
     virtual float InternalGetEffectBarRechargeTime() { return 0.0f; };
     virtual bool CanInspect() { return true; } ;
     virtual void HookAttributes();
