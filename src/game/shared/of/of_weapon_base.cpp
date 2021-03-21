@@ -1,12 +1,13 @@
 // ========= Copyright Open Fortress Developers, CC-BY-NC-SA ============
 // Purpose: Impl COFWeaponBase, the root of all OF weapons
-// Author(s): Nopey, Fenteale, KaydemonLP
+// Author(s): Nopey, Fenteale, KaydemonLP, Cherry!
 //
 #include "cbase.h"
 #include "eventlist.h"
 #ifdef CLIENT_DLL
 #include "c_of_player.h"
 #include "c_baseviewmodel.h"
+#include "of_clientmode.h"
 #else
 #include "of_player.h"
 #include "baseviewmodel.h"
@@ -133,18 +134,24 @@ IMPLEMENT_NETWORKCLASS_ALIASED( OFWeaponBase, DT_OFWeaponBase )
 
 BEGIN_NETWORK_TABLE( COFWeaponBase, DT_OFWeaponBase )
 #ifdef CLIENT_DLL
-  
+	RecvPropBool(RECVINFO(m_bLoweredWeapon)),
+	RecvPropInt(RECVINFO(m_iReloadStage)),
+	RecvPropBool(RECVINFO(m_bAnimReload)),
+	RecvPropFloat(RECVINFO(m_flOldPrimaryAttack))
 #else
-/* SDK Garbo that might or might not be useful
-    // world weapon models have no animations
-      SendPropExclude( "DT_AnimTimeMustBeFirst", "m_flAnimTime" ),
-    SendPropExclude( "DT_BaseAnimating", "m_nSequence" ),
-*/
+	SendPropBool(SENDINFO(m_bLoweredWeapon)),
+	SendPropInt(SENDINFO(m_iReloadStage)),
+	SendPropBool(SENDINFO(m_bAnimReload)),
+	SendPropFloat(SENDINFO(m_flOldPrimaryAttack))
 #endif
 END_NETWORK_TABLE()
 
 #ifdef CLIENT_DLL
 BEGIN_PREDICTION_DATA( COFWeaponBase )
+	DEFINE_PRED_FIELD( m_bLoweredWeapon, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
+	DEFINE_PRED_FIELD( m_iReloadStage, FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
+	DEFINE_PRED_FIELD( m_bAnimReload, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
+	DEFINE_PRED_FIELD( m_flOldPrimaryAttack, FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
     DEFINE_PRED_FIELD( m_flTimeWeaponIdle, FIELD_FLOAT, FTYPEDESC_OVERRIDE | FTYPEDESC_NOERRORCHECK ),
 END_PREDICTION_DATA()
 #endif
@@ -163,15 +170,23 @@ LINK_ENTITY_TO_CLASS( tf_weapon_base, COFWeaponBase );
 
 #endif
 
+#ifdef CLIENT_DLL
+
+extern ConVar cl_flipviewmodels;
+
+#endif
 ConVar tf_weapon_criticals( "tf_weapon_criticals", "1", FCVAR_NOTIFY | FCVAR_REPLICATED, "");
 
 // ----------------------------------------------------------------------------- //
 // COFWeaponBase implementation. 
 // ----------------------------------------------------------------------------- //
 
-//OFSTATUS: INCOMPLETE, massive (~500 lines). (lots of fields, too)
+//OFSTATUS: COMPLETE
 COFWeaponBase::COFWeaponBase()
 {
+	SetPredictionEligible(true);
+	SetSolidFlags(FSOLID_TRIGGER);
+
 	m_bLoweredWeapon = false;
 	m_iWeaponMode = OF_WEAPON_MODE_PRIMARY;
 	m_flLastDeployTime = 0.0f;
@@ -180,66 +195,14 @@ COFWeaponBase::COFWeaponBase()
 	m_flCritDuration = 0;
 	m_iLastCritCheck = 0;
 	m_bAttackCritical = false;
+	m_bWeaponReset = false;
 }
 
-#ifdef CLIENT_DLL
-//OFSTATUS: INCOMPLETE
+//OFSTATUS: COMPLETE
 COFWeaponBase::~COFWeaponBase()
 {
-    /*
-    uint uVar1;
-    C_BaseEntity *pCVar2;
-    int *piVar3;
-    undefined *puVar4;
-    int iVar5;
-    int iVar6;
-
-    this->vtable = (vtableC_TFWeaponBase *)&PTR_ ~C_TFWeaponBase_00fbf338;
-    this->field_0x4 = &PTR___ZThn4_N12C_BaseEntity17GetIClientUnknownEv_00fbfb64;
-    this->field_0x8 = &PTR___ZThn8_N12C_BaseEntity17GetIClientUnknownEv_00fbfc20;
-    this->field_0xc = &PTR___ZThn12_N12C_BaseEntity17GetIClientUnknownEv_00fbfc60;
-    this->field_0x540 = &PTR___ZThn1344_N15C_BaseAnimating19OnModelLoadCompleteEPK7model_t_00fbfc7c;
-    this->field_0x894 = &PTR___ZThn2196_N12C_EconEntity19GetAttributeManagerEv_00fbfc88;
-    this->field_0xae0 = &PTR___ZThn2784_N14C_TFWeaponBase20GetOwnerViaInterfaceEv_00fbfca4;
-    this->field_0xae4 = &PTR_ShouldUpdateMeter_00fbfcb0;
-    this->field_0xae8 = &PTR___ZThn2792_N14C_TFWeaponBaseD1Ev_00fbfccc;
-    puVar4 = PTR__g_pEntityList_00f8a1b4;
-    iVar5 = *(int *)PTR__g_pEntityList_00f8a1b4;
-    uVar1 = this->field_0xafc;
-    if (((uVar1 != 0xffffffff) &&
-         (iVar6 = (uVar1 & 0xfff) * 0x10, *(uint *)(iVar5 + 8 + iVar6) == uVar1 >> 0xc)) &&
-        (pCVar2 = *(C_BaseEntity **)(iVar5 + 4 + iVar6), pCVar2 != (C_BaseEntity *)0x0))
-    {
-        C_BaseEntity::Remove(pCVar2);
-        this->field_0xafc = 0xffffffff;
-        iVar5 = *(int *)puVar4;
-    }
-    uVar1 = this->field_0xaf8;
-    if (((uVar1 != 0xffffffff) &&
-         (iVar6 = (uVar1 & 0xfff) * 0x10, *(uint *)(iVar5 + 8 + iVar6) == uVar1 >> 0xc)) &&
-        (pCVar2 = *(C_BaseEntity **)(iVar5 + 4 + iVar6), pCVar2 != (C_BaseEntity *)0x0))
-    {
-        C_BaseEntity::Remove(pCVar2);
-        this->field_0xaf8 = 0xffffffff;
-    }
-    this->field_0xae8 = &PTR_ ~CGameEventListener_011ff3b8;
-    if (*(char *)&this->field_0xaec != '\0')
-    {
-        piVar3 = *(int **)PTR__gameeventmanager_00f8a094;
-        if (piVar3 != (int *)0x0)
-        {
-            (**(code **)(*piVar3 + 0x18))(piVar3, &this->field_0xae8);
-        }
-        *(undefined *)&this->field_0xaec = 0;
-    }
-    C_BaseCombatWeapon::~C_BaseCombatWeapon((C_BaseCombatWeapon *)this);
-    */
-
-    /* Server Side Destructor
-        this->~CBaseCombatWeapon();
-    */
+	CBaseCombatWeapon::~CBaseCombatWeapon();
 }
-#endif
 
 //OFSTATUS: COMPLETE
 CBaseEntity *COFWeaponBase::GetOwnerViaInterface()
@@ -515,7 +478,7 @@ bool COFWeaponBase::ReloadSingly()
 	|| ( bAutoFiresWhenFull && Clip1() == GetMaxClip1() || pPlayer->GetAmmoCount(m_iPrimaryAmmoType) <= 0 ) ) 
 	{
 		PrimaryAttack();
-		//*(undefined *)&this->field_0x5b6 = 1; Does this mark the start of firing a barrage? - Kay
+		m_bFiringWholeClip = true;
 		return false;
 	}
 
@@ -813,7 +776,7 @@ void COFWeaponBase::ItemBusyFrame()
 					m_bInReload = 0;
 					m_flNextSecondaryAttack.Set(gpGlobals->curtime);
 					m_flNextPrimaryAttack = Max(gpGlobals->curtime, (float)m_flOldPrimaryAttack);
-					CBaseCombatWeapon::SetWeaponIdleTime(GetOFWpnData().m_WeaponModeInfo[m_iWeaponMode].m_flTimeIdle);
+					CBaseCombatWeapon::SetWeaponIdleTime(gpGlobals->curtime + GetOFWpnData().m_WeaponModeInfo[m_iWeaponMode].m_flTimeIdle);
 				}
 			}
 		}
@@ -1588,37 +1551,17 @@ int COFWeaponBase::GetViewModelWeaponRole()
 	return GetOFWpnData().m_iWeaponType;
 }
 
-//OFSTATUS: INCOMPLETE, only temp for now
+//OFSTATUS: COMPLETE
 bool COFWeaponBase::CanAttack()
 {
-    /*
-    undefined uVar1;
-    int iVar2;
-    C_TFPlayer *this_00;
-    undefined3 extraout_var;
+	COFPlayer *pPlayer = GetOFPlayerOwner();
 
-    iVar2 = this->GetOwner();
-    if (iVar2 == 0)
-    {
-        uVar1 = 0;
-    }
-    else
-    {
-        this_00 = (C_TFPlayer *)
-            __symbol_stub::___dynamic_cast(iVar2, PTR_typeinfo_00f8a488, PTR_typeinfo_00f8a508, 0);
-        if (this_00 == (C_TFPlayer *)0x0)
-        {
-            uVar1 = 0;
-        }
-        else
-        {
-            uVar1 = this->GetCanAttackFlags();
-            //uVar1 = C_TFPlayer::CanAttack(this_00, CONCAT31(extraout_var, uVar1));
-        }
-    }
-    return uVar1;
-    */
-    return true;
+	if (pPlayer)
+	{
+		return pPlayer->m_Shared.CanAttack(GetCanAttackFlags());
+	}
+
+    return false;
 }
 
 //OFSTATUS: COMPLETE
@@ -1648,46 +1591,31 @@ bool COFWeaponBase::HideWhileStunned()
 	return 1;
 }
 
-//OFSTATUS: INCOMPLETE
+//OFSTATUS: COMPLETE
 bool COFWeaponBase::IsViewModelFlipped()
 {
 	// Who uses flipped viewmodels anyways?
 
-	return false;
-	
-	/*
-	char cVar1;
-	int iVar2;
-	int *piVar3;
-	bool bVar4;
+	// me :^) - cherry
 
-	iVar2 = CBaseCombatWeapon::GetOwner((CBaseCombatWeapon *)this);
-	if (iVar2 == 0)
+	COFPlayer *pPlayer = GetOFPlayerOwner();
+	if (!pPlayer) return false;
+
+#ifdef CLIENT_DLL
+	//bVar4 = (bool)*(char *)&this->field_0xabc != (*(int *)(*(int *)(PTR__cl_flipviewmodels_00f8a2ac + 0x1c) + 0x30) != 0);
+	if ( m_bFlipViewModel != cl_flipviewmodels.GetBool() )
 	{
-		bVar4 = false;
+		return true;
 	}
-	else
+#else
+	//bVar4 = *(char *)&this->field_0x61c != *(char *)(piVar3 + 0x7f3);
+	if (m_bFlipViewModel != pPlayer->m_bFlipViewModel)
 	{
-		piVar3 = (int *)__symbol_stub::___dynamic_cast(iVar2, PTR_typeinfo_00e34140, PTR_typeinfo_00e34088, 0);
-		if (piVar3 == (int *)0x0)
-		{
-			bVar4 = false;
-		}
-		else
-		{
-			cVar1 = (**(code **)(*piVar3 + 0x144))(piVar3);
-			if (cVar1 == '\0')
-			{
-				bVar4 = false;
-			}
-			else
-			{
-				bVar4 = this[0x61c] != *(CTFWeaponBase *)(piVar3 + 0x7f3);
-			}
-		}
+		return true;
 	}
-	return bVar4;
-	*/
+#endif
+
+	return false;
 }
 
 //OFSTATUS: COMPLETE
@@ -1720,7 +1648,7 @@ COFPlayer *COFWeaponBase::GetOFPlayerOwner() const
 	return ToOFPlayer( GetOwner() );
 }
 
-// OFSTATUS: INCOMPLETE
+// OFSTATUS: COMPLETE
 // --------------------------------------
 // Econ stuff removed + "complete" but we still gotta figure out where to define convar tf_useparticletracers - cherry
 // --------------------------------------
@@ -1798,17 +1726,17 @@ void COFWeaponBase::Precache()
 	//COFWeaponInfo weaponInfo = COFWeaponBase::GetOFWpnData();
 
 	//if (*(char *)(iVar5 + 0x991) != '\0')
-	if (COFWeaponBase::GetOFWpnData().m_szExplosionSound)
+	if (GetOFWpnData().m_szExplosionSound && GetOFWpnData().m_szExplosionSound[0])
 	{
 		//CBaseEntity::PrecacheScriptSound((char *)(iVar5 + 0x991));
-		CBaseEntity::PrecacheScriptSound(COFWeaponBase::GetOFWpnData().m_szExplosionSound);
+		CBaseEntity::PrecacheScriptSound(GetOFWpnData().m_szExplosionSound);
 	}
 
 	//if (*(char *)(iVar5 + 0x911) != '\0')
-	if (COFWeaponBase::GetOFWpnData().m_szBrassModel)
+	if (GetOFWpnData().m_szBrassModel && GetOFWpnData().m_szBrassModel[0])
 	{
 		//CBaseEntity::PrecacheModel((char *)(iVar5 + 0x911));
-		CBaseEntity::PrecacheModel(COFWeaponBase::GetOFWpnData().m_szBrassModel);
+		CBaseEntity::PrecacheModel(GetOFWpnData().m_szBrassModel);
 	}
 
 	//uVar2 = (COFWeaponBase::GetMuzzleFlashParticleEffect);
@@ -1819,27 +1747,28 @@ void COFWeaponBase::Precache()
 	}
 
 	//if (*(char *)(iVar5 + 0xa11) != '\0')
-	if (COFWeaponBase::GetOFWpnData().m_szExplosionEffect)
+	if (GetOFWpnData().m_szExplosionEffect && GetOFWpnData().m_szExplosionEffect[0])
 	{
 		//PrecacheParticleSystem((char *)(iVar5 + 0xa11));
-		PrecacheParticleSystem(COFWeaponBase::GetOFWpnData().m_szExplosionEffect);
+		DevMsg("Particle: %s\n", GetOFWpnData().m_szExplosionEffect);
+		PrecacheParticleSystem(GetOFWpnData().m_szExplosionEffect);
 	}
 
 	//if (*(char *)(iVar5 + 0xa91) != '\0')
-	if (COFWeaponBase::GetOFWpnData().m_szExplosionEffectPlayer)
+	if (GetOFWpnData().m_szExplosionEffectPlayer && GetOFWpnData().m_szExplosionEffectPlayer[0])
 	{
 		//PrecacheParticleSystem((char *)(iVar5 + 0xa91));
-		PrecacheParticleSystem(COFWeaponBase::GetOFWpnData().m_szExplosionEffectPlayer);
+		PrecacheParticleSystem(GetOFWpnData().m_szExplosionEffectPlayer);
 	}
 
 	//if (*(char *)(iVar5 + 0xb11) != '\0')
-	if (COFWeaponBase::GetOFWpnData().m_szExplosionEffectWater)
+	if (GetOFWpnData().m_szExplosionEffectWater && GetOFWpnData().m_szExplosionEffectWater[0])
 	{
 		//PrecacheParticleSystem((char *)(iVar5 + 0xb11));
-		PrecacheParticleSystem(COFWeaponBase::GetOFWpnData().m_szExplosionEffectWater);
+		PrecacheParticleSystem(GetOFWpnData().m_szExplosionEffectWater);
 	}
 
-	if (COFWeaponBase::GetOFWpnData().m_szTracerParticle)
+	if (GetOFWpnData().m_szTracerParticle && GetOFWpnData().m_szTracerParticle[0])
 	{
 		char szTracerparticle[128];
 		char szTracerparticleCrit[128];
@@ -1905,99 +1834,258 @@ void COFWeaponBase::ChangeTeam(int iTeamNum)
 }
 #endif
 
+#ifdef CLIENT_DLL
+//OFSTATUS: COMPLETE
+bool COFWeaponBase::ShouldPredict()
+{
+	if ( GetOwner() && GetOwner() == C_BasePlayer::GetLocalPlayer() )
+	{
+		return true;
+	}
+	return false;
+}
+
+//OFSTATUS: COMPLETE
+void COFWeaponBase::OnPreDataChanged(DataUpdateType_t updateType)
+{
+	BaseClass::OnPreDataChanged(updateType);
+
+	m_bOldWeaponReset = m_bWeaponReset;
+}
+
 //OFSTATUS: INCOMPLETE
+// trimmed econ, that last part at the bottom is unfinished
+void COFWeaponBase::OnDataChanged(DataUpdateType_t updateType)
+{
+	BaseClass::OnDataChanged(updateType);
+
+	if (updateType == DATA_UPDATE_CREATED)
+	{
+		ListenForGameEvent("localplayer_changeteam");
+	}
+
+	if (GetPredictable() && !ShouldPredict())
+	{
+		ShutdownPredictable();
+	}
+
+	if (m_iWorldModelIndex == GetWorldModelIndex())
+	{
+		m_nSkin = GetSkin();
+	}
+
+	if (m_bWeaponReset != m_bOldWeaponReset)
+	{
+		WeaponReset();
+	}
+
+	// hmm, this part got messed up real bad
+
+	// NOTES:
+	// piVar2 is the player
+
+	//uVar3 = this->field_0xbf4;
+	//if (uVar3 != 0xffffffff)
+	//{
+	//	iVar6 = (uVar3 & 0xfff) * 0x10;
+	//	if ((*(uint *)(*(int *)PTR__g_pEntityList_00f8a1b4 + 8 + iVar6) == uVar3 >> 0xc) &&
+	//		(piVar2 = *(int **)(*(int *)PTR__g_pEntityList_00f8a1b4 + 4 + iVar6), piVar2 != (int *)0x0))
+	//	{
+	//		(**(code **)(*piVar2 + 0x224))(piVar2);
+	//	}
+	//}
+}
+
+//OFSTATUS: INCOMPLETE
+// trimmed econ, bottom part unfinished
+int COFWeaponBase::GetWorldModelIndex()
+{
+	COFPlayer *pPlayer = GetOFPlayerOwner();
+
+	if (pPlayer)
+	{
+		C_OFPlayer *pLocalPlayer = C_OFPlayer::GetLocalOFPlayer();
+		if (!pLocalPlayer) return 0;
+
+		//int iLocalTeam = pLocalPlayer->GetTeamNumber();
+		//int iTeam = pPlayer->GetTeamNumber();
+
+		//bool bDisguiseCheck = ((LAST_SHARED_TEAM < iLocalTeam) && (iTeam != iLocalTeam));
+
+		// OFTODO: condition system doesnt exist yet, uncomment in the future - cherry
+
+		//if (bDisguiseCheck && pPlayer->m_Shared.InCond(TF_COND_DISGUISED)) //(cVar3 = CTFPlayerShared::InCond((CTFPlayerShared *)(pPlayer + 0x5f3), TF_COND_DISGUISED), cVar3 != '\0'))// &&
+		//	(uVar9 = pPlayer[0x63b], uVar9 != 0xffffffff))
+		//{
+			//iVar6 = (uVar9 & 0xfff) * 0x10;
+			//if (((*(uint *)(*(int *)PTR__g_pEntityList_00f8a1b4 + 8 + iVar6) == uVar9 >> 0xc) &&
+			//	(this_00 = *(C_TFWeaponBase **)(*(int *)PTR__g_pEntityList_00f8a1b4 + 4 + iVar6),
+			//	this_00 != (C_TFWeaponBase *)0x0)) && (this_00 != this))
+			//{
+			//	bVar5 = (*this_00->vtable->C_TFWeaponBase::GetWorldModelIndex)(this_00);
+			//	return (uint)bVar5;
+			//}
+		//}
+	}
+
+	return BaseClass::GetWorldModelIndex();
+}
+
+//OFSTATUS: COMPLETE
+void COFWeaponBase::FireGameEvent(IGameEvent *event)
+{
+	const char *eventname = event->GetName();
+	if (V_strcmp(eventname, "localplayer_changeteam") == 0)
+	{
+		UpdateVisibility();
+	}
+}
+
+//OFSTATUS: COMPLETE
+bool COFWeaponBase::ShouldDrawCrosshair()
+{
+	// OFTODO: custom crosshairs, they don't exist yet, uncomment in the future
+
+	// const char *crosshair_file = cl_crosshair_file.GetString();
+	//if (!crosshair_file)
+	//{
+		return GetOFWpnData().m_WeaponModeInfo[OF_WEAPON_TYPE_PRIMARY].m_bDrawCrosshair;
+	//}
+
+	//return true;
+}
+
+//OFSTATUS: COMPLETE
+void COFWeaponBase::Redraw()
+{
+	if (ShouldDrawCrosshair())
+	{
+		if (g_pClientMode->ShouldDrawCrosshair())
+		{
+			C_BaseCombatWeapon::DrawCrosshair();
+		}
+	}
+}
+
+
+// Taken from basehlcombatweapon_shared.cpp - cherry
+
+float g_lateralBob;
+float g_verticalBob;
+
+//ConVar OF_BOB_CYCLE_MAX("OF_BOB_CYCLE_MAX", "0.8", FCVAR_NOTIFY | FCVAR_REPLICATED, "");
+//ConVar OF_BOB("OF_BOB", "0.5", FCVAR_NOTIFY | FCVAR_REPLICATED, "");
+
+#define	OF_BOB_CYCLE_MAX	0.8f
+#define	OF_BOB		0.5f
+
+float COFWeaponBase::CalcViewmodelBob(void)
+{
+	static	float bobtime;
+	static	float lastbobtime;
+	float	cycle;
+
+	CBasePlayer *player = ToBasePlayer(GetOwner());
+	//Assert( player );
+
+	//NOTENOTE: For now, let this cycle continue when in the air, because it snaps badly without it
+
+	if ((!gpGlobals->frametime) || (player == NULL))
+	{
+		//NOTENOTE: We don't use this return value in our case (need to restructure the calculation function setup!)
+		return 0.0f;// just use old value
+	}
+
+	//Find the speed of the player
+	float speed = player->GetLocalVelocity().Length2D();
+
+	//FIXME: This maximum speed value must come from the server.
+	//		 MaxSpeed() is not sufficient for dealing with sprinting - jdw
+
+	speed = clamp(speed, -320, 320);
+
+	float bob_offset = RemapVal(speed, 0, 320, 0.0f, 1.0f);
+
+	bobtime += (gpGlobals->curtime - lastbobtime) * bob_offset;
+	lastbobtime = gpGlobals->curtime;
+
+	//Calculate the vertical bob
+	cycle = bobtime - (int)(bobtime / OF_BOB_CYCLE_MAX)*OF_BOB_CYCLE_MAX;
+	cycle /= OF_BOB_CYCLE_MAX;
+
+	if (cycle < OF_BOB)
+	{
+		cycle = M_PI * cycle / OF_BOB;
+	}
+	else
+	{
+		cycle = M_PI + M_PI*(cycle - OF_BOB) / (1.0 - OF_BOB);
+	}
+
+	g_verticalBob = speed*0.005f;
+	g_verticalBob = g_verticalBob*0.3 + g_verticalBob*0.4*sin(cycle);
+
+	g_verticalBob = clamp(g_verticalBob, -7.0f, 4.0f);
+
+	//Calculate the lateral bob
+	cycle = bobtime - (int)(bobtime / OF_BOB_CYCLE_MAX * 2)*OF_BOB_CYCLE_MAX * 2;
+	cycle /= OF_BOB_CYCLE_MAX * 2;
+
+	if (cycle < OF_BOB)
+	{
+		cycle = M_PI * cycle / OF_BOB;
+	}
+	else
+	{
+		cycle = M_PI + M_PI*(cycle - OF_BOB) / (1.0 - OF_BOB);
+	}
+
+	g_lateralBob = speed*0.005f;
+	g_lateralBob = g_lateralBob*0.3 + g_lateralBob*0.4*sin(cycle);
+	g_lateralBob = clamp(g_lateralBob, -7.0f, 4.0f);
+
+	//NOTENOTE: We don't use this return value in our case (need to restructure the calculation function setup!)
+	return 0.0f;
+}
+
+void COFWeaponBase::AddViewmodelBob(CBaseViewModel *viewmodel, Vector &origin, QAngle &angles)
+{
+	Vector	forward, right;
+	AngleVectors(angles, &forward, &right, NULL);
+
+	CalcViewmodelBob();
+
+	// Apply bob, but scaled down to 40%
+	VectorMA(origin, g_verticalBob * 0.1f, forward, origin);
+
+	// Z bob a bit more
+	origin[2] += g_verticalBob * 0.1f;
+
+	// bob the angles
+	angles[ROLL] += g_verticalBob * 0.5f;
+	angles[PITCH] -= g_verticalBob * 0.4f;
+
+	angles[YAW] -= g_lateralBob  * 0.3f;
+
+	VectorMA(origin, g_lateralBob * 0.8f, right, origin);
+}
+
+#endif // CLIENT_DLL
+
+//OFSTATUS: COMPLETE
 void COFWeaponBase::WeaponReset()
 {
-    /*
-    byte bVar1;
-    ushort uVar2;
-    ushort uVar3;
-    uint *this_00;
-    ushort *puVar4;
-    ushort *puVar5;
-    uint uVar6;
-    uint uVar7;
-    uint uVar8;
-    float10 extraout_ST0;
-    float10 extraout_ST0_00;
-    float fVar9;
-    uint local_34;
-    float local_18;
-    int local_14;
+#ifdef GAME_DLL
 
-    local_14 = 0;
-    CNetworkVarBase<int, CTFWeaponBase::NetworkVar_m_iReloadMode>::Set((CNetworkVarBase<int, CTFWeaponBase::NetworkVar_m_iReloadMode> *)&this->field_0x6ac,
-                                                                       &local_14);
-    bVar1 = *(byte *)&this->field_0x76c;
-    if (*(char *)&this->field_0x5c != '\0')
-    {
-        *(byte *)&this->field_0x60 = *(byte *)&this->field_0x60 | 1;
-        goto LAB_00372efa;
-    }
-    this_00 = (uint *)this->field_0x20;
-    if ((this_00 == (uint *)0x0) || ((*this_00 & 0x100) != 0))
-        goto LAB_00372efa;
-    *this_00 = *this_00 | 1;
-    puVar5 = (ushort *)CBaseEdict::GetChangeAccessor((CBaseEdict *)this_00);
-    puVar4 = *(ushort **)PTR__g_pSharedChangeInfo_00e34128;
-    uVar2 = *puVar4;
-    if (puVar5[1] == uVar2)
-    {
-        uVar6 = (uint)*puVar5;
-        uVar8 = (uint)puVar4[uVar6 * 0x14 + 0x14];
-        local_34 = 0;
-        if (uVar8 != 0)
-        {
-            uVar7 = 0;
-            do
-            {
-                if (puVar4[uVar6 * 0x14 + uVar7 + 1] == 0x76c)
-                    goto LAB_00372efa;
-                uVar7 = uVar7 + 1;
-            } while (uVar7 < uVar8);
-            local_34 = uVar8;
-            if (uVar8 == 0x13)
-            {
-                puVar5[1] = 0;
-                goto LAB_00372e9a;
-            }
-        }
-        puVar4[uVar6 * 0x14 + 0x14] = (short)local_34 + 1;
-        puVar4[uVar6 * 0x14 + local_34 + 1] = 0x76c;
-    }
-    else
-    {
-        uVar3 = puVar4[0x7d1];
-        uVar6 = (uint)uVar3;
-        if (uVar6 != 100)
-        {
-            *puVar5 = uVar3;
-            puVar4[0x7d1] = uVar3 + 1;
-            puVar5[1] = uVar2;
-            puVar4[uVar6 * 0x14 + 1] = 0x76c;
-            puVar4[uVar6 * 0x14 + 0x14] = 1;
-            goto LAB_00372efa;
-        }
-        puVar5[1] = 0;
-    LAB_00372e9a:
-        *(CBaseEdict *)((int)this_00 + 1) = (CBaseEdict)((byte) * (CBaseEdict *)((int)this_00 + 1) | 1);
-    }
-LAB_00372efa:
-    *(byte *)&this->field_0x76c = bVar1 ^ 1;
-    (*this->vtable->CTFWeaponBase::Energy_GetShotCost)(this);
-    fVar9 = CAttributeManager::AttribHookValue<float>((float)(int)(20.0 / (float)extraout_ST0), "mult_clipsize_upgrade",
-                                                      (CBaseEntity *)this, (CUtlVector *)0x0, true);
-    (*this->vtable->CTFWeaponBase::Energy_GetShotCost)(this);
-    local_18 = (float)(int)fVar9 * (float)extraout_ST0_00;
-    CNetworkVarBase<float, CTFWeaponBase::NetworkVar_m_flEnergy>::operator=((CNetworkVarBase<float, CTFWeaponBase::NetworkVar_m_flEnergy> *)&this->field_0x77c,
-                                                                            &local_18);
-    */
+	m_iReloadStage.Set(OF_RELOAD_STAGE_NONE);
 
-    /* Ghidra fucked up lole (Client)
-    //WARNING: Could not recover jumptable at 0x00369a7f. Too many branches
-    // WARNING: Treating indirect jump as call
-    (*this->vtable->C_TFWeaponBase::UpdateVisibility)();
-    */
+	m_bWeaponReset = !m_bWeaponReset;
+
+#else
+
+    UpdateVisibility();
+
+#endif
 }
 
 #ifdef GAME_DLL
@@ -2025,6 +2113,12 @@ CBaseEntity *COFWeaponBase::Respawn()
 		Msg("Respawn failed to create %s!\n", WeaponIDToAlias(GetWeaponID()));
 	}
 	return pWeapon;
+}
+
+//OFSTATUS: COMPLETE
+void COFWeaponBase::CheckRespawn()
+{
+	return;
 }
 #endif
 
@@ -2078,154 +2172,42 @@ const char *COFWeaponBase::GetMuzzleFlashParticleEffect()
 	return NULL;
 }
 
-//OFSTATUS: INCOMPLETE
-Vector COFWeaponBase::GetParticleColor(int iColor)
-{
-    /*
-    int *this;
-    char cVar1;
-    int iVar2;
-    uint uVar3;
-    int iVar4;
-    float fVar5;
-    float fVar6;
-    int *in_stack_00000008;
-    int in_stack_0000000c;
-
-    uVar3 = in_stack_00000008[0x7f];
-    if (uVar3 != 0xffffffff)
-    {
-        iVar4 = (uVar3 & 0xfff) * 0x10;
-        if ((((*(uint *)(*(int *)PTR__g_pEntityList_00e3407c + 8 + iVar4) == uVar3 >> 0xc) &&
-              (this = *(int **)(*(int *)PTR__g_pEntityList_00e3407c + 4 + iVar4), this != (int *)0x0)) &&
-             (cVar1 = (**(code **)(*this + 0x144))(this), cVar1 != '\0')) &&
-            (iVar4 = (**(code **)(*in_stack_00000008 + 0x37c))(), *(char *)(iVar4 + 0xb0) != '\0'))
-        {
-            iVar2 = CBaseEntity::GetTeamNumber((CBaseEntity *)this);
-            uVar3 = CEconItemView::GetModifiedRGBValue((CEconItemView *)(iVar4 + 0x5c), iVar2 == 3);
-            if (0 < (int)uVar3)
-            {
-                fVar6 = *(float *)(&DAT_00c01e10 + (uint)(in_stack_0000000c == 2) * 4);
-                fVar5 = (float)(uVar3 >> 0x10 & 0xff) * fVar6;
-                if (fVar5 <= 0.0)
-                {
-                    fVar5 = 0.0;
-                }
-                if (1.0 <= fVar5)
-                {
-                    fVar5 = 1.0;
-                }
-                *(float *)iColor = fVar5;
-                fVar5 = (float)(uVar3 >> 8 & 0xff) * fVar6;
-                if (fVar5 <= 0.0)
-                {
-                    fVar5 = 0.0;
-                }
-                if (1.0 <= fVar5)
-                {
-                    fVar5 = 1.0;
-                }
-                *(float *)(iColor + 4) = fVar5;
-                fVar6 = (float)(uVar3 & 0xff) * fVar6;
-                if (fVar6 <= 0.0)
-                {
-                    fVar6 = 0.0;
-                }
-                if (1.0 <= fVar6)
-                {
-                    fVar6 = 1.0;
-                }
-                *(float *)(iColor + 8) = fVar6;
-                return;
-            }
-            iVar4 = CBaseEntity::GetTeamNumber((CBaseEntity *)this);
-            if (in_stack_0000000c == 1)
-            {
-                if (iVar4 == 2)
-                {
-                    *(undefined4 *)iColor = 0x3f3851ec;
-                    *(undefined4 *)(iColor + 4) = 0x3e6147ae;
-                    *(undefined4 *)(iColor + 8) = 0x3e6b851f;
-                    return;
-                }
-                *(undefined4 *)iColor = 0x3eb0a3d7;
-                *(undefined4 *)(iColor + 4) = 0x3f051eb8;
-                *(undefined4 *)(iColor + 8) = 0x3f228f5c;
-                return;
-            }
-            if (iVar4 == 2)
-            {
-                *(undefined4 *)iColor = 0x3f000000;
-                *(undefined4 *)(iColor + 4) = 0x3e3851ec;
-                *(undefined4 *)(iColor + 8) = 0x3e000000;
-                return;
-            }
-            *(undefined4 *)iColor = 0x3e147ae1;
-            *(undefined4 *)(iColor + 4) = 0x3eda9fbe;
-            *(undefined4 *)(iColor + 8) = 0x3f0ccccd;
-            return;
-        }
-    }
-    *(undefined4 *)iColor = 0;
-    *(undefined4 *)(iColor + 4) = 0;
-    *(undefined4 *)(iColor + 8) = 0;
-    */
-
-	return Vector(0, 0, 0); // TEMPORARY - cherry
-}
-
+// OFSTATUS: COMPLETE
 int COFWeaponBase::GetSkin()
 {
-	//undefined uVar1;
-	//int iVar2;
-	//CBaseEntity *this_00;
-	//undefined3 extraout_var;
-	//undefined3 extraout_var_00;
-	//uint uVar3;
+	COFPlayer *pPlayer = GetOFPlayerOwner();
+	if (!pPlayer) return 0;
 
-	COFPlayer *this_00 = GetOFPlayerOwner();
-	if (!this_00) return 0;
-
-	//iVar2 = CBaseCombatWeapon::GetOwner((CBaseCombatWeapon *)this);
 	int iSkin = 0;
-	//if ((iVar2 != 0) &&
-	//	(this_00 = (CBaseEntity *)
-	//	__symbol_stub::___dynamic_cast(iVar2, PTR_typeinfo_00e34140, PTR_typeinfo_00e3408c, 0),
-	//	this_00 != (CBaseEntity *)0x0))
-	//if (this_00)
-	//{
+
+	int iTeam = pPlayer->GetTeamNumber();
 
 #ifdef CLIENT_DLL
-	COFPlayer *piVar5 = C_OFPlayer::GetLocalOFPlayer();
-	//iVar3 = (**(code **)(*piVar5 + 0x1d4))(piVar5);
-	//if ((1 < iVar3) && (local_14 != iVar3))
-	//{
-	//	cVar1 = CTFPlayerShared::InCond((CTFPlayerShared *)(piVar4 + 0x5f3), 3);
-	//	if ((piVar5 != piVar4) && (cVar1 == 1))
-	//	{
-	//		local_14 = CTFPlayerShared::GetDisguiseTeam((CTFPlayerShared *)(piVar4 + 0x5f3));
-	//	}
-	//}
+	COFPlayer *pLocalPlayer = C_OFPlayer::GetLocalOFPlayer();
+
+	int iLocalTeam = pLocalPlayer->GetTeamNumber();
+
+	if ((1 < iLocalTeam) && (iTeam != iLocalTeam))
+	{
+		//cVar1 = CTFPlayerShared::InCond((CTFPlayerShared *)(piVar4 + 0x5f3), 3);
+		//cVar1 = this_00->m_Shared.InCond(3);
+
+		// OFTODO: condition system doesnt exist yet, uncomment in the future - cherry
+
+		/*
+		if ((pLocalPlayer != pPlayer) && pPlayer->m_Shared.InCond(TF_COND_DISGUISED))//(cVar1 == 1))
+		{
+			//local_14 = CTFPlayerShared::GetDisguiseTeam((CTFPlayerShared *)(this_00 + 0x5f3));
+			iTeam = pPlayer->m_Shared.GetDisguiseTeam();
+		}
+		*/
+	}
 #endif
 
-	int iTeam = GetTeamNumber();
 	int iSkinOverride = GetSkinOverride();
-	//uVar3 = CONCAT31(extraout_var, uVar1);
-	if (iSkinOverride == -1) //0xffffffff)
+
+	if (iSkinOverride == -1)
 	{
-		// econ
-		//uVar1 = (*this->vtable->CEconEntity::GetAttributeContainer)((CEconEntity *)this);
-		//if ((*(char *)(CONCAT31(extraout_var_00, uVar1) + 0xb0) != '\0') &&
-		//	(uVar3 = CEconItemView::GetSkin
-		//	((CEconItemView *)(CONCAT31(extraout_var_00, uVar1) + 0x5c), iVar2, false),
-		//	uVar3 != 0xffffffff))
-		//{
-		//	return uVar3;
-		//}
-
-		//OF_TEAM_RED;
-		//OF_TEAM_BLUE;
-
 		switch (iTeam)
 		{
 		case OF_TEAM_RED:
@@ -2238,14 +2220,7 @@ int COFWeaponBase::GetSkin()
 			iSkin = 1;
 			break;
 		}
-
-		//uVar3 = 0;
-		//if (iTeam != 2)
-		//{
-		//	uVar3 = (uint)(iTeam == 3);
-		//}
 	}
-	//}
 	return iSkin;
 }
 

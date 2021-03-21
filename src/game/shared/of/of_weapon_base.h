@@ -1,6 +1,6 @@
 // ========= Copyright Open Fortress Developers, CC-BY-NC-SA ============
 // Purpose: COFWeaponBase is the root of all OF weapons
-// Author(s): Nopey, Fenteale
+// Author(s): Nopey, Fenteale, Cherry!
 //
 #pragma once
 
@@ -9,6 +9,7 @@
 #include "econ/ihasowner.h"
 #include "predictable_entity.h"
 #include "npcevent.h"
+#include "GameEventListener.h"
 
 #ifdef CLIENT_DLL
 #define COFPlayer C_OFPlayer
@@ -141,7 +142,11 @@ public:
 class COFPlayer;
 
 //OFTODO: Mark many COFWeaponBase getters const
-class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */ 
+#ifdef GAME_DLL
+class COFWeaponBase: public CBaseCombatWeapon, IHasOwner//, public CGameEventListener /*, IHasGenericMeter */ 
+#else
+class COFWeaponBase : public CBaseCombatWeapon, IHasOwner, public CGameEventListener
+#endif
 {
     DECLARE_CLASS(COFWeaponBase, CBaseCombatWeapon);
     DECLARE_NETWORKCLASS();
@@ -154,9 +159,8 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     //OFTODO: Compare COFWeaponBase members to client.dylib CTFWeaponBase
 
     COFWeaponBase();
-    #ifdef CLIENT_DLL
     ~COFWeaponBase();
-    #endif
+
     // CBaseEntity::
     virtual const char *GetTracerType() override;
 
@@ -223,13 +227,15 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     virtual const char *GetShootSound( int iIndex ) const override;
     virtual int Clip1() override;
     virtual int Clip2() override;
-    //virtual Activity ActivityOverride( Activity baseAct, bool *pRequired ); // ignore, ghidra messed up
+    //virtual Activity ActivityOverride( Activity baseAct, bool *pRequired ); // ignore
     virtual acttable_t *ActivityList( int &iActivityCount );
     #ifdef CLIENT_DLL
     virtual void FallInit() { /*Intentionally blank*/ };
     #endif
 	virtual void Materialize();
-    // virtual void CheckRespawn() override;
+	#ifdef GAME_DLL
+    virtual void CheckRespawn() override;
+	#endif
     virtual void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
     virtual bool Ready() override;
     virtual bool Lower() override;
@@ -255,10 +261,10 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
 	#ifdef CLIENT_DLL
     // virtual void UpdateHands(); // ignored! - cherry
 	#endif
-    // virtual bool OwnerCanTaunt();
+	virtual bool OwnerCanTaunt() { return true; };
     // virtual bool CanBeCritBoosted();
     // OFTODO: this is almost certainly not an int pointer.
-    // virtual int *GetTauntItem();
+    // virtual int GetTauntItem() const; // econ?
     // warning: massive chonkey function
     // virtual void UpdateExtraWearables();
     // virtual void ExtraWearableEquipped(CTFWearable *);
@@ -299,21 +305,21 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // virtual bool DeflectPlayer(CTFPlayer *,CTFPlayer *,Vector *);
     // virtual bool DeflectEntity(CBaseEntity *,CTFPlayer *,Vector *);
     // virtual void PlayDeflectionSound(bool);
-    // virtual float GetDeflectionRadius();
+	virtual float GetDeflectionRadius() { return 128.0; };
 	virtual float GetJarateTime() { return 0.0f; };
     virtual bool CanAttack();
     virtual bool GetCanAttackFlags() const { return false; };
     virtual void WeaponReset();
-    // virtual void WeaponRegenerate();
+    // virtual void WeaponRegenerate(); // energy weapons
     virtual const char *GetMuzzleFlashEffectName_3rd();
     virtual const char *GetMuzzleFlashEffectName_1st();
     virtual const char *GetMuzzleFlashModel();
     virtual float GetMuzzleFlashModelLifetime();
     virtual const char *GetMuzzleFlashParticleEffect();
-    // virtual const char *GetInventoryModel();
+    // virtual const char *GetInventoryModel(); // econ
     virtual float GetSpeedMod();
 	virtual bool CanFireCriticalShot() { return true; };
-    // virtual bool CanFireRandomCriticalShot(CBaseEntity *);
+    //virtual bool CanFireRandomCriticalShot(float param_1); // unused
     // Probably the MvM rottenburg cap stun :P
     virtual void OnControlStunned();
     virtual bool IsViewModelFlipped();
@@ -326,12 +332,12 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     virtual float Energy_GetShotCost(){ return 4.0f; };
 	// OFSTATUS: COMPLETE
     virtual float Energy_GetRechargeCost(){ return 4.0f; };
-    virtual Vector GetParticleColor(int iColor);
+    //virtual Vector GetParticleColor(int iColor); //econ
     virtual bool HasLastShotCritical() const { return false; };
     virtual bool UseServerRandomSeed() const { return true; };
     // int param is probs a bool or an enum
     // void OnBulletFire(int iPlayersHit); // ignored
-    // virtual void OnPlayerKill(CTFPlayer *pSmellyUnfortunate, CTakeDamageInfo *);
+    //virtual void OnPlayerKill(COFPlayer *pSmellyUnfortunate, CTakeDamageInfo &info); // ignored
     #ifdef GAME_DLL
     //virtual float GetLastHitTime(); // ignore
 	virtual int GetDropSkinOverride() { return -1; };
@@ -356,6 +362,20 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
     // (oh, and it doesn't have any overrides)
     // or in other words, all my homies hate CTFWeaponBase::OnUpgraded
     // void OnUpgraded();
+	#ifdef CLIENT_DLL
+
+	virtual int GetWorldModelIndex();
+	virtual bool ShouldPredict();
+	virtual void OnPreDataChanged(DataUpdateType_t updateType);
+	virtual void OnDataChanged(DataUpdateType_t updateType);
+	virtual void FireGameEvent(IGameEvent *event);
+	virtual bool ShouldDrawCrosshair();
+	virtual void Redraw();
+
+	virtual float CalcViewmodelBob();
+	virtual void AddViewmodelBob(CBaseViewModel *viewmodel, Vector &origin, QAngle &angles);
+
+	#endif
 	
 	COFPlayer	*GetOFPlayerOwner() const;
 	
@@ -364,24 +384,28 @@ class COFWeaponBase: public CBaseCombatWeapon, IHasOwner /*, IHasGenericMeter */
 public:
 	int m_iWeaponMode; // Used in stuff like airblast 'n similar
 	CNetworkVar( int, m_iReloadStage );
-private:
+	CNetworkVar(bool, m_bLoweredWeapon);
 	CNetworkVar( bool, m_bAnimReload );
+	CNetworkVar(float, m_flOldPrimaryAttack);
+private:
 	CNetworkVar( bool, m_bInAttack );
 	CNetworkVar( bool, m_bInAttack2 );
 	CNetworkVar( float, m_flEnergy );
 	CNetworkVar( int, m_iConsecutiveShots );
 	CNetworkVar( int, m_iOldClip );
-	CNetworkVar( float, m_flOldPrimaryAttack );
-	float m_flLastDeployTime; // i'm not 100% if this is a cnetworkvar but it doesnt seem to be, do correct me if i'm wrong! - cherry
+	float m_flLastDeployTime;
     bool m_bCanDropWeapon;
 	char m_szTracerTypeName[128];
 	COFWeaponInfo *m_pWeaponInfo;
 	int field_0x6cc; // OFTODO: RENAME ME IN THE FUTURE!
 	int m_iCritSeed;
 	float m_flCritDuration;
-	bool m_bLoweredWeapon;
+	
 	int m_iLastCritCheck;
 	bool m_bAttackCritical;
+
+	CNetworkVar( bool, m_bWeaponReset );
+	bool m_bOldWeaponReset;
 
 	static acttable_t m_acttableSecondary[];
 	static acttable_t m_acttableMelee[];

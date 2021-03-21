@@ -114,7 +114,7 @@ enum
 
 // not all of these exist, compatibility only
 // https://csrd.science/misc/datadump/current/tf_conds.txt
-enum
+enum ETFCond
 {
 	TF_COND_AIMING = 0,		// Sniper aiming, Heavy minigun.
 	TF_COND_ZOOMED,

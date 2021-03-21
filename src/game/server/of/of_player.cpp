@@ -81,6 +81,7 @@ END_DATADESC()
 COFPlayer::COFPlayer() : BaseClass()
 {
 	m_PlayerAnimState = CreatePlayerAnimState(this);
+	m_bFlipViewModel = false;
 }
 
 bool COFPlayer::m_bOFPlayerNeedsPrecache { false };

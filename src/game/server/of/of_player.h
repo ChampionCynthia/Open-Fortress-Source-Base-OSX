@@ -97,6 +97,11 @@ public:
 private:
 	COFPlayerAnimState *m_PlayerAnimState;
 	OFPlayerState	m_iPlayerState;
+
+public:
+
+	bool m_bFlipViewModel;
+
 };
 
 inline COFPlayer *ToOFPlayer( CBaseEntity *pEntity )

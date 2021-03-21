@@ -40,6 +40,8 @@ public:
 	void Init(OuterClass *pOuter);
 
 	virtual float GetCritMult();
+	virtual bool CanAttack(int iFlags);
+	//virtual bool InCond(ETFCond eCond) const;
 
 private:
 
