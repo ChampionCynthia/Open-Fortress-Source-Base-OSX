@@ -4,7 +4,8 @@
 //
 
 #include "cbase.h"
-#include "of_shareddefs.h"
+//#include "of_shareddefs.h"
+#include "of_flag.h"
 #include "of_gamerules.h"
 #include "viewport_panel_names.h"
 #include "gameeventdefs.h"
@@ -27,16 +28,18 @@
 	#include "of_player.h"
 	#include "gameinterface.h"
 	#include "of_bot_temp.h"
-	#include "team.h"
+	#include "of_team.h"
+	#include "team_control_point_master.h"
+	//#include "of_flag.h"
 #endif
 
 REGISTER_GAMERULES_CLASS( COFGameRules );
 
 BEGIN_NETWORK_TABLE_NOBASE( COFGameRules, DT_OFGameRules )
 #ifdef CLIENT_DLL
-		//RecvPropBool( RECVINFO( ?? ) ),
+		RecvPropInt(RECVINFO(m_nGameType)),
 #else
-		//SendPropBool( SENDINFO( ?? ) ),
+		SendPropInt(SENDINFO(m_nGameType), 4, SPROP_UNSIGNED),
 #endif
 END_NETWORK_TABLE()
 
@@ -44,6 +47,7 @@ LINK_ENTITY_TO_CLASS( tf_gamerules, COFGameRulesProxy );
 IMPLEMENT_NETWORKCLASS_ALIASED( OFGameRulesProxy, DT_OFGameRulesProxy )
 
 ConVar sv_showimpacts("sv_showimpacts", "0", FCVAR_REPLICATED, "Shows client (red) and server (blue) bullet impact point" );
+ConVar tf_flag_caps_per_round("tf_flag_caps_per_round", "3", FCVAR_REPLICATED, "Number of captures per round on CTF maps. Set to 0 to disable.");
 
 // OFSTATUS: COMPLETE
 static const char *s_PreserveEnts[] =
@@ -118,44 +122,268 @@ void InitBodyQue()
 // OFSTATUS: INCOMPLETE	
 COFGameRules::COFGameRules()
 {
-#ifndef CLIENT_DLL
+#ifdef GAME_DLL
+	OFTeamMgr()->Init();
+
+	ResetMapTime();
+
 	// Create the team managers
+	/*
 	for ( int i = 0; i < ARRAYSIZE( g_aTeamNames ); i++ )
 	{
 		CTeam *pTeam = static_cast<CTeam*>(CreateEntityByName( "team_manager" ));
 		pTeam->Init( g_aTeamNames[i], i );
-
+	
 		g_Teams.AddToTail( pTeam );
 	}
+	*/
+
+	ListenForGameEvent("teamplay_point_captured");
+	ListenForGameEvent("teamplay_capture_blocked");
+	ListenForGameEvent("teamplay_round_win");
+	ListenForGameEvent("teamplay_flag_event");
+	ListenForGameEvent("teamplay_round_start");
+	ListenForGameEvent("player_escort_score");
+	ListenForGameEvent("player_disconnect");
+	ListenForGameEvent("teamplay_setup_finished");
+	ListenForGameEvent("recalculate_truce");
+#else
+	ListenForGameEvent("game_newmap");
+	ListenForGameEvent("overtime_nag");
+	ListenForGameEvent("recalculate_holidays");
 #endif
 }
 	
 // OFSTATUS: INCOMPLETE	
 COFGameRules::~COFGameRules( void )
 {
-#ifndef CLIENT_DLL
-	// Note, don't delete each team since they are in the gEntList and will 
-	// automatically be deleted from there, instead.
-	g_Teams.Purge();
+#ifdef GAME_DLL
+	OFTeamMgr()->Shutdown();
 #endif
+}
+
+#ifdef GAME_DLL
+// OFSTATUS: COMPLETE
+// cut mvm and boss precaching
+void COFGameRules::Precache(void)
+{
+	CTeamplayRules::Precache();
+	COFPlayer::m_bOFPlayerNeedsPrecache = true;
 }
 
 // OFSTATUS: INCOMPLETE
 void COFGameRules::CreateStandardEntities( void )
 {
-#ifndef CLIENT_DLL
-	CBaseEntity::Create( "tf_gamerules", vec3_origin, vec3_angle );
-#endif
+	m_hOFGameRulesProxy = dynamic_cast< COFGameRulesProxy* >(CBaseEntity::Create("tf_gamerules", vec3_origin, vec3_angle));
 }
 
 // OFSTATUS: INCOMPLETE
 void COFGameRules::Think( void )
 {
-#ifndef CLIENT_DLL	
 	//BaseClass::Think();
+}
 #endif
+
+// OFSTATUS: COMPLETE
+float COFGameRules::GetRespawnTimeScalar(int iTeam)
+{
+	// (field_0x964 + 2) is PVE mode (MvM)
+	//if (*(char *)((int)&this->field_0x964 + 2) != '\0') 
+	//{
+	//	return (float10)1;
+	//}
+
+	//fVar1 = (float10)CTeamplayRoundBasedRules::GetRespawnTimeScalar((CTeamplayRoundBasedRules *)this, param_1);
+	//return fVar1;
+	return BaseClass::GetRespawnTimeScalar(iTeam);
 }
 
+// OFSTATUS: COMPLETE
+float COFGameRules::GetRespawnWaveMaxLength(int iTeam, bool bScaleWithNumPlayers)
+{
+	//fVar1 = (float10)CTeamplayRoundBasedRules::GetRespawnWaveMaxLength
+	//	((CTeamplayRoundBasedRules *)this, param_1,
+	//	(bool)(*(char *)((int)&this->field_0x964 + 2) == '\0' & param_2));
+	//fVar2 = (float)fVar1;
+
+	return BaseClass::GetRespawnWaveMaxLength(iTeam, bScaleWithNumPlayers);
+
+	// more mvm stuff
+	//this_00 = (CTFRobotDestructionLogic *)CTFRobotDestructionLogic::GetRobotDestructionLogic();
+	//if (this_00 != (CTFRobotDestructionLogic *)0x0)
+	//{
+	//	fVar1 = (float10)CTFRobotDestructionLogic::GetRespawnScaleForTeam(this_00, param_1);
+	//	fVar2 = fVar2 * (1.0 - (float)fVar1);
+	//}
+	//return (float10)fVar2;
+}
+
+// OFSTATUS: COMPLETE
+bool COFGameRules::FlagsMayBeCapped()
+{
+	if ((State_Get() == GR_STATE_PREROUND) || (State_Get() == GR_STATE_TEAM_WIN))
+		return false;
+
+	return true;
+}
+
+#ifdef GAME_DLL
+// OFSTATUS: COMPLETE
+void COFGameRules::RemoveAllProjectiles()
+{
+	// OFTODO: we need to implement projectiles before we can uncomment this
+	//for (int i = 0; i < IBaseProjectileAutoList::AutoList().Count(); i++)
+	//{
+	//	UTIL_Remove(static_cast<CBaseProjectile*>(IBaseProjectileAutoList::AutoList()[i]));
+	//}
+}
+
+// OFSTATUS: INCOMPLETE
+// OFTODO: gotta implement objects first
+void COFGameRules::RemoveAllBuildings(bool param_1)
+{
+	/*
+	for (int i = 0; i < IBaseObjectAutoList::AutoList().Count(); i++)
+	{
+		CBaseObject *pObj = static_cast<CBaseObject*>(IBaseObjectAutoList::AutoList()[i]);
+
+		if (!(pObj + 0x178))
+		{
+			IGameEvent *event = gameeventmanager->CreateEvent("object_removed");
+			if (event)
+			{
+				iVar7 = (**(code **)(*piVar1 + 0x51c))(piVar1);
+				pcVar3 = *(code **)(*piVar6 + 0x2c);
+				uVar8 = 0xffffffff;
+				if (iVar7 != 0) {
+					uVar8 = (**(code **)(**(int **)PTR__engine_00e34074 + 0x3c))
+						(*(int **)PTR__engine_00e34074, *(undefined4 *)(iVar7 + 0x20));
+				}
+				(*pcVar3)(piVar6, "userid", uVar8);
+				pcVar3 = *(code **)(*piVar6 + 0x2c);
+				uVar8 = (**(code **)(*(int *)(iVar2 + -0x864) + 0x580))(piVar1);
+				(*pcVar3)(piVar6, "objecttype", uVar8);
+				iVar7 = 0;
+				if (*(int *)(iVar2 + -0x844) != 0) {
+					iVar7 = (int)*(short *)(*(int *)(iVar2 + -0x844) + 6);
+				}
+				(**(code **)(*piVar6 + 0x2c))(piVar6, "index", iVar7);
+
+				gameeventmanager->FireEvent(event);
+			}
+
+			if (param_1)
+			{
+				//(**(code **)(*piVar1 + 0x568))(piVar1);
+			}
+			else
+			{
+				// why do we set something nonsolid when we're about to destroy it..
+				pObj->SetSolid(SOLID_NONE);
+				UTIL_Remove(pObj);
+			}
+		}
+	}
+	*/
+}
+
+// OFSTATUS: INCOMPLETE
+// gotta implement objects
+void COFGameRules::RemoveAllSentriesAmmo()
+{
+	/*
+	for (int i = 0; i < IBaseObjectAutoList::AutoList().Count(); i++)
+	{
+		CBaseObject *pObj = static_cast<CBaseObject*>(IBaseObjectAutoList::AutoList()[i]);
+		// check if the object is a sentry, if so remove the ammo
+		//iVar2 = (**(code **)(*this + 0x580))(this);
+		//if (iVar2 == 2)
+		//{
+		//	CObjectSentrygun::RemoveAllAmmo((CObjectSentrygun *)this);
+		//}
+	}
+	*/
+}
+
+// OFSTATUS: COMPLETE
+// implement objects :lilacstate:
+void COFGameRules::RemoveAllProjectilesAndBuildings(bool param_1)
+{
+	RemoveAllProjectiles();
+	RemoveAllBuildings(param_1);
+}
+
+// OFSTATUS: COMPLETE
+bool COFGameRules::CanChangelevelBecauseOfTimeLimit()
+{
+	CTeamControlPointMaster *pMaster = g_hControlPointMasters.Count() ? g_hControlPointMasters[0] : NULL;
+	if (pMaster && pMaster->PlayingMiniRounds() && pMaster->ShouldPlayAllControlPointRounds() && !m_bForceMapReset && 0 < pMaster->NumPlayableControlPointRounds())
+	{
+		return false;
+	}
+	return true;
+}
+
+// OFSTATUS: COMPLETE
+bool COFGameRules::CanGoToStalemate()
+{
+	if (m_nGameType == TF_GAMETYPE_CTF)
+	{
+		for (int i = 0; i < ICaptureFlagAutoList::AutoList().Count(); i++)
+		{
+			CCaptureFlag *pFlag = static_cast<CCaptureFlag*>(ICaptureFlagAutoList::AutoList()[i]);
+			if (pFlag->IsDropped() || pFlag->IsStolen())
+			{
+				return false;
+			}
+		}
+
+		if (CheckCapsPerRound())
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+// OFSTATUS: COMPLETE
+// we dont really care for passtime so this can be trimmed down to just:
+bool COFGameRules::CheckCapsPerRound()
+{
+	return SetCtfWinningTeam();
+}
+
+// OFSTATUS: COMPLETE
+bool COFGameRules::SetCtfWinningTeam()
+{
+	if (0 < tf_flag_caps_per_round.GetInt())
+	{
+		int iTeamCount = OFTeamMgr()->GetTeamCount();
+		int iWinningCaps = -1;
+		COFTeam *iWinningTeam = NULL;
+
+		for (int i = FIRST_GAME_TEAM; i < iTeamCount; i++)
+		{
+			COFTeam *pTeam = GetGlobalOFTeam(i);
+			if (pTeam)
+			{
+				if (iWinningCaps < pTeam->GetFlagCaptures() && tf_flag_caps_per_round.GetInt() <= pTeam->GetFlagCaptures())
+				{
+					iWinningCaps = pTeam->GetFlagCaptures();
+					iWinningTeam = pTeam;
+				}
+			}
+		}
+
+		if ((iWinningTeam != NULL) && (iWinningCaps != -1))
+		{
+			SetWinningTeam(iWinningTeam->GetTeamNumber(), WINREASON_FLAG_CAPTURE_LIMIT, true, false, false, false);
+			return true;
+		}
+	}
+	return false;
+}
+#endif
 // OFSTATUS: INCOMPLETE (theres some kind of holiday calc here)
 void COFGameRules::GoToIntermission( void )
 {
@@ -293,43 +521,19 @@ bool COFGameRules::IsConnectedUserInfoChangeAllowed( CBasePlayer *pPlayer )
 	*/
 	return true;
 }
- 
-#ifdef GAME_DLL
-//OFSTATUS: Incomplete, and low priority
-void COFGameRules::Precache( void )
+
+// OFSTATUS: COMPLETE
+// cut halloween and matchmaking
+void COFGameRules::LevelInitPostEntity()
 {
-	CTeamplayRules::Precache();
-	// !??!!?!??! this switch is evil. not gonna RE it for now
-	// OF? More like OOF
-	/*
-	switch (this->magic_value_at 0xd70)
-	{
-		case 1:
-		CHeadlessHatman::PrecacheHeadlessHatman();
-		break;
-	case 2:
-		CEyeballBoss::PrecacheEyeballBoss();
-		break;
-	case 4:
-		CEyeballBoss::PrecacheEyeballBoss();
-		CGhost::PrecacheGhost();
-		break;
-	case 5:
-		COFPlayer::PrecacheKart();
-		CGhost::PrecacheGhost();
-		CHeadlessHatman::PrecacheHeadlessHatman();
-	case 3:
-		CGhost::PrecacheMerasmus();
-	}
-	*/
+	CTeamplayRoundBasedRules::LevelInitPostEntity();
 
-	if(StringAfterPrefix(gpGlobals->mapname.ToCStr(), "mvm_"))
-		COFPlayer::PreCacheMvM();
+	#ifdef GAME_DLL
 
-	COFPlayer::m_bOFPlayerNeedsPrecache = true;
+	m_hOFGameRulesProxy = dynamic_cast<COFGameRulesProxy*>(gEntList.FindEntityByClassname(NULL, "tf_gamerules"));
+
+	#endif
 }
-
-#endif
 
 // OFSTATUS: NEEDS LABELS
 bool COFGameRules::ShouldCollide( int collisionGroup0, int collisionGroup1 )

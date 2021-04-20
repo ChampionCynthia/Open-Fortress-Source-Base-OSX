@@ -8,6 +8,7 @@
 #include "of_shareddefs.h"
 #include "of_player_shared.h"
 #include "of_gamerules.h"
+#include "of_item.h"
 
 #ifdef CLIENT_DLL
 	#include "c_of_player.h"
@@ -20,6 +21,7 @@
 COFPlayerShared::COFPlayerShared()
 {
 	field_0x324 = 0.0;
+	m_bAllowedToPickUpFlag = true;
 }
 
 //OFSTATUS: INCOMPLETE
@@ -186,4 +188,40 @@ bool COFPlayerShared::CanAttack(int iFlags)
 	}
 	return bVar5;
 	*/
+}
+
+// OFSTATUS: COMPLETE
+bool COFPlayerShared::IsAllowedToPickUpFlag() const
+{
+	// attributes stuff
+	return m_bAllowedToPickUpFlag;
+}
+
+//=========================================================
+// Non-COFPlayerShared Functions
+//=========================================================
+//
+// OFTODO: make this just m_shared?, makes more sense to me
+//
+void COFPlayer::SetItem(COFItem *pItem)
+{
+	m_hItem = pItem;
+
+	#ifdef GAME_DLL
+
+	if (!pItem)
+	{
+		//RemoveGlowEffect();
+	}
+	else
+	{
+		//AddGlowEffect();
+
+		if (pItem->GetItemID() == OF_ITEM_FLAG)
+		{
+			//RemoveInvisibility();
+		}
+	}
+
+	#endif
 }

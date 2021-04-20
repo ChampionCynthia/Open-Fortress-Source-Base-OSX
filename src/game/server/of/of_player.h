@@ -15,7 +15,9 @@
 #include "of_playeranimstate.h"
 #include "of_player_shared.h"
 
+class COFItem;
 class COFWeaponBase;
+class COFTeam;
 
 enum OFPlayerState
 {
@@ -93,10 +95,13 @@ public:
 	friend class COFPlayerShared;
 
 	virtual float GetCritMult() { return m_Shared.GetCritMult(); };
+	virtual void SetItem(COFItem *pItem);
+	COFTeam *GetOFTeam() { return (COFTeam*)(GetTeam()); };
 
 private:
 	COFPlayerAnimState *m_PlayerAnimState;
 	OFPlayerState	m_iPlayerState;
+	CNetworkHandle(COFItem, m_hItem);
 
 public:
 

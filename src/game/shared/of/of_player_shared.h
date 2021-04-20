@@ -14,10 +14,10 @@
 #include "networkvar.h"
 
 #ifdef CLIENT_DLL
-	class C_OFPlayer;
-#else
-	class COFPlayer;
+	#define COFPlayer C_OFPlayer
 #endif
+
+class COFPlayer;
 
 class COFPlayerShared
 {
@@ -42,13 +42,14 @@ public:
 	virtual float GetCritMult();
 	virtual bool CanAttack(int iFlags);
 	//virtual bool InCond(ETFCond eCond) const;
+	virtual bool IsAllowedToPickUpFlag() const;
 
 private:
 
 	OuterClass *m_pOuter;
 
 	float field_0x324;
-
+	bool m_bAllowedToPickUpFlag;
 };
 
 #endif // !OF_PLAYER_SHARED_H

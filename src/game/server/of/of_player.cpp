@@ -196,7 +196,8 @@ void COFPlayer::Spawn()
 void COFPlayer::ForceRespawn()
 {
     StateEnter( TF_STATE_ACTIVE );
-    BaseClass::ForceRespawn();
+	Spawn();
+    //BaseClass::ForceRespawn();
 }
 
 void COFPlayer::DoAnimationEvent( PlayerAnimEvent_t event, int nData )

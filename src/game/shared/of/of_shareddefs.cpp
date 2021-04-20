@@ -133,7 +133,14 @@ const char *g_aTeamNames[] =
 	"Spectator",
 	"Red",
 	"Blue",
-	"Mercenary"
+};
+
+color32 g_aTeamColors[] =
+{
+	{ 0, 0, 0, 0 },
+	{ 0, 0, 0, 0 },
+	{ 255, 0, 0, 0 },
+	{ 0, 0, 255, 0 },
 };
 
 const char* s_ValveMaps[][3] =
@@ -145,3 +152,53 @@ const char* s_CommunityMaps[][3] =
 {
 	"pl_borneo", "Borneo", "#Gametype_Escort",
 };
+
+const char* s_aGameTypeNames[] =
+{
+	"Undefined",
+	"#Gametype_CTF",
+	"#Gametype_CP",
+	"#Gametype_Escort",
+	"#Gametype_Arena",
+
+	//"#Gametype_MVM",
+	//"#Gametype_RobotDestruction",
+	//"#GameType_Passtime",
+	//"#GameType_PlayerDestruction",
+};
+
+const char* s_aEnumGameTypeName[] =
+{
+	"TF_GAMETYPE_UNDEFINED",
+	"TF_GAMETYPE_CTF",
+	"TF_GAMETYPE_CP",
+	"TF_GAMETYPE_ESCORT",
+	"TF_GAMETYPE_ARENA",
+
+	//"TF_GAMETYPE_MVM",
+	//"TF_GAMETYPE_RD",
+	//"TF_GAMETYPE_PASSTIME",
+	//"TF_GAMETYPE_PD",
+};
+
+const char *GetGameTypeName(ETFGameType GameType)
+{
+	return s_aGameTypeNames[GameType];
+}
+
+const char *GetEnumGameTypeName(ETFGameType GameType)
+{
+	return s_aEnumGameTypeName[GameType];
+}
+
+ETFGameType GetGameTypeFromName(const char *GameName)
+{
+	for (int i = 0; i < TF_GAMETYPE_COUNT; i++)
+	{
+		if (FStrEq(GameName, s_aEnumGameTypeName[i]))
+		{
+			return ETFGameType(i);
+		}
+	}
+	return TF_GAMETYPE_UNDEFINDED;
+}

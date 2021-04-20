@@ -47,11 +47,25 @@ public:
 
 #ifdef GAME_DLL
 	virtual void Precache( void );
+	virtual void CreateStandardEntities(void);
+	virtual void Think(void);
+#endif
+	virtual void LevelInitPostEntity();
+	virtual float GetRespawnTimeScalar(int iTeam);
+	virtual float GetRespawnWaveMaxLength(int iTeam, bool bScaleWithNumPlayers);
+	virtual bool FlagsMayBeCapped();
+#ifdef GAME_DLL
+	virtual void RemoveAllProjectiles();
+	virtual void RemoveAllBuildings(bool param_1);
+	virtual void RemoveAllSentriesAmmo();
+	virtual void RemoveAllProjectilesAndBuildings(bool param_1);
+	virtual bool CanChangelevelBecauseOfTimeLimit();
+	virtual bool CanGoToStalemate();
+	virtual bool CheckCapsPerRound();
+	virtual bool SetCtfWinningTeam();
 #endif
 	virtual bool ShouldCollide( int collisionGroup0, int collisionGroup1 );
 	virtual bool ClientCommand( CBaseEntity *pEdict, const CCommand &args );
-	virtual void Think( void );
-	virtual void CreateStandardEntities( void );
 	virtual int PlayerRelationship( CBaseEntity *pPlayer, CBaseEntity *pTarget );
 	virtual void GoToIntermission( void );
 	virtual void DeathNotice( CBasePlayer *pVictim, const CTakeDamageInfo &info );
@@ -64,6 +78,12 @@ public:
 #endif
 
 	virtual bool IsPlayingSpecialDeliveryMode( void );
+
+private:
+
+	CHandle<COFGameRulesProxy>	m_hOFGameRulesProxy;
+	CNetworkVar(int, m_nGameType);
+
 };
 
 inline COFGameRules* OFGameRules()

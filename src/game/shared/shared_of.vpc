@@ -35,6 +35,10 @@ $Project
 			$File	"$SHARED/of/of_weapon_smg.h"
 			$File	"$SHARED/of/of_player_shared.cpp"
 			$File	"$SHARED/of/of_player_shared.h"
+			$File	"$SHARED/of/of_item.cpp"
+			$File	"$SHARED/of/of_item.h"
+			$File	"$SHARED/of/of_flag.cpp"
+			$File	"$SHARED/of/of_flag.h"
 			
 			$File	"$SHARED/of/of_usermessages.cpp"
 		}

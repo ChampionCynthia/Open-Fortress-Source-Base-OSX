@@ -8,10 +8,12 @@
 #include "c_baseplayer.h"
 #include "of_playeranimstate.h"
 #include "of_player_shared.h"
+#include "of_item.h"
 
 class C_OFWeaponBase;
 
-class C_OFPlayer : public C_BasePlayer {
+class C_OFPlayer : public C_BasePlayer 
+{
 public:
 	DECLARE_CLASS( C_OFPlayer, C_BasePlayer );
 	DECLARE_CLIENTCLASS();
@@ -44,6 +46,10 @@ public:
 	friend class COFPlayerShared;
 
 	virtual float GetCritMult() { return m_Shared.GetCritMult(); };
+	virtual void SetItem(COFItem *pItem);
+
+private:
+	CNetworkHandle(COFItem, m_hItem);
 };
 
 inline C_OFPlayer *ToOFPlayer( C_BaseEntity *pEntity )

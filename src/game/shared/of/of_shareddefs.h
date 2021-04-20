@@ -4,6 +4,7 @@
 //
 
 #include "shareddefs.h"
+#include "mp_shareddefs.h"
 
 // OFSTATUS: INCOMPLETE  ( labeling )
 enum OF_Collision_Group_t
@@ -40,7 +41,6 @@ enum
 {
 	OF_TEAM_RED = FIRST_GAME_TEAM,
 	OF_TEAM_BLUE,
-	OF_TEAM_MERCENARY,
 
 	OF_TEAM_COUNT
 };
@@ -248,6 +248,51 @@ enum ETFCond
 	TF_COND_LAST
 };
 
+enum
+{
+	OF_FLAGSTATUS_NONE = 0,
+	OF_FLAGSTATUS_TAKEN,
+	OF_FLAGSTATUS_DROPPED
+};
+
+enum
+{
+	OF_ITEM_UNDEFINDED = 0,
+	OF_ITEM_FLAG
+};
+
+// gotta continue re'ing CCaptureFlag to figure out what's what
+enum EOFFlagType
+{
+	TF_FLAGTYPE_CTF = 0,
+	TF_FLAGTYPE_UNKNOWN1, // attackdefend.. mvm?
+	TF_FLAGTYPE_UNKNOWN2,
+	TF_FLAGTYPE_UNKNOWN3, // invade
+	TF_FLAGTYPE_UNKNOWN4, // special delivery
+	TF_FLAGTYPE_ROBOTDESTRUCTION,
+	TF_FLAGTYPE_PLAYERDESTRUCTION
+};
+
+enum ETFGameType
+{
+	TF_GAMETYPE_UNDEFINDED = 0,
+	TF_GAMETYPE_CTF,
+	TF_GAMETYPE_CP,
+	TF_GAMETYPE_ESCORT,
+	TF_GAMETYPE_ARENA,
+
+	//TF_GAMETYPE_MVM,
+	//TF_GAMETYPE_ROBOTDESTRUCTION,
+	//TF_GAMETYPE_PASSTIME,
+	//TF_GAMETYPE_PLAYERDESTRUCTION,
+
+	TF_GAMETYPE_COUNT
+};
+
+const char *GetGameTypeName(ETFGameType GameType);
+const char *GetEnumGameTypeName(ETFGameType GameType);
+ETFGameType GetGameTypeFromName(const char *GameName);
+
 extern const char *g_aWeaponModePrefix[OF_WEAPON_MODE_COUNT];
 extern uint g_aWeaponDamageTypes[];
 extern const char *g_aProjectileTypeNames[OF_PROJECTILE_TYPE_COUNT];
@@ -262,6 +307,7 @@ extern const char *g_aProjectileTypeNames[OF_PROJECTILE_TYPE_COUNT];
 // No longer the case, did it properly and moved it to of_shareddefs.cpp now - Kay
 extern const char *g_aAmmoNames[AMMONAME_LAST];
 extern const char *g_aTeamNames[OF_TEAM_COUNT];
+extern color32 g_aTeamColors[];
 extern const char* s_ValveMaps[][3];
 extern const char* s_CommunityMaps[][3];
 
