@@ -23,7 +23,7 @@ public:
 
 	CCaptureFlag();
 
-	int GetTeamID() const;
+	int GetItemID() const;
 	void GetHudIcon(int param_1, char *param_2, int param_3);
 
 	const char *GetModel();
@@ -57,8 +57,10 @@ public:
 	void RemoveFlagTrail();
 	void Capture(COFPlayer *pPlayer, int param_2);
 	void CreateReturnIcon();
+	bool IsCaptured() { return m_bCaptured; };
 #endif
 	void Drop(COFPlayer *pPlayer, bool bNoDraw, bool param_3, bool param_4);
+	int GetFlagType() { return m_nType; };
 private:
 
 	int m_nReturnTime;
@@ -118,7 +120,7 @@ private:
 	float m_fFlagTrailBrightness;
 	bool m_bRemoveFlagTrailInstantly;
 
-	bool field_0xbfd;
+	bool m_bCaptured;
 
 	#endif
 

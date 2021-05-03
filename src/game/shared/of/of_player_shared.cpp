@@ -200,9 +200,7 @@ bool COFPlayerShared::IsAllowedToPickUpFlag() const
 //=========================================================
 // Non-COFPlayerShared Functions
 //=========================================================
-//
-// OFTODO: make this just m_shared?, makes more sense to me
-//
+
 void COFPlayer::SetItem(COFItem *pItem)
 {
 	m_hItem = pItem;
@@ -224,4 +222,14 @@ void COFPlayer::SetItem(COFItem *pItem)
 	}
 
 	#endif
+}
+
+bool COFPlayer::HasItem() const
+{
+	return (m_hItem != NULL);
+}
+
+COFItem *COFPlayer::GetItem() const
+{
+	return m_hItem;
 }

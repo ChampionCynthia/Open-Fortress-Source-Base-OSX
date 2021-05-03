@@ -167,7 +167,7 @@ CCaptureFlag::CCaptureFlag()
 	m_pInitialParent = NULL;
 }
 
-int CCaptureFlag::GetTeamID() const
+int CCaptureFlag::GetItemID() const
 {
 	return OF_ITEM_FLAG;
 }
@@ -346,7 +346,7 @@ void CCaptureFlag::Spawn()
 		// networked (field_0x684)
 		m_hPrevOwner = NULL;
 
-		field_0xbfd = false;
+		m_bCaptured = false;
 
 		///////////
 		// mvm stuff going on here, ignored
@@ -572,9 +572,9 @@ void CCaptureFlag::Think()
 
 	if (OFGameRules()->FlagsMayBeCapped())
 	{
-		if (field_0xbfd)
+		if (m_bCaptured)
 		{
-			field_0xbfd = false;
+			m_bCaptured = false;
 			SetTouch(&CCaptureFlag::FlagTouch);
 		}
 
@@ -939,7 +939,7 @@ void CCaptureFlag::Capture(COFPlayer *pPlayer, int param_2)
 		break;
 	}
 
-	field_0xbfd = true;
+	m_bCaptured = true;
 
 	SetNextThink(gpGlobals->curtime + 0.25);
 

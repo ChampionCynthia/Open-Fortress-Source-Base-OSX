@@ -47,6 +47,8 @@ public:
 
 	virtual float GetCritMult() { return m_Shared.GetCritMult(); };
 	virtual void SetItem(COFItem *pItem);
+	virtual bool HasItem() const;
+	virtual COFItem *GetItem() const;
 
 private:
 	CNetworkHandle(COFItem, m_hItem);
