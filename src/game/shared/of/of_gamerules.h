@@ -63,6 +63,7 @@ public:
 	virtual bool CanGoToStalemate();
 	virtual bool CheckCapsPerRound();
 	virtual bool SetCtfWinningTeam();
+	virtual bool CanFlagBeCaptured(COFPlayer *pPlayer);
 #endif
 	virtual bool ShouldCollide( int collisionGroup0, int collisionGroup1 );
 	virtual bool ClientCommand( CBaseEntity *pEdict, const CCommand &args );

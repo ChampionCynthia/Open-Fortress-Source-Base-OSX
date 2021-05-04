@@ -120,11 +120,22 @@ void CCaptureZone::ShimTouch(COFPlayer *pPlayer)
 	}
 }
 
-// OFSTATUS: INCOMPLETE
+// OFSTATUS: COMPLETE
 void CCaptureZone::Capture(COFPlayer *pPlayer)
 {
 	if (!pPlayer) return;
 
 	if (!pPlayer->IsPlayer()) return;
 
+	if (!pPlayer->HasItem())
+	{
+		//puVar2 = PTR__g_pGameRules_00e340a8;
+		//cVar4 = CTFGameRules::CanFlagBeCaptured(*(CTFGameRules **)PTR__g_pGameRules_00e340a8, param_1);
+		if (OFGameRules()->CanFlagBeCaptured(pPlayer))
+		{
+			//ClientPrint((CBasePlayer *)param_1, 4, "#TF_CTF_Cannot_Capture", (char *)0x0, (char *)0x0,(char *)0x0, (char *)0x0);
+			ClientPrint(pPlayer, 4, "#TF_CTF_Cannot_Capture");
+		}
+		return;
+	}
 }

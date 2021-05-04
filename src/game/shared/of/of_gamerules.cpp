@@ -48,6 +48,7 @@ IMPLEMENT_NETWORKCLASS_ALIASED( OFGameRulesProxy, DT_OFGameRulesProxy )
 
 ConVar sv_showimpacts("sv_showimpacts", "0", FCVAR_REPLICATED, "Shows client (red) and server (blue) bullet impact point" );
 ConVar tf_flag_caps_per_round("tf_flag_caps_per_round", "3", FCVAR_REPLICATED, "Number of captures per round on CTF maps. Set to 0 to disable.");
+ConVar tf_flag_return_on_touch("tf_flag_return_on_touch", "0", FCVAR_REPLICATED, "If this is set, your flag must be at base in order to capture the enemy flag.Remote friendly flags return to your base instantly when you touch them.");
 
 // OFSTATUS: COMPLETE
 static const char *s_PreserveEnts[] =
@@ -383,7 +384,64 @@ bool COFGameRules::SetCtfWinningTeam()
 	}
 	return false;
 }
-#endif
+
+bool COFGameRules::CanFlagBeCaptured(COFPlayer *pPlayer)
+{
+	/*
+	undefined *puVar1;
+	char cVar2;
+	int iVar3;
+	int iVar4;
+	int iVar5;
+	CCaptureFlag *this_00;
+
+	int iFlagCount = 0;
+
+	if (!pPlayer)
+	{
+		if (tf_flag_return_on_touch.GetInt() == 0)
+		{
+			if (this[0x961] == (CTFGameRules)0x0)
+			{
+				return true;
+			}
+			iVar3 = *(int *)(PTR_m_ICaptureFlagAutoListAutoList_00e344f8 + 0xc);
+		}
+		else
+		{
+			iVar3 = *(int *)(PTR_m_ICaptureFlagAutoListAutoList_00e344f8 + 0xc);
+		}
+		iVar5 = 0;
+		if (0 < iVar3)
+		{
+			do
+			{
+				puVar1 = PTR_m_ICaptureFlagAutoListAutoList_00e344f8;
+				iVar3 = *(int *)(*(int *)PTR_m_ICaptureFlagAutoListAutoList_00e344f8 + iVar5 * 4);
+				if (*(int *)(iVar3 + 0x24) == 0)
+				{
+					this_00 = (CCaptureFlag *)(iVar3 + -0x64c);
+					cVar2 = CCaptureFlag::IsDisabled(this_00);
+					if (cVar2 == '\0')
+					{
+						iVar3 = CBaseEntity::GetTeamNumber(param_1);
+						iVar4 = CBaseEntity::GetTeamNumber((CBaseEntity *)this_00);
+						if ((iVar3 == iVar4) && (cVar2 = CCaptureFlag::IsHome(this_00), cVar2 == '\0'))
+						{
+							return false;
+						}
+					}
+				}
+				iVar5 = iVar5 + 1;
+			} while (iVar5 < *(int *)(puVar1 + 0xc));
+		}
+	}
+	*/
+	return true;
+}
+
+#endif // GAME_DLL
+
 // OFSTATUS: INCOMPLETE (theres some kind of holiday calc here)
 void COFGameRules::GoToIntermission( void )
 {
