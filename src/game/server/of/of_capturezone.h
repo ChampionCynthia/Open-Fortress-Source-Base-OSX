@@ -15,10 +15,20 @@ DECLARE_AUTO_LIST(ICaptureZoneAutoList);
 
 class COFPlayer;
 
-class CCaptureZone : public CBaseTrigger
+// Taken from trigger_area_capture.h
+// This class is to get around the fact that DEFINE_FUNCTION doesn't like multiple inheritance
+class CCaptureZoneShim : public CBaseTrigger
+{
+	virtual void ShimTouch(CBaseEntity *pOther) = 0;
+public:
+	void	Touch(CBaseEntity *pOther) { return ShimTouch(pOther); }
+};
+
+class CCaptureZone : public CCaptureZoneShim, public ICaptureZoneAutoList
 {
 public:
-	DECLARE_CLASS(CCaptureZone, CBaseTrigger);
+	DECLARE_CLASS(CCaptureZone, CCaptureZoneShim);
+	DECLARE_DATADESC();
 
 	CCaptureZone();
 	~CCaptureZone();
@@ -27,10 +37,18 @@ public:
 	void SetDisabled(bool bDisable);
 	void Activate();
 	bool IsDisabled();
-	void ShimTouch(COFPlayer *pPlayer);
+	void ShimTouch(CBaseEntity *pOther) override;
 	void Capture(COFPlayer *pPlayer);
+	int UpdateTransmitState();
+	void InputEnable();
+	void InputDisable();
 
 private:
 
 	float field_0x514;
+	float m_flCaptureDelayOffset;
+
+	COutputEvent m_outputOnCapture;
+	COutputEvent m_OnCapTeam1;
+	COutputEvent m_OnCapTeam2;
 };

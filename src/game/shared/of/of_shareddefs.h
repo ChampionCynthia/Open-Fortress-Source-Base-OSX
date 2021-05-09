@@ -315,7 +315,6 @@ extern const char* s_CommunityMaps[][3];
 // nevermind! compatibility
 
 #define TF_DAMAGE_CRIT_MULTIPLIER	3
-#define TF_GAMETYPE_ESCORT			3
 
 #define TF_WEAPON_RANDOM_RANGE				1000.0f
 #define TF_WEAPON_CRIT_CHANCE_NORMAL		0.02f

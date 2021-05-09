@@ -40,6 +40,8 @@ $Project "Client (Open Fortress)"
 		$File	"of/c_of_player.h"
 		$File	"of/c_of_team.cpp"
 		$File	"of/c_of_team.h"
+		$File	"of/c_of_objectiveresource.cpp"
+		$File	"of/c_of_objectiveresource.h"
 		
 		$File	"of/c_te_firebullets.cpp"
 

@@ -23,7 +23,7 @@
 #define OF_FLAG_MODEL "models/flag/briefcase.mdl"
 #define OF_FLAG_PAPEREFFECT "player_intel_papertrail"
 
-extern ConVar tf_flag_caps_per_round;
+ConVar tf_flag_caps_per_round("tf_flag_caps_per_round", "3", FCVAR_REPLICATED, "Number of captures per round on CTF maps. Set to 0 to disable.");
 ConVar tf_flag_return_on_touch("tf_flag_return_on_touch", "0", FCVAR_REPLICATED, "If this is set, your flag must be at base in order to capture the enemy flag. Remote friendly flags return to your base instantly when you touch them.");
 ConVar cl_flag_return_height("cl_flag_return_height", "82", FCVAR_CHEAT);
 
@@ -919,7 +919,7 @@ void CCaptureFlag::Capture(COFPlayer *pPlayer, int param_2)
 	//HandleFlagCapturedInDetectionZone(pPlayer);
 	//HandleFlagDroppedInDetectionZone(pPlayer);
 
-	Drop(pPlayer, true, false, true);
+	BaseClass::Drop(pPlayer, true, false, true);
 	Reset();
 
 	//pPlayer->TeamFortress_SetSpeed();

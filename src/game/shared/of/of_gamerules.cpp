@@ -14,6 +14,7 @@
 
 #ifdef CLIENT_DLL
 	#include "c_of_player.h"
+	//#include "c_of_objectiveresource.h"
 #else
 	#include "voice_gamemgr.h"
 	#include "eventqueue.h"
@@ -30,6 +31,10 @@
 	#include "of_bot_temp.h"
 	#include "of_team.h"
 	#include "team_control_point_master.h"
+	#include "hltvdirector.h"
+	#include "vote_controller.h"
+	#include "of_objectiveresource.h"
+	#include "team_train_watcher.h"
 	//#include "of_flag.h"
 #endif
 
@@ -38,8 +43,14 @@ REGISTER_GAMERULES_CLASS( COFGameRules );
 BEGIN_NETWORK_TABLE_NOBASE( COFGameRules, DT_OFGameRules )
 #ifdef CLIENT_DLL
 		RecvPropInt(RECVINFO(m_nGameType)),
+		RecvPropBool(RECVINFO(m_bPlayingKoth)),
+		RecvPropBool(RECVINFO(m_bPlayingMedieval)),
+		RecvPropBool(RECVINFO(m_bPlayingSpecialDeliveryMode)),
 #else
 		SendPropInt(SENDINFO(m_nGameType), 4, SPROP_UNSIGNED),
+		SendPropBool(SENDINFO(m_bPlayingKoth)),
+		SendPropBool(SENDINFO(m_bPlayingMedieval)),
+		SendPropBool(SENDINFO(m_bPlayingSpecialDeliveryMode)),
 #endif
 END_NETWORK_TABLE()
 
@@ -47,8 +58,8 @@ LINK_ENTITY_TO_CLASS( tf_gamerules, COFGameRulesProxy );
 IMPLEMENT_NETWORKCLASS_ALIASED( OFGameRulesProxy, DT_OFGameRulesProxy )
 
 ConVar sv_showimpacts("sv_showimpacts", "0", FCVAR_REPLICATED, "Shows client (red) and server (blue) bullet impact point" );
-ConVar tf_flag_caps_per_round("tf_flag_caps_per_round", "3", FCVAR_REPLICATED, "Number of captures per round on CTF maps. Set to 0 to disable.");
-ConVar tf_flag_return_on_touch("tf_flag_return_on_touch", "0", FCVAR_REPLICATED, "If this is set, your flag must be at base in order to capture the enemy flag.Remote friendly flags return to your base instantly when you touch them.");
+extern ConVar tf_flag_caps_per_round;
+extern ConVar tf_flag_return_on_touch;
 
 // OFSTATUS: COMPLETE
 static const char *s_PreserveEnts[] =
@@ -173,16 +184,81 @@ void COFGameRules::Precache(void)
 }
 
 // OFSTATUS: INCOMPLETE
-void COFGameRules::CreateStandardEntities( void )
+void COFGameRules::Think( void )
 {
-	m_hOFGameRulesProxy = dynamic_cast< COFGameRulesProxy* >(CBaseEntity::Create("tf_gamerules", vec3_origin, vec3_angle));
+	BaseClass::Think();
 }
 
 // OFSTATUS: INCOMPLETE
-void COFGameRules::Think( void )
+// i did my best in dissecting the parts that we actually need
+// there's stuff commented out as we havent implemented it yet - cherry
+void COFGameRules::Activate()
 {
-	//BaseClass::Think();
+	m_nGameType = TF_GAMETYPE_UNDEFINDED;
+
+	m_bPlayingKoth = false; // field_0x960
+	m_bPlayingMedieval = false; // field_0x963
+	//m_bPlayingHybrid_CTF_CP = false // field_0x964 - this exists????
+	m_bPlayingSpecialDeliveryMode = false; // field_0x965
+
+	/*
+	// Arena
+	CArenaLogic *pLogicArenaEnt = dynamic_cast<CArenaLogic*>(gEntList.FindEntityByClassname(NULL,"tf_logic_arena"));
+	if (pLogicArenaEnt)
+	{
+		field_0x67c = pLogicArenaEnt;
+		m_nGameType = TF_GAMETYPE_ARENA;
+
+		Msg("Executing server arena config file\n");
+		engine->ServerCommand("exec config_arena.cfg\n");
+	}
+	*/
+
+	// Control Points
+	if (g_hControlPointMasters.Count() && m_nGameType != TF_GAMETYPE_ARENA)
+	{
+		m_nGameType = TF_GAMETYPE_CP;
+	}
+
+	// Special Delivery
+	bool bFlags = (ICaptureFlagAutoList::AutoList().Count() > 0);
+	if (StringHasPrefix(STRING(gpGlobals->mapname), "sd_"))
+	{
+		m_bPlayingSpecialDeliveryMode = true;
+	}
+
+	// Capture the Flag
+	else if (bFlags)
+	{
+		m_nGameType = TF_GAMETYPE_CTF;
+	}
+
+	// Payload
+	CTeamTrainWatcher *pTrainWatcher = dynamic_cast<CTeamTrainWatcher*>(gEntList.FindEntityByClassname(NULL, "team_train_watcher"));
+	if (pTrainWatcher)
+	{
+		m_nGameType = TF_GAMETYPE_ESCORT;
+	}
+
+	/*
+	// Koth
+	CKothLogic *pKothLogic = dynamic_cast<CKothLogic*>(gEntList.FindEntityByClassname(NULL, "tf_logic_koth"));
+	if (pKothLogic)
+	{
+		m_bPlayingKoth = true;
+	}
+	*/
+
+	// Medieval
+	/*
+	CMedievalLogic *pMedievalLogic = dynamic_cast<CMedievalLogic*>(gEntList.FindEntityByClassname(NULL, "tf_logic_medieval"));
+	if (pMedievalLogic)
+	{
+		m_bPlayingMedieval = true;
+	}
+	*/
 }
+
 #endif
 
 // OFSTATUS: COMPLETE
@@ -229,6 +305,92 @@ bool COFGameRules::FlagsMayBeCapped()
 }
 
 #ifdef GAME_DLL
+
+// OFSTATUS: INCOMPLETE
+void COFGameRules::CreateStandardEntities()
+{
+	//g_pPlayerResource
+
+	g_pObjectiveResource = dynamic_cast<COFObjectiveResource*>(CBaseEntity::Create("tf_objective_resource", vec3_origin, vec3_angle));
+
+	m_hOFGameRulesProxy = dynamic_cast< COFGameRulesProxy* >(CBaseEntity::Create("tf_gamerules", vec3_origin, vec3_angle));
+}
+
+// OFSTATUS: INCOMPLETE
+void COFGameRules::RoundRespawn()
+{
+	//*(undefined *)&this->field_0xc8c = 0;
+	//this->field_0xcb0 = 0;
+
+	RemoveAllProjectilesAndBuildings(false);
+
+	// not finished + gotta implement objects
+	/*
+	for (int i = 0; i < IBaseObjectAutoList::AutoList().count(); i++)
+	{
+	CBaseObject *pObj = static_cast<CBaseObject*>(IBaseObjectAutoList::AutoList()[i]);
+	if (pObj && pObj->ObjectType() == 2 && ???? && pObj->GetTeamNumber() != m_iWinningTeam)
+	{
+	pObj->SetDisabled(false);
+	}
+	}
+	*/
+
+	if (!IsInTournamentMode())
+	{
+		//Arena_RunTeamLogic();
+	}
+
+	//field_0x698 = 0;
+
+	int iTeams = OFTeamMgr()->GetTeamCount();
+	for (int teamIndex = FIRST_GAME_TEAM; teamIndex < iTeams; teamIndex++)
+	{
+		COFTeam *pTeam = GetGlobalOFTeam(teamIndex);
+
+		if (pTeam)
+		{
+			pTeam->SetFlagCaptures(0);
+		}
+	}
+
+	IGameEvent *pEvent = gameeventmanager->CreateEvent("scorestats_accumulated_update");
+	if (pEvent)
+	{
+		gameeventmanager->FireEvent(pEvent);
+	}
+
+	//CTFGameStats::ResetRoundStats((CTFGameStats *)PTR__CTF_GameStats_00e340b8);
+	BaseClass::RoundRespawn();
+
+	/*
+	if (m_bForceMapReset || field_0x279)
+	{
+		for (int playerIndex = 1; playerIndex < gpGlobals->maxClients; playerIndex++)
+		{
+			COFPlayer *pPlayer = ToOFPlayer(UTIL_PlayerByIndex(playerIndex));
+			if (pPlayer)
+			{
+				pPlayer->m_Shared.SetDefualtItemChargeMeters()
+			}
+		}
+	}
+	*/
+
+	if (!IsInWaitingForPlayers())
+	{
+		//ShowRoundInfoPanel(false);
+	}
+
+	/*
+	if (field_0x6d5)
+	{
+		g_voteController->CreateVote(99, "nextlevel", "");
+		field_0x6d4 = 1;
+	}
+	*/
+}
+
 // OFSTATUS: COMPLETE
 void COFGameRules::RemoveAllProjectiles()
 {
@@ -354,6 +516,59 @@ bool COFGameRules::CheckCapsPerRound()
 	return SetCtfWinningTeam();
 }
 
+// OFSTATUS: INCOMPLETE
+void COFGameRules::RestoreActiveTimer()
+{
+	BaseClass::RestoreActiveTimer();
+
+	if (!IsInKothMode()) return;
+
+	//if (m_hBlueKothTimer)
+
+	//if (m_hRedKothTimer)
+}
+
+// OFSTATUS: COMPLETE
+bool COFGameRules::RoundCleanupShouldIgnore(CBaseEntity *pEnt)
+{
+	if (FindInList(s_PreserveEnts, pEnt->GetClassname())) return true;
+
+	if (Q_strstr(pEnt->GetClassname(), "tf_weapon_")) return true;
+
+	return BaseClass::RoundCleanupShouldIgnore(pEnt);
+}
+
+// OFSTATUS: COMPLETE
+bool COFGameRules::ShouldCreateEntity(char const *pszClassName)
+{
+	if (FindInList(s_PreserveEnts, pszClassName)) return false;
+
+	return BaseClass::ShouldCreateEntity(pszClassName);
+}
+
+// OFSTATUS: INCOMPLETE
+void COFGameRules::CleanUpMap()
+{
+	for (int playerIndex = 1; playerIndex < gpGlobals->maxClients; playerIndex++)
+	{
+		COFPlayer *pPlayer = ToOFPlayer(UTIL_PlayerByIndex(playerIndex));
+		if (pPlayer)
+		{
+			//pPlayer->m_Shared.RemoveAllCond();
+		}
+	}
+
+	BaseClass::CleanUpMap();
+
+	if (HLTVDirector())
+	{
+		HLTVDirector()->BuildCameraList();
+	}
+
+	//*(undefined *)&this->field_0xc8c = 0;
+	//this->field_0xcb0 = 0;
+}
+
 // OFSTATUS: COMPLETE
 bool COFGameRules::SetCtfWinningTeam()
 {
@@ -438,6 +653,14 @@ bool COFGameRules::CanFlagBeCaptured(COFPlayer *pPlayer)
 	}
 	*/
 	return true;
+}
+
+// OFSTATUS: COMPLETE
+const char *COFGameRules::GetStalemateSong(int nTeam)
+{
+	if (m_bPlayingSpecialDeliveryMode) return "Announcer.SD_Event_MurderedToStalemate";
+
+	return BaseClass::GetStalemateSong(NULL);
 }
 
 #endif // GAME_DLL
@@ -688,7 +911,6 @@ bool COFGameRules::IsPlayingSpecialDeliveryMode( void ) {
 ConVar ammo_max( "ammo_max", "5000", FCVAR_GAMEDLL | FCVAR_REPLICATED );
 
 #ifdef GAME_DLL
-#include "of_team.h"
 // OFSTATUS: Incomplete
 void COFGameRules::TeamPlayerCountChanged(COFTeam *pTeam)
 {

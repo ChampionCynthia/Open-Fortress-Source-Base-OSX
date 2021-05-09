@@ -198,7 +198,7 @@ int COFTeamManager::Create(const char *TeamName, color32 TeamColor)
 		int iTeam = g_Teams.AddToTail(pTeam);
 		pTeam->Init(TeamName, iTeam);
 		pTeam->NetworkProp()->SetUpdateInterval(0.75f);
-		
+
 		// i dont think this teamcolor stuff is even used so... ignored
 		//piVar4[0xf2] = _param_2;
 

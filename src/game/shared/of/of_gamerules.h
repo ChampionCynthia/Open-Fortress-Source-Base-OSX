@@ -47,14 +47,16 @@ public:
 
 #ifdef GAME_DLL
 	virtual void Precache( void );
-	virtual void CreateStandardEntities(void);
 	virtual void Think(void);
+	virtual void Activate();
 #endif
 	virtual void LevelInitPostEntity();
 	virtual float GetRespawnTimeScalar(int iTeam);
 	virtual float GetRespawnWaveMaxLength(int iTeam, bool bScaleWithNumPlayers);
 	virtual bool FlagsMayBeCapped();
 #ifdef GAME_DLL
+	virtual void CreateStandardEntities();
+	virtual void RoundRespawn();
 	virtual void RemoveAllProjectiles();
 	virtual void RemoveAllBuildings(bool param_1);
 	virtual void RemoveAllSentriesAmmo();
@@ -62,8 +64,13 @@ public:
 	virtual bool CanChangelevelBecauseOfTimeLimit();
 	virtual bool CanGoToStalemate();
 	virtual bool CheckCapsPerRound();
+	virtual void RestoreActiveTimer();
+	virtual bool RoundCleanupShouldIgnore(CBaseEntity *pEnt);
+	virtual bool ShouldCreateEntity(const char *pszClassName);
+	virtual void CleanUpMap();
 	virtual bool SetCtfWinningTeam();
 	virtual bool CanFlagBeCaptured(COFPlayer *pPlayer);
+	virtual const char *GetStalemateSong(int nTeam);
 #endif
 	virtual bool ShouldCollide( int collisionGroup0, int collisionGroup1 );
 	virtual bool ClientCommand( CBaseEntity *pEdict, const CCommand &args );
@@ -75,7 +82,7 @@ public:
 	virtual void ClientDisconnected( edict_t *pClient );
 	virtual bool IsConnectedUserInfoChangeAllowed( CBasePlayer *pPlayer );
 #ifdef GAME_DLL
-	void TeamPlayerCountChanged(COFTeam *);
+	virtual void TeamPlayerCountChanged(COFTeam *pTeam);
 #endif
 
 	virtual bool IsPlayingSpecialDeliveryMode( void );
@@ -84,6 +91,9 @@ private:
 
 	CHandle<COFGameRulesProxy>	m_hOFGameRulesProxy;
 	CNetworkVar(int, m_nGameType);
+	CNetworkVar(bool, m_bPlayingKoth);
+	CNetworkVar(bool, m_bPlayingMedieval);
+	CNetworkVar(bool, m_bPlayingSpecialDeliveryMode);
 
 };
 
