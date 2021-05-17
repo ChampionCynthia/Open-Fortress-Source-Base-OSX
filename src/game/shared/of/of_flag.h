@@ -36,6 +36,7 @@ public:
 	void SetFlagStatus(int iFlagStatus, CBasePlayer *pPlayer = NULL);
 
 	bool IsDisabled();
+	void SetVisibleWhenDisabled(bool bIsVisible);
 	void SetDisabled(bool bDisabled);
 	void UpdateOnRemove();
 	void Reset();

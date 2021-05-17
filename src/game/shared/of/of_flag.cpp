@@ -49,7 +49,7 @@ static void RecvProxy_IsVisibleWhenDisabled(const CRecvProxyData *pData, void *p
 
 	if (pFlag)
 	{
-		pFlag->SetDisabled(pData->m_Value.m_Int);
+		pFlag->SetVisibleWhenDisabled(pData->m_Value.m_Int);
 	}
 }
 
@@ -398,6 +398,12 @@ void CCaptureFlag::SetFlagStatus(int iFlagStatus, CBasePlayer *pPlayer)
 bool CCaptureFlag::IsDisabled()
 {
 	return m_bDisabled;
+}
+
+void CCaptureFlag::SetVisibleWhenDisabled(bool bIsVisible)
+{
+	m_bVisibleWhenDisabled = bIsVisible;
+	SetDisabled(IsDisabled());
 }
 
 void CCaptureFlag::SetDisabled(bool bDisable)

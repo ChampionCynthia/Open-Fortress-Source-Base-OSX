@@ -35,6 +35,7 @@
 	#include "vote_controller.h"
 	#include "of_objectiveresource.h"
 	#include "team_train_watcher.h"
+	#include "entity_ofstart.h"
 	//#include "of_flag.h"
 #endif
 
@@ -163,6 +164,10 @@ COFGameRules::COFGameRules()
 	ListenForGameEvent("game_newmap");
 	ListenForGameEvent("overtime_nag");
 	ListenForGameEvent("recalculate_holidays");
+#endif
+
+#ifdef GAME_DLL
+	m_iPreviousRoundWinnerTeam = TEAM_UNASSIGNED;
 #endif
 }
 	
@@ -570,6 +575,182 @@ void COFGameRules::CleanUpMap()
 }
 
 // OFSTATUS: COMPLETE
+// this is hurting my head so much - cherry
+void COFGameRules::RecalculateControlPointState()
+{
+	if (g_hControlPointMasters.Count() && (!g_pObjectiveResource || !g_pObjectiveResource->PlayingMiniRounds()))
+	{
+		for (int iTeam = FIRST_GAME_TEAM; iTeam < GetNumberOfTeams(); iTeam++)
+		{
+			int iFarthestCP = GetFarthestOwnedControlPoint(iTeam, true);
+
+			for (int iControlPoint = 0; iControlPoint < IOFTeamSpawnAutoList::AutoList().Count(); iControlPoint++)
+			{
+				COFTeamSpawn *pOFSpawn = dynamic_cast<COFTeamSpawn*>(IOFTeamSpawnAutoList::AutoList()[iControlPoint]);
+				if (pOFSpawn->GetControlPoint())
+				{
+					if (pOFSpawn->GetTeamNumber() == iTeam)
+					{
+						if (pOFSpawn->GetControlPoint()->GetPointIndex() == iFarthestCP)
+						{
+							pOFSpawn->SetDisable(false);
+						}
+						else
+						{
+							pOFSpawn->SetDisable(true);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+// OFSTATUS: COMPLETE
+// cheese and crackers - cherry
+int COFGameRules::GetFarthestOwnedControlPoint(int iTeam, bool param_2)
+{
+	int iBaseTeamCP = g_pObjectiveResource->GetBaseControlPointForTeam(iTeam);
+
+	if (iBaseTeamCP == -1) return -1;
+
+	int iAddition = -1;
+	int iCPAmount = 0;
+	if (iBaseTeamCP == 0)
+	{
+		iAddition = 1;
+		iCPAmount = g_pObjectiveResource->GetNumControlPoints() - 1;
+	}
+
+	int iFarthestCP = iBaseTeamCP;
+	for (int i = iBaseTeamCP; i != iCPAmount; i += iAddition)
+	{
+		if (g_pObjectiveResource->GetOwningTeam(i) != iTeam) break;
+
+		if (param_2 && field_0xb3c[iTeam][i]) continue;
+
+		iFarthestCP = i;
+	}
+
+	return iFarthestCP;
+}
+
+// OFSTATUS: INCOMPLETE
+void COFGameRules::SetupOnRoundStart()
+{
+	for (int i = 0; i < MAX_TEAMS; i++)
+	{
+		g_pObjectiveResource->SetBaseCP(-1, i);
+	}
+
+	for (int i = 0; i < OF_TEAM_COUNT; i++)
+	{
+		//field_0x654 .. field_0x650 .. field_0x65c .. field_0x658[i] = 0;
+	}
+
+	SetOvertime(false);
+
+	m_hRedKothTimer = -1;
+	m_hBlueKothTimer = -1;
+
+	CBaseEntity *pEntity = gEntList.FirstEnt();
+	while (pEntity)
+	{
+		variant_t emptyVariant;
+		pEntity->AcceptInput("RoundSpawn", NULL, NULL, emptyVariant, 0);
+
+		pEntity = gEntList.NextEnt(pEntity);
+	}
+
+	//*(undefined *)&this->field_0x50c = 0;
+	//this->field_0xc58 = 0;
+	//this->field_0xc70 = 0;
+
+	pEntity = gEntList.FirstEnt();
+	while (pEntity)
+	{
+		variant_t emptyVariant;
+		pEntity->AcceptInput("RoundActivate", NULL, NULL, emptyVariant, 0);
+
+		pEntity = gEntList.NextEnt(pEntity);
+	}
+
+	if (g_pObjectiveResource && !g_pObjectiveResource->PlayingMiniRounds())
+	{
+		memset(field_0xb3c, 0, MAX_TEAMS * MAX_CONTROL_POINTS);
+		for (int i = 0; i < IOFTeamSpawnAutoList::AutoList().Count(); i++)
+		{
+			COFTeamSpawn *pOFSpawn = dynamic_cast<COFTeamSpawn*>(IOFTeamSpawnAutoList::AutoList()[i]);
+			if (pOFSpawn->GetControlPoint())
+			{
+				int iTeam = pOFSpawn->GetTeamNumber();
+				int iPointIndex = pOFSpawn->GetControlPoint()->GetPointIndex();
+				field_0xb3c[iTeam][iPointIndex] = true;
+				pOFSpawn->SetDisable(true);
+			}
+		}
+		
+		RecalculateControlPointState();
+		SetRoundOverlayDetails();
+	}
+
+	// training mode stuff
+	//if (IsInTraining() && field_0x6a4) { field_0x6a4->0x524 = 0 }
+
+	field_0x62c[0] = '\0';
+
+	// halloween, mvm, stuff
+	//field_0xc98 = 0xbf800000;
+	//field_0xce8 = 0;
+	//field_0xcc8 = 0xbf800000;
+	//field_0xccc = 0;
+	//SetIT()
+	// ...
+}
+
+// OFSTATUS: COMPLETE
+void COFGameRules::SetupOnRoundRunning()
+{
+	for (int i = 0; i < g_hControlPointMasters.Count(); i++)
+	{
+		CTeamControlPointMaster *pControlPoint = g_hControlPointMasters[i];
+		if (pControlPoint)
+		{
+			variant_t emptyVariant;
+			pControlPoint->AcceptInput("RoundStart", NULL, NULL, emptyVariant, 0);
+		}
+	}
+
+	for (int i = 1; i < gpGlobals->maxClients; i++)
+	{
+		COFPlayer *pPlayer = ToOFPlayer(UTIL_PlayerByIndex(i));
+		if (pPlayer)
+		{
+			// OFTODO: rename to OFSetSpeed.. cus thats just weird name
+			//pPlayer->TeamFortress_SetSpeed();
+			// there was a bunch of weird checks going on here on hallowen and steam id stuff, so ignoring all that its just this:
+			pPlayer->SpeakConceptIfAllowed(MP_CONCEPT_ROUND_START);
+		}
+	}
+
+	if (IsPlayingSpecialDeliveryMode() && !IsInWaitingForPlayers())
+	{
+		BroadcastSound(255, "Announcer.SD_RoundStart");
+	}
+}
+
+// OFSTATUS: COMPLETE
+void COFGameRules::PreviousRoundEnd()
+{
+	if (g_hControlPointMasters.Count() && g_hControlPointMasters[0])
+	{
+		g_hControlPointMasters[0]->FireRoundEndOutput();
+	}
+
+	m_iPreviousRoundWinnerTeam = GetWinningTeam();
+}
+
+// OFSTATUS: COMPLETE
 bool COFGameRules::SetCtfWinningTeam()
 {
 	if (0 < tf_flag_caps_per_round.GetInt())
@@ -664,6 +845,12 @@ const char *COFGameRules::GetStalemateSong(int nTeam)
 }
 
 #endif // GAME_DLL
+
+//OFSTATUS: COMPLETE
+bool COFGameRules::IsPlayingSpecialDeliveryMode()
+{
+	return m_bPlayingSpecialDeliveryMode;
+}
 
 // OFSTATUS: INCOMPLETE (theres some kind of holiday calc here)
 void COFGameRules::GoToIntermission( void )
@@ -900,11 +1087,6 @@ bool COFGameRules::ClientCommand( CBaseEntity *pEdict, const CCommand &args )
 		return true;
 #endif
 
-	return false;
-}
-
-//OFSTATUS: Incomplete, and low priority
-bool COFGameRules::IsPlayingSpecialDeliveryMode( void ) {
 	return false;
 }
 

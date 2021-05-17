@@ -68,6 +68,11 @@ public:
 	virtual bool RoundCleanupShouldIgnore(CBaseEntity *pEnt);
 	virtual bool ShouldCreateEntity(const char *pszClassName);
 	virtual void CleanUpMap();
+	virtual void RecalculateControlPointState();
+	virtual int GetFarthestOwnedControlPoint(int param_1, bool param_2);
+	virtual void SetupOnRoundStart();
+	virtual void SetupOnRoundRunning();
+	virtual void PreviousRoundEnd();
 	virtual bool SetCtfWinningTeam();
 	virtual bool CanFlagBeCaptured(COFPlayer *pPlayer);
 	virtual const char *GetStalemateSong(int nTeam);
@@ -94,6 +99,17 @@ private:
 	CNetworkVar(bool, m_bPlayingKoth);
 	CNetworkVar(bool, m_bPlayingMedieval);
 	CNetworkVar(bool, m_bPlayingSpecialDeliveryMode);
+
+	CNetworkVar(float, m_hRedKothTimer);
+	CNetworkVar(float, m_hBlueKothTimer);
+
+	#ifdef GAME_DLL
+
+	bool field_0xb3c[MAX_TEAMS][MAX_CONTROL_POINTS];
+	char field_0x62c[256]; // figure out the proper size later
+	int m_iPreviousRoundWinnerTeam;
+
+	#endif
 
 };
 
