@@ -21,6 +21,7 @@ BEGIN_DATADESC(COFTeamSpawn)
 
 	DEFINE_INPUTFUNC(FIELD_VOID, "Enable", InputEnable),
 	DEFINE_INPUTFUNC(FIELD_VOID, "Disable", InputDisable),
+	DEFINE_INPUTFUNC(FIELD_VOID, "RoundSpawn", InputRoundSpawn),
 
 END_DATADESC()
 
@@ -39,7 +40,7 @@ void COFTeamSpawn::InputDisable(inputdata_t &inputdata)
 	m_bDisabled = true;
 }
 
-void COFTeamSpawn::InputRoundSpawn()
+void COFTeamSpawn::InputRoundSpawn(inputdata_t &inputdata)
 {
 	if (m_iszControlPointName != NULL_STRING)
 	{

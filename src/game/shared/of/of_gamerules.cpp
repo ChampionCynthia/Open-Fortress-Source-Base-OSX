@@ -751,6 +751,48 @@ void COFGameRules::PreviousRoundEnd()
 }
 
 // OFSTATUS: COMPLETE
+void COFGameRules::SetupSpawnPointsForRound()
+{
+	// 0x398 = m_ControlPointRounds.Count() ?
+	// 0x3a0 = GetCurrentRound() ?
+	CTeamControlPointRound *pControlPointRound = g_hControlPointMasters[0]->GetCurrentRound();
+	if (g_hControlPointMasters.Count() && g_hControlPointMasters[0] && (g_hControlPointMasters[0]->PlayingMiniRounds()) && pControlPointRound)
+	{
+		for (int i = 0; i < IOFTeamSpawnAutoList::AutoList().Count(); i++)
+		{
+			COFTeamSpawn *pOFSpawn = dynamic_cast<COFTeamSpawn*>(IOFTeamSpawnAutoList::AutoList()[i]);
+
+			if (pOFSpawn)
+			{
+				CHandle<CTeamControlPoint> pControlPoint = pOFSpawn->GetControlPoint();
+				CHandle<CTeamControlPointRound> pBlueControlPoint = pOFSpawn->GetBlueControlPoint();
+				CHandle<CTeamControlPointRound> pRedControlPoint = pOFSpawn->GetRedControlPoint();
+
+				if (pControlPoint && pControlPointRound->IsControlPointInRound(pControlPoint))
+				{
+					pOFSpawn->SetDisable(false);
+					pOFSpawn->ChangeTeam(pControlPoint->GetOwner());
+				}
+				else if (pBlueControlPoint && pBlueControlPoint == pControlPointRound)
+				{
+					pOFSpawn->SetDisable(false);
+					pOFSpawn->ChangeTeam(OF_TEAM_BLUE);
+				}
+				else if (pRedControlPoint && pRedControlPoint == pControlPointRound)
+				{
+					pOFSpawn->SetDisable(false);
+					pOFSpawn->ChangeTeam(OF_TEAM_RED);
+				}
+				else
+				{
+					pOFSpawn->SetDisable(true);
+				}
+			}
+		}
+	}
+}
+
+// OFSTATUS: COMPLETE
 bool COFGameRules::SetCtfWinningTeam()
 {
 	if (0 < tf_flag_caps_per_round.GetInt())

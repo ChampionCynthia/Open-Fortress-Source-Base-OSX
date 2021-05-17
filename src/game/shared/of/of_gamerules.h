@@ -73,6 +73,7 @@ public:
 	virtual void SetupOnRoundStart();
 	virtual void SetupOnRoundRunning();
 	virtual void PreviousRoundEnd();
+	virtual void SetupSpawnPointsForRound();
 	virtual bool SetCtfWinningTeam();
 	virtual bool CanFlagBeCaptured(COFPlayer *pPlayer);
 	virtual const char *GetStalemateSong(int nTeam);

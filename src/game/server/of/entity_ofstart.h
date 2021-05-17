@@ -22,7 +22,7 @@ public:
 	void SetDisable(bool bDisable) { m_bDisabled = bDisable; }
 	void InputEnable(inputdata_t &inputdata);
 	void InputDisable(inputdata_t &inputdata);
-	void InputRoundSpawn();
+	void InputRoundSpawn(inputdata_t &inputdata);
 	CHandle<CTeamControlPoint> GetControlPoint() { return m_hControlPoint; }
 	CHandle<CTeamControlPointRound> GetBlueControlPoint() { return m_hControlPointBlue; }
 	CHandle<CTeamControlPointRound> GetRedControlPoint() { return m_hControlPointRed; }
