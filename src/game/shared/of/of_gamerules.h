@@ -69,7 +69,6 @@ public:
 	virtual bool ShouldCreateEntity(const char *pszClassName);
 	virtual void CleanUpMap();
 	virtual void RecalculateControlPointState();
-	virtual int GetFarthestOwnedControlPoint(int param_1, bool param_2);
 	virtual void SetupOnRoundStart();
 	virtual void SetupOnRoundRunning();
 	virtual void PreviousRoundEnd();
@@ -78,6 +77,8 @@ public:
 	virtual bool CanFlagBeCaptured(COFPlayer *pPlayer);
 	virtual const char *GetStalemateSong(int nTeam);
 #endif
+	virtual int GetFarthestOwnedControlPoint(int iTeam, bool param_2);
+	virtual bool TeamMayCapturePoint(int iTeam, int iPointIndex);
 	virtual bool ShouldCollide( int collisionGroup0, int collisionGroup1 );
 	virtual bool ClientCommand( CBaseEntity *pEdict, const CCommand &args );
 	virtual int PlayerRelationship( CBaseEntity *pPlayer, CBaseEntity *pTarget );
@@ -104,9 +105,12 @@ private:
 	CNetworkVar(float, m_hRedKothTimer);
 	CNetworkVar(float, m_hBlueKothTimer);
 
-	#ifdef GAME_DLL
+	CNetworkVar(float, m_flCapturePointEnableTime);
 
 	bool field_0xb3c[MAX_TEAMS][MAX_CONTROL_POINTS];
+
+	#ifdef GAME_DLL
+
 	char field_0x62c[256]; // figure out the proper size later
 	int m_iPreviousRoundWinnerTeam;
 

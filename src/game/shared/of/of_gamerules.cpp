@@ -14,7 +14,7 @@
 
 #ifdef CLIENT_DLL
 	#include "c_of_player.h"
-	//#include "c_of_objectiveresource.h"
+	#include "c_of_objectiveresource.h"
 #else
 	#include "voice_gamemgr.h"
 	#include "eventqueue.h"
@@ -47,11 +47,13 @@ BEGIN_NETWORK_TABLE_NOBASE( COFGameRules, DT_OFGameRules )
 		RecvPropBool(RECVINFO(m_bPlayingKoth)),
 		RecvPropBool(RECVINFO(m_bPlayingMedieval)),
 		RecvPropBool(RECVINFO(m_bPlayingSpecialDeliveryMode)),
+		RecvPropFloat(RECVINFO(m_flCapturePointEnableTime)),
 #else
 		SendPropInt(SENDINFO(m_nGameType), 4, SPROP_UNSIGNED),
 		SendPropBool(SENDINFO(m_bPlayingKoth)),
 		SendPropBool(SENDINFO(m_bPlayingMedieval)),
 		SendPropBool(SENDINFO(m_bPlayingSpecialDeliveryMode)),
+		SendPropFloat(SENDINFO(m_flCapturePointEnableTime)),
 #endif
 END_NETWORK_TABLE()
 
@@ -59,6 +61,7 @@ LINK_ENTITY_TO_CLASS( tf_gamerules, COFGameRulesProxy );
 IMPLEMENT_NETWORKCLASS_ALIASED( OFGameRulesProxy, DT_OFGameRulesProxy )
 
 ConVar sv_showimpacts("sv_showimpacts", "0", FCVAR_REPLICATED, "Shows client (red) and server (blue) bullet impact point" );
+ConVar tf_caplinear("tf_caplinear", "1", FCVAR_REPLICATED, "");
 extern ConVar tf_flag_caps_per_round;
 extern ConVar tf_flag_return_on_touch;
 
@@ -606,35 +609,6 @@ void COFGameRules::RecalculateControlPointState()
 	}
 }
 
-// OFSTATUS: COMPLETE
-// cheese and crackers - cherry
-int COFGameRules::GetFarthestOwnedControlPoint(int iTeam, bool param_2)
-{
-	int iBaseTeamCP = g_pObjectiveResource->GetBaseControlPointForTeam(iTeam);
-
-	if (iBaseTeamCP == -1) return -1;
-
-	int iAddition = -1;
-	int iCPAmount = 0;
-	if (iBaseTeamCP == 0)
-	{
-		iAddition = 1;
-		iCPAmount = g_pObjectiveResource->GetNumControlPoints() - 1;
-	}
-
-	int iFarthestCP = iBaseTeamCP;
-	for (int i = iBaseTeamCP; i != iCPAmount; i += iAddition)
-	{
-		if (g_pObjectiveResource->GetOwningTeam(i) != iTeam) break;
-
-		if (param_2 && field_0xb3c[iTeam][i]) continue;
-
-		iFarthestCP = i;
-	}
-
-	return iFarthestCP;
-}
-
 // OFSTATUS: INCOMPLETE
 void COFGameRules::SetupOnRoundStart()
 {
@@ -887,6 +861,80 @@ const char *COFGameRules::GetStalemateSong(int nTeam)
 }
 
 #endif // GAME_DLL
+
+// OFSTATUS: COMPLETE
+// cheese and crackers - cherry
+int COFGameRules::GetFarthestOwnedControlPoint(int iTeam, bool param_2)
+{
+	int iBaseTeamCP = g_pObjectiveResource->GetBaseControlPointForTeam(iTeam);
+
+	if (iBaseTeamCP == -1) return -1;
+
+	int iAddition = -1;
+	int iCPAmount = 0;
+	if (iBaseTeamCP == 0)
+	{
+		iAddition = 1;
+		iCPAmount = g_pObjectiveResource->GetNumControlPoints() - 1;
+	}
+
+	int iFarthestCP = iBaseTeamCP;
+	for (int i = iBaseTeamCP; i != iCPAmount; i += iAddition)
+	{
+		if (g_pObjectiveResource->GetOwningTeam(i) != iTeam) break;
+
+		if (param_2 && !field_0xb3c[iTeam][i]) continue;
+
+		iFarthestCP = i;
+	}
+
+	return iFarthestCP;
+}
+
+// OFSTATUS: COMPLETE
+bool COFGameRules::TeamMayCapturePoint(int iTeam, int iPointIndex)
+{
+	if (!tf_caplinear.GetBool()) return true;
+
+	int iPreviousPoint = g_pObjectiveResource->GetPreviousPointForPoint(iPointIndex, iTeam, 0);
+	if (iPreviousPoint == iPointIndex) return true;
+
+	if (IsInKothMode() && IsInWaitingForPlayers()) return false;
+
+	if (g_pObjectiveResource->GetCPLocked(iPointIndex)) return false;
+
+	if (iPreviousPoint == -1)
+	{
+		if (IsInArenaMode())
+		{
+			// field_0x93c = m_flCapturePointEnableTime
+			if (gpGlobals->curtime >= m_flCapturePointEnableTime && State_Get() == GR_STATE_STALEMATE) return true;
+
+			return false;
+		}
+		else
+		{
+			if (!g_pObjectiveResource->PlayingMiniRounds())
+			{
+				int iFarthestCP = GetFarthestOwnedControlPoint(iTeam, false);
+				return (abs(iFarthestCP - iPointIndex) <= 1);
+			}
+
+			return true;
+		}
+	}
+
+	for (int i = 0; i < MAX_PREVIOUS_POINTS; i++)
+	{
+		int iPreviousPoint = g_pObjectiveResource->GetPreviousPointForPoint(iPointIndex, iTeam, i);
+		if (iPreviousPoint != -1 && g_pObjectiveResource->GetOwningTeam(iPreviousPoint) != iTeam)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
 
 //OFSTATUS: COMPLETE
 bool COFGameRules::IsPlayingSpecialDeliveryMode()
