@@ -224,7 +224,7 @@ int COFTeamManager::GetFlagCaptures(int iTeam)
 		COFTeam *pTeam = GetGlobalOFTeam(iTeam);
 		if (!pTeam) return -1;
 
-		pTeam->GetFlagCaptures();
+		return pTeam->GetFlagCaptures();
 	}
 	return -1;
 }

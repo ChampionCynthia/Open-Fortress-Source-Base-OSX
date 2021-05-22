@@ -14,4 +14,4 @@ public:
 	COFExLabel( Panel* parent, const char* panelName, const char* text );
 };
 
-typedef COFExLabel CExButton;
+typedef COFExLabel CExLabel;

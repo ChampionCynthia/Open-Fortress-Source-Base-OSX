@@ -289,6 +289,17 @@ enum ETFGameType
 	TF_GAMETYPE_COUNT
 };
 
+enum
+{
+	OF_HUDTYPE_UNDEFINDED = 0,
+	OF_HUDTYPE_CTF,
+	OF_HUDTYPE_CP,
+	OF_HUDTYPE_PAYLOAD,
+	OF_HUDTYPE_UNKNOWN4,
+	OF_HUDTYPE_UNKNOWN5,
+	OF_HUDTYPE_UNKNOWN6,
+};
+
 const char *GetGameTypeName(ETFGameType GameType);
 const char *GetEnumGameTypeName(ETFGameType GameType);
 ETFGameType GetGameTypeFromName(const char *GameName);

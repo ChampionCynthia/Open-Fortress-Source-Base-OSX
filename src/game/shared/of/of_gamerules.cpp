@@ -43,17 +43,19 @@ REGISTER_GAMERULES_CLASS( COFGameRules );
 
 BEGIN_NETWORK_TABLE_NOBASE( COFGameRules, DT_OFGameRules )
 #ifdef CLIENT_DLL
-		RecvPropInt(RECVINFO(m_nGameType)),
-		RecvPropBool(RECVINFO(m_bPlayingKoth)),
-		RecvPropBool(RECVINFO(m_bPlayingMedieval)),
-		RecvPropBool(RECVINFO(m_bPlayingSpecialDeliveryMode)),
-		RecvPropFloat(RECVINFO(m_flCapturePointEnableTime)),
+	RecvPropInt(RECVINFO(m_nHudType)),
+	RecvPropInt(RECVINFO(m_nGameType)),
+	RecvPropBool(RECVINFO(m_bPlayingKoth)),
+	RecvPropBool(RECVINFO(m_bPlayingMedieval)),
+	RecvPropBool(RECVINFO(m_bPlayingSpecialDeliveryMode)),
+	RecvPropFloat(RECVINFO(m_flCapturePointEnableTime)),
 #else
-		SendPropInt(SENDINFO(m_nGameType), 4, SPROP_UNSIGNED),
-		SendPropBool(SENDINFO(m_bPlayingKoth)),
-		SendPropBool(SENDINFO(m_bPlayingMedieval)),
-		SendPropBool(SENDINFO(m_bPlayingSpecialDeliveryMode)),
-		SendPropFloat(SENDINFO(m_flCapturePointEnableTime)),
+	SendPropInt(SENDINFO(m_nHudType), 3, SPROP_UNSIGNED),
+	SendPropInt(SENDINFO(m_nGameType), 4, SPROP_UNSIGNED),
+	SendPropBool(SENDINFO(m_bPlayingKoth)),
+	SendPropBool(SENDINFO(m_bPlayingMedieval)),
+	SendPropBool(SENDINFO(m_bPlayingSpecialDeliveryMode)),
+	SendPropFloat(SENDINFO(m_flCapturePointEnableTime)),
 #endif
 END_NETWORK_TABLE()
 
@@ -123,10 +125,67 @@ static const char *s_PreserveEnts[] =
 		return pRules;
 	}
 
-	BEGIN_SEND_TABLE( COFGameRulesProxy, DT_OFGameRulesProxy )
-		SendPropDataTable( "tf_gamerules_data", 0, &REFERENCE_SEND_TABLE( DT_OFGameRules ), SendProxy_OFGameRules )
+	BEGIN_SEND_TABLE(COFGameRulesProxy, DT_OFGameRulesProxy)
+		SendPropDataTable("tf_gamerules_data", 0, &REFERENCE_SEND_TABLE(DT_OFGameRules), SendProxy_OFGameRules)
 	END_SEND_TABLE()
 #endif
+
+#ifdef GAME_DLL
+BEGIN_DATADESC(COFGameRulesProxy)
+	DEFINE_KEYFIELD(m_nHudType, FIELD_INTEGER, "hud_type"),
+	DEFINE_KEYFIELD(m_bOvertimeAllowedForCTF, FIELD_BOOLEAN, "ctf_overtime"),
+
+	DEFINE_INPUTFUNC(FIELD_VOID, "SetRedTeamRespawnWaveTime", SetRedTeamRespawnWaveTime),
+	// there's a lot more inputs here but i havent done them yet since, there's a lot :v - cherry
+
+	DEFINE_OUTPUT(m_OnWonByTeam1, "OnWonByTeam1"),
+	DEFINE_OUTPUT(m_OnWonByTeam2, "OnWonByTeam2"),
+END_DATADESC();
+
+// OFSTATUS: INCOMPLETE
+void COFGameRulesProxy::SetRedTeamRespawnWaveTime(inputdata_t &inputdata)
+{
+
+}
+
+COFGameRulesProxy::COFGameRulesProxy()
+{
+	m_nHudType = OF_HUDTYPE_UNDEFINDED;
+	m_bOvertimeAllowedForCTF = false;
+}
+
+// OFSTATUS: COMPLETE
+void COFGameRulesProxy::Activate()
+{
+	OFGameRules()->Activate();
+	OFGameRules()->SetHudType(m_nHudType);
+
+	OFGameRules()->SetOvertimeAllowedForCTF(m_bOvertimeAllowedForCTF);
+
+	ListenForGameEvent("teamplay_round_win");
+
+	BaseClass::Activate();
+}
+#endif
+
+// OFSTATUS: COMPLETE
+void COFGameRulesProxy::FireGameEvent(IGameEvent *event)
+{
+#ifdef GAME_DLL
+	if (Q_strcmp(event->GetName(), "teamplay_round_win"))
+	{
+		switch (event->GetInt())
+		{
+		case OF_TEAM_RED:
+			m_OnWonByTeam1.FireOutput(this, this);
+			break;
+		case OF_TEAM_BLUE:
+			m_OnWonByTeam2.FireOutput(this, this);
+			break;
+		}
+	}
+#endif
+}
 
 // Called by world.cpp, is a NOP in both SDK and TF2.
 // OFSTATUS: COMPLETE.
@@ -194,6 +253,17 @@ void COFGameRules::Precache(void)
 // OFSTATUS: INCOMPLETE
 void COFGameRules::Think( void )
 {
+	if (!g_fGameOver)
+	{
+		if (m_flNextPeriodicThink < gpGlobals->curtime)
+		{
+			if (State_Get() != GR_STATE_TEAM_WIN && State_Get() != GR_STATE_BONUS && State_Get() != GR_STATE_GAME_OVER && !IsInWaitingForPlayers())
+			{
+				if (CheckCapsPerRound()) return;
+			}
+		}
+	}
+
 	BaseClass::Think();
 }
 
@@ -860,6 +930,19 @@ const char *COFGameRules::GetStalemateSong(int nTeam)
 	return BaseClass::GetStalemateSong(NULL);
 }
 
+// OFSTATUS: COMPLETE
+void COFGameRules::SetHudType(int iHudType)
+{
+	// OFTODO: figure out these hud types
+	if (iHudType != OF_HUDTYPE_UNDEFINDED)
+	{
+		if (iHudType != OF_HUDTYPE_UNKNOWN4 && iHudType < OF_HUDTYPE_UNKNOWN6)
+		{
+			m_nHudType = iHudType;
+		}
+	}
+}
+
 #endif // GAME_DLL
 
 // OFSTATUS: COMPLETE
@@ -936,7 +1019,76 @@ bool COFGameRules::TeamMayCapturePoint(int iTeam, int iPointIndex)
 	return true;
 }
 
-//OFSTATUS: COMPLETE
+// OFSTATUS: COMPLETE
+bool COFGameRules::PlayerMayCapturePoint(CBasePlayer *pPlayer, int iPointIndex, char *pszReason, int iMaxReasonLength)
+{
+	// OFTODO: gotta implement player conditions
+	/*
+	COFPlayer *pOFPlayer = ToOFPlayer(pPlayer);
+
+	// cant cap when invisible (spy)
+	if (pOFPlayer->m_Shared.IsStealthed())
+	{
+		if (pszReason)
+		{
+			V_snprintf(pszReason, iMaxReasonLength, "#Cant_cap_stealthed");
+		}
+
+		return false;
+	}
+
+	// cant cap when ubered
+	if (pOFPlayer->m_Shared.IsInvulnerable())
+	{
+		if (pszReason)
+		{
+			V_snprintf(pszReason, iMaxReasonLength, "#Cant_cap_invuln");
+		}
+
+		return false;
+	}
+
+	// cant cap when disguised
+	if (pOFPlayer->m_Shared.InCond(TF_COND_DISGUISED) && pOFPlayer->m_Shared.GetDisguiseTeam() != pOFPlayer->GetTeamNumber())
+	{
+		if (pszReason)
+		{
+			V_snprintf(pszReason, iMaxReasonLength, "#Cant_cap_disguised");
+		}
+
+		return false;
+	}
+	*/
+
+	// training mode stuff, line 54 - 83
+	//if (IsInTraining())
+	//{}
+
+	return true;
+}
+
+// OFSTATUS: COMPLETE
+bool COFGameRules::PlayerMayBlockPoint(CBasePlayer *pPlayer, int iPointIndex, char *pszReason, int iMaxReasonLength)
+{
+	// OFTODO: gotta implement player conditions
+	/*
+	COFPlayer *pOFPlayer = ToOFPlayer(pPlayer);
+
+	if (pOFPlayer->m_Shared.IsInvulnerable())
+	{
+		if (pszReason)
+		{
+			V_snprintf(pszReason, iMaxReasonLength, "#Cant_cap_invuln");
+		}
+
+		return true;
+	}
+	*/
+
+	return false;
+}
+
+// OFSTATUS: COMPLETE
 bool COFGameRules::IsPlayingSpecialDeliveryMode()
 {
 	return m_bPlayingSpecialDeliveryMode;

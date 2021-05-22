@@ -81,7 +81,7 @@ BEGIN_NETWORK_TABLE(CCaptureFlag, DT_CaptureFlag)
 	RecvPropInt(RECVINFO(m_nFlagStatus),0,RecvProxy_FlagStatus),
 	RecvPropTime(RECVINFO(m_flResetTime)),
 	RecvPropTime(RECVINFO(m_flNeutralTime)),
-	RecvPropTime(RECVINFO(m_flMaxresetTime)),
+	RecvPropTime(RECVINFO(m_flMaxResetTime)),
 	RecvPropEHandle(RECVINFO(m_hPrevOwner)),
 	RecvPropString(RECVINFO(m_szModel)),
 	RecvPropString(RECVINFO(m_szHudIcon)),
@@ -95,7 +95,7 @@ BEGIN_NETWORK_TABLE(CCaptureFlag, DT_CaptureFlag)
 	SendPropInt(SENDINFO(m_nFlagStatus),3,SPROP_UNSIGNED),
 	SendPropTime(SENDINFO(m_flResetTime)),
 	SendPropTime(SENDINFO(m_flNeutralTime)),
-	SendPropTime(SENDINFO(m_flMaxresetTime)),
+	SendPropTime(SENDINFO(m_flMaxResetTime)),
 	SendPropEHandle(SENDINFO(m_hPrevOwner)),
 	SendPropString(SENDINFO(m_szModel)),
 	SendPropString(SENDINFO(m_szHudIcon)),
@@ -126,12 +126,16 @@ BEGIN_DATADESC(CCaptureFlag)
 	DEFINE_KEYFIELD(m_iszTrailEffect, FIELD_STRING, "flag_trail"),
 
 	// Input
+	DEFINE_INPUTFUNC(FIELD_VOID, "Enable", InputEnable),
+	DEFINE_INPUTFUNC(FIELD_VOID, "Disable", InputDisable),
 	/*
 	DEFINE_INPUT(FIELD_VOID, "ForceDrop", InputForceDrop),
 	DEFINE_INPUT(FIELD_VOID, "ForceReset", InputForceReset),
 	DEFINE_INPUT(FIELD_VOID, "ForceResetSilent", InputForceResetSilent),
 	DEFINE_INPUT(FIELD_VOID, "ForceResetAndDisableSilent", InputForceResetAndDisableSilent),
-	DEFINE_INPUT(FIELD_INTEGER, "SetReturnTime", InputSetReturnTime),
+	*/
+	DEFINE_INPUTFUNC(FIELD_INTEGER, "SetReturnTime", InputSetReturnTime),
+	/*
 	DEFINE_INPUT(FIELD_INTEGER, "ShowTimer", InputShowTimer),
 	DEFINE_INPUT(FIELD_INTEGER, "ForceGlowDisabled", InputForceGlowDisabled),
 	*/
@@ -894,6 +898,15 @@ void CCaptureFlag::Capture(COFPlayer *pPlayer, int param_2)
 			m_pInitialPlayer = NULL;
 		}
 
+		if (tf_flag_caps_per_round.GetInt() >= 1)
+		{
+			OFTeamMgr()->IncrementFlagCaptures(pPlayer->GetTeamNumber());
+		}
+		else
+		{
+			OFTeamMgr()->AddTeamScore(pPlayer->GetTeamNumber(), 1);
+		}
+
 		break;
 	} // end switch statement
 
@@ -1040,6 +1053,7 @@ bool PointInRespawnFlagZone(const Vector &vector)
 */
 
 #ifdef GAME_DLL
+// OFSTATUS: COMPLETE
 void CCaptureFlag::CreateReturnIcon()
 {
 	if (!m_pReturnIcon) return;
@@ -1053,4 +1067,32 @@ void CCaptureFlag::CreateReturnIcon()
 		pIcon->SetParent(this);
 	}
 }
+
+void CCaptureFlag::SetFlagReturnIn(float fReturnTime)
+{
+	m_flResetTime = gpGlobals->curtime + fReturnTime;
+	m_flMaxResetTime = fReturnTime;
+}
+
+void CCaptureFlag::InputEnable(inputdata_t &inputdata)
+{
+	SetDisabled(false);
+}
+
+void CCaptureFlag::InputDisable(inputdata_t &inputdata)
+{
+	SetDisabled(true);
+}
+
+// OFSTATUS: COMPLETE
+void CCaptureFlag::InputSetReturnTime(inputdata_t &inputdata)
+{
+	int iReturnTime = inputdata.value.Int();
+
+	if (IsDropped())
+	{
+		SetFlagReturnIn(float(iReturnTime));
+	}
+}
+
 #endif

@@ -27,11 +27,32 @@ class COFTeam;
 
 #define HUD_ALERT_SCRAMBLE_TEAMS	0
 
-class COFGameRulesProxy : public CTeamplayRoundBasedRulesProxy
+class COFGameRulesProxy : public CTeamplayRoundBasedRulesProxy , public CGameEventListener
 {
 public:
 	DECLARE_CLASS( COFGameRulesProxy, CTeamplayRoundBasedRulesProxy );
 	DECLARE_NETWORKCLASS();
+
+#ifdef GAME_DLL
+	DECLARE_DATADESC();
+
+	COFGameRulesProxy();
+	virtual void Activate();
+
+	virtual void SetRedTeamRespawnWaveTime(inputdata_t &inputdata);
+
+private:
+
+	int m_nHudType;
+	bool m_bOvertimeAllowedForCTF;
+
+	COutputEvent m_OnWonByTeam1;
+	COutputEvent m_OnWonByTeam2;
+
+#endif
+
+public:
+	virtual void FireGameEvent(IGameEvent * event);
 };
 
 class COFGameRules : public CTeamplayRoundBasedRules
@@ -76,9 +97,13 @@ public:
 	virtual bool SetCtfWinningTeam();
 	virtual bool CanFlagBeCaptured(COFPlayer *pPlayer);
 	virtual const char *GetStalemateSong(int nTeam);
+	virtual void SetHudType(int iHudType);
+	virtual void SetOvertimeAllowedForCTF(bool bAllow) { m_bOvertimeAllowedForCTF = bAllow; }
 #endif
 	virtual int GetFarthestOwnedControlPoint(int iTeam, bool param_2);
 	virtual bool TeamMayCapturePoint(int iTeam, int iPointIndex);
+	virtual bool PlayerMayCapturePoint(CBasePlayer *pPlayer, int iPointIndex, char *pszReason = NULL, int iMaxReasonLength = 0);
+	virtual bool PlayerMayBlockPoint(CBasePlayer *pPlayer, int iPointIndex, char *pszReason = NULL, int iMaxReasonLength = 0);
 	virtual bool ShouldCollide( int collisionGroup0, int collisionGroup1 );
 	virtual bool ClientCommand( CBaseEntity *pEdict, const CCommand &args );
 	virtual int PlayerRelationship( CBaseEntity *pPlayer, CBaseEntity *pTarget );
@@ -97,6 +122,7 @@ public:
 private:
 
 	CHandle<COFGameRulesProxy>	m_hOFGameRulesProxy;
+	CNetworkVar(int, m_nHudType);
 	CNetworkVar(int, m_nGameType);
 	CNetworkVar(bool, m_bPlayingKoth);
 	CNetworkVar(bool, m_bPlayingMedieval);
@@ -111,6 +137,7 @@ private:
 
 	#ifdef GAME_DLL
 
+	bool m_bOvertimeAllowedForCTF;
 	char field_0x62c[256]; // figure out the proper size later
 	int m_iPreviousRoundWinnerTeam;
 

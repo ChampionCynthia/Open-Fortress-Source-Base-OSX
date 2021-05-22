@@ -58,7 +58,12 @@ public:
 	void RemoveFlagTrail();
 	void Capture(COFPlayer *pPlayer, int param_2);
 	void CreateReturnIcon();
+	void SetFlagReturnIn(float fReturnTime);
 	bool IsCaptured() { return m_bCaptured; };
+
+	void InputEnable(inputdata_t &inputdata);
+	void InputDisable(inputdata_t &inputdata);
+	void InputSetReturnTime(inputdata_t &inputdata);
 #endif
 	void Drop(COFPlayer *pPlayer, bool bNoDraw, bool param_3, bool param_4);
 	int GetFlagType() { return m_nType; };
@@ -80,7 +85,7 @@ private:
 	CNetworkVar(int, m_nFlagStatus);
 	CNetworkVar(float, m_flResetTime);
 	CNetworkVar(float, m_flNeutralTime);
-	CNetworkVar(float, m_flMaxresetTime);
+	CNetworkVar(float, m_flMaxResetTime);
 	CNetworkHandle(CBaseEntity, m_hPrevOwner);
 	CNetworkString(m_szModel, MAX_PATH);
 	CNetworkString(m_szHudIcon, MAX_PATH);
