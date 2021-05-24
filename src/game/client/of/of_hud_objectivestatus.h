@@ -4,6 +4,7 @@
 //
 
 #include "hud_controlpointicons.h"
+#include "of_hud_timestatus.h"
 #include "c_of_player.h"
 #include "of_shareddefs.h"
 
@@ -19,6 +20,7 @@ public:
 
 private:
 
+	COFHudTimeStatus *m_pTimePanel;
 	CHudControlPointIcons *m_pPointIconsPanel;
 	CControlPointProgressBar *m_pPointProgressBarPanel;
 };

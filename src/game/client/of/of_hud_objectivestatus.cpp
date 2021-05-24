@@ -15,6 +15,7 @@ COFHudObjectiveStatus::COFHudObjectiveStatus(const char *pElementName) : CHudEle
 	vgui::Panel *pParent = g_pClientMode->GetViewport();
 	SetParent(pParent);
 
+	m_pTimePanel = new COFHudTimeStatus(this, "ObjectiveStatusTimePanel");
 	//m_pFlagStatusPanel = new CTFHudFlagObjectives(this, "ObjectiveStatusFlagPanel");
 	m_pPointIconsPanel = NULL;
 	m_pPointProgressBarPanel = new CControlPointProgressBar(this);
