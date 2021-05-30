@@ -10,6 +10,7 @@
 // * removed stray "L" in ApplySchemeSettings
 // * replaced C_TFPlayer with OF equivalent
 // * replaced TF_TEAM_* with OF equivalent
+// * replaced CExLabel with COFLabel
 
 #include "cbase.h"
 #include "hud_controlpointicons.h"
@@ -196,7 +197,7 @@ void CControlPointIcon::ApplySchemeSettings( IScheme *pScheme )
 
 	if ( !m_pCPTimerLabel )
 	{
-		m_pCPTimerLabel = new CExLabel( this, "CPTimerLabel", "" );
+		m_pCPTimerLabel = new COFLabel(this, "CPTimerLabel", "");
 		m_pCPTimerLabel->SetZPos( 0 );
 	}
 
@@ -1801,7 +1802,7 @@ void CControlPointCountdown::ApplySchemeSettings( IScheme *pScheme )
 //-----------------------------------------------------------------------------
 void CControlPointCountdown::PerformLayout()
 {
-	CExLabel *pLabel = dynamic_cast<CExLabel *>( FindChildByName( "CapCountdownLabel" ) );
+	COFLabel *pLabel = dynamic_cast<COFLabel *>(FindChildByName("CapCountdownLabel"));
 	if ( pLabel )
 	{
 		pLabel->SetBounds( 0, 0, GetWide(), GetTall() );

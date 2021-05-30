@@ -1094,6 +1094,22 @@ bool COFGameRules::IsPlayingSpecialDeliveryMode()
 	return m_bPlayingSpecialDeliveryMode;
 }
 
+// OFSTATUS: COMPLETE
+// taken from CTeamplayRoundBasedRules, it was a server only function though
+int COFGameRules::GetTimeLeft()
+{
+	float flTimeLimit = mp_timelimit.GetInt() * 60;
+	float flMapChangeTime = m_flMapResetTime + flTimeLimit;
+
+	int iTime = (int)(flMapChangeTime - gpGlobals->curtime);
+	if (iTime < 0)
+	{
+		iTime = 0;
+	}
+
+	return (iTime);
+}
+
 // OFSTATUS: INCOMPLETE (theres some kind of holiday calc here)
 void COFGameRules::GoToIntermission( void )
 {

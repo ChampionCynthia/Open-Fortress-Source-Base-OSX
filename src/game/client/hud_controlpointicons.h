@@ -6,6 +6,7 @@
 
 // Open Fortress Modifications (CC-BY-NC-CA)
 // * replaced "tf_controls.h" to "of_controls.h"
+// * replaced CExLabel with COFLabel
 
 #ifndef HUD_CONTROLPOINTICONS_H
 #define HUD_CONTROLPOINTICONS_H
@@ -348,7 +349,7 @@ private:
 	bool							m_bCachedCountdownState;
 	CControlPointCountdown			*m_pCountdown;
 
-	DHANDLE< CExLabel >				m_pCPTimerLabel; // used to display CCPTimerLogic countdowns
+	DHANDLE< COFLabel >				m_pCPTimerLabel; // used to display CCPTimerLogic countdowns
 	DHANDLE< vgui::ImagePanel >		m_pCPTimerBG; // used to display CCPTimerLogic countdowns
 	float							m_flCPTimerTime;
 	bool							m_bRedText;

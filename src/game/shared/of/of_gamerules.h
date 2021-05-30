@@ -118,6 +118,7 @@ public:
 #endif
 
 	virtual bool IsPlayingSpecialDeliveryMode( void );
+	virtual int GetTimeLeft();
 
 private:
 

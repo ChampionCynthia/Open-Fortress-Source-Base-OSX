@@ -6,7 +6,6 @@
 #include "hud_controlpointicons.h"
 #include "of_hud_timestatus.h"
 #include "c_of_player.h"
-#include "of_shareddefs.h"
 
 class COFHudObjectiveStatus : public CHudElement, public vgui::EditablePanel
 {
@@ -14,6 +13,7 @@ public:
 	DECLARE_CLASS_SIMPLE(COFHudObjectiveStatus, vgui::EditablePanel);
 
 	COFHudObjectiveStatus(const char *pElementName);
+	void Think();
 	void ApplySchemeSettings(IScheme *pScheme);
 	void Reset();
 	CControlPointProgressBar *GetControlPointProgressBar();

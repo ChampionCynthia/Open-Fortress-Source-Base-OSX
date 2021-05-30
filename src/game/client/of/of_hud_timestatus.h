@@ -5,9 +5,8 @@
 
 #pragma once
 
+#include "GameEventListener.h"
 #include "hudelement.h"
-#include "vgui_controls/ScalableImagePanel.h"
-#include "vgui_controls/EditablePanel.h"
 #include "vgui/of_controls.h"
 #include "IconPanel.h"
 
@@ -17,7 +16,7 @@ typedef struct
 {
 	float m_flDeathTime;
 	int m_iSeconds;
-} delta_tablet_t;
+} delta_table_t;
 
 class COFHudTimeStatus : public vgui::EditablePanel, public CGameEventListener
 {
@@ -29,23 +28,27 @@ public:
 	virtual void SetTeamBackground();
 	virtual void FireGameEvent(IGameEvent *event);
 	virtual void SetExtraTimePanels();
-	//virtual void CheckClockLabelLength(CExLabel *pLabel, Panel *pPanel);
-	//virtual void Reset();
+	virtual void CheckClockLabelLength(COFLabel *pLabel, Panel *pPanel);
+	virtual void Reset();
+	virtual void OnThink();
+	virtual void Paint();
+	virtual void SetTimerIndex(int iTimerIndex);
+	virtual int GetTimerIndex() { return m_iTimerIndex; }
 	virtual void ApplySchemeSettings(IScheme *pScheme);
 
 private:
 
-	CExLabel *m_pTimePanelValueLabel;
+	COFLabel *m_pTimePanelValueLabel;
 	//COFProgressBar *m_pTimePanelProgresssBar;
-	CExLabel *m_pOvertimeLabel;
+	COFLabel *m_pOvertimeLabel;
 	Panel *m_pOvertimeBG;
-	CExLabel *m_pSuddenDeathLabel;
+	COFLabel *m_pSuddenDeathLabel;
 	Panel *m_pSuddenDeathBG;
-	CExLabel *m_pWaitingForPlayersLabel;
+	COFLabel *m_pWaitingForPlayersLabel;
 	Panel *m_pWaitingForPlayersBG;
-	CExLabel *m_pSetupLabel;
+	COFLabel *m_pSetupLabel;
 	Panel *m_pSetupBG;
-	CExLabel *m_pServerTimeLimitLabel;
+	COFLabel *m_pServerTimerLimitLabel;
 	Panel *m_pServerTimerLimitLabelBG;
 
 	ScalableImagePanel *m_pTimePanelBG;
@@ -53,14 +56,19 @@ private:
 	CPanelAnimationVarAliasType(float, m_flDeltaItemStartPos, "delta_item_start_y", "100", "proportional_float");
 	CPanelAnimationVarAliasType(float, m_flDeltaItemEndPos, "delta_item_end_y", "0", "proportional_float");
 	CPanelAnimationVarAliasType(float, m_flDeltaItemX, "delta_item_x", "0", "proportional_float");
-	CPanelAnimationVar(Color, m_DeltaPositiveColor, "PositiveColor", "0 255 0 255");
-	CPanelAnimationVar(Color, m_DeltaNegativeColor, "NegativeColor", "255 0 0 255");
+	CPanelAnimationVar(Color, m_DeltaPositiveColor, "PositiveColor", "0 255 0 255"); // field_0x238 + 1
+	CPanelAnimationVar(Color, m_DeltaNegativeColor, "NegativeColor", "255 0 0 255"); // field_0x23c + 2
 	CPanelAnimationVar(float, m_flDeltaLifetime, "delta_lifetime", "2.0");
 	CPanelAnimationVar(vgui::HFont, m_hDeltaItemFont, "delta_item_font", "Default");
 
 	int field_0x250;
 	int m_iTimerIndex; //field_0x190;
 
-	delta_tablet_t m_DeltaTable[DELTATABLE_SIZE];
+	delta_table_t m_DeltaTable[DELTATABLE_SIZE];
 	int field_0x1cc;
+
+	float field_0x18c;
+
+	bool field_0x254;
+	bool field_0x255;
 };

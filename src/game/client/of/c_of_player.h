@@ -37,7 +37,9 @@ public:
 						   float x,	// spread x factor
 						   float y	// spread y factor
 						   );
-						   
+	void OnPreDataChanged(DataUpdateType_t updateType);
+	void OnDataChanged(DataUpdateType_t updateType);
+
 	static C_OFPlayer* GetLocalOFPlayer();
 
 	COFPlayerAnimState *m_PlayerAnimState;
@@ -52,6 +54,7 @@ public:
 
 private:
 	CNetworkHandle(COFItem, m_hItem);
+	int m_iPreDataChangeTeam;
 };
 
 inline C_OFPlayer *ToOFPlayer( C_BaseEntity *pEntity )

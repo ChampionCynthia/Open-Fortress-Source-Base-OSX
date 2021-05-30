@@ -4,6 +4,7 @@
 //
 
 #include "vgui/IVGui.h"
-#include "vgui/of_exbutton.h"
-#include "vgui/of_exlabel.h"
+#include "vgui/of_button.h"
+#include "vgui/of_label.h"
 #include "vgui/of_textwindow.h"
+#include "vgui/of_imagepanel.h"
