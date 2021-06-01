@@ -46,6 +46,8 @@ $Project "Client (Open Fortress)"
 		$File	"of/of_hud_objectivestatus.h"
 		$File	"of/of_hud_timestatus.cpp"
 		$File	"of/of_hud_timestatus.h"
+		$File	"of/of_hud_progressbar.cpp"
+		$File	"of/of_hud_progressbar.h"
 		
 		$File	"of/c_te_firebullets.cpp"
 

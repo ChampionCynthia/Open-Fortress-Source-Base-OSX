@@ -10,6 +10,8 @@
 #include "vgui/of_controls.h"
 #include "IconPanel.h"
 
+class COFProgressBar;
+
 #define DELTATABLE_SIZE 10
 
 typedef struct
@@ -39,7 +41,7 @@ public:
 private:
 
 	COFLabel *m_pTimePanelValueLabel;
-	//COFProgressBar *m_pTimePanelProgresssBar;
+	COFProgressBar *m_pTimePanelProgressBar;
 	COFLabel *m_pOvertimeLabel;
 	Panel *m_pOvertimeBG;
 	COFLabel *m_pSuddenDeathLabel;

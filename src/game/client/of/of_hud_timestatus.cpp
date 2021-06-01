@@ -13,6 +13,7 @@
 #include "vgui_controls/EditablePanel.h"
 #include "vgui/ISurface.h"
 #include "vgui/ILocalize.h"
+#include "of_hud_progressbar.h"
 
 ConVar tf_hud_show_servertimelimit("tf_hud_show_servertimelimit", "0", FCVAR_CLIENTDLL, "Display time left before the current map ends.");
 extern ConVar tf_arena_round_time;
@@ -21,7 +22,7 @@ extern ConVar tf_arena_round_time;
 COFHudTimeStatus::COFHudTimeStatus(Panel *parent, const char *pName) : vgui::EditablePanel(parent, pName)
 {
 	m_pTimePanelValueLabel = new COFLabel(this, "TimePanelValue", "");
-	//m_pTimePanelProgressBar = NULL;
+	m_pTimePanelProgressBar = NULL;
 	m_pOvertimeLabel = NULL;
 	m_pOvertimeBG = NULL;
 	m_pSuddenDeathLabel = NULL;
@@ -136,7 +137,7 @@ void COFHudTimeStatus::SetExtraTimePanels()
 	if (pTimer && pTimer->IsStopWatchTimer())
 	{
 		if (m_pTimePanelBG) m_pTimePanelBG->SetVisible(false);
-		//if (m_pTimePanelProgressBar) m_pTimePanelProgressBar->SetVisible(false);
+		if (m_pTimePanelProgressBar) m_pTimePanelProgressBar->SetVisible(false);
 		if (m_pWaitingForPlayersLabel) m_pWaitingForPlayersLabel->SetVisible(false);
 		if (m_pWaitingForPlayersBG) m_pWaitingForPlayersBG->SetVisible(false);
 		if (m_pOvertimeLabel) m_pOvertimeLabel->SetVisible(false);
@@ -362,19 +363,17 @@ void COFHudTimeStatus::OnThink()
 				m_pTimePanelValueLabel->SetText(textTimePanel);
 			}
 
-			/*
 			if (m_pTimePanelProgressBar && m_pTimePanelProgressBar->IsVisible())
 			{
 				if (iTimerMaxLength)
 				{
-					m_pTimePanelProgressBar->field_0x180 = (iTimerMaxLength - flTimeRemaining) / iTimerMaxLength;
+					m_pTimePanelProgressBar->SetRemainingTime((iTimerMaxLength - flTimeRemaining) / iTimerMaxLength); // field_0x180
 				}
 				else
 				{
-					m_pTimePanelProgressBar->field_0x180 = 0;
+					m_pTimePanelProgressBar->SetRemainingTime(0); // field_0x180
 				}
 			}
-			*/
 
 			if (m_pServerTimerLimitLabel && m_pServerTimerLimitLabelBG)
 			{
@@ -521,7 +520,7 @@ void COFHudTimeStatus::ApplySchemeSettings(IScheme *pScheme)
 {
 	LoadControlSettings("resource/UI/HudObjectiveTimePanel.res");
 
-	//m_pTimePanelProgressBar = dynamic_cast<COFProgressBar*>(FindChildByName("TimePanelProgressBar")); //field_0x19c
+	m_pTimePanelProgressBar = dynamic_cast<COFProgressBar*>(FindChildByName("TimePanelProgressBar")); //field_0x19c
 
 	m_pOvertimeLabel = dynamic_cast<COFLabel*>(FindChildByName("OvertimeLabel")); //field_0x1ac
 
