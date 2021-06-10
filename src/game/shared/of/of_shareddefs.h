@@ -112,6 +112,24 @@ enum
 	OF_RELOAD_STAGE_END
 };
 
+enum
+{
+	OF_CLASS_UNDEFINED = 0,
+
+	OF_CLASS_SCOUT,
+	OF_CLASS_SNIPER,
+	OF_CLASS_SOLDIER,
+	OF_CLASS_DEMO,
+	OF_CLASS_MEDIC,
+	OF_CLASS_HEAVY,
+	OF_CLASS_PYRO,
+	OF_CLASS_SPY,
+	OF_CLASS_ENGINEER,
+
+	OF_CLASS_CIVILIAN,
+	OF_CLASS_COUNT
+};
+
 // not all of these exist, compatibility only
 // https://csrd.science/misc/datadump/current/tf_conds.txt
 enum ETFCond

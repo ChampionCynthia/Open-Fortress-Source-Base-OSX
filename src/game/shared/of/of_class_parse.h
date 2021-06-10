@@ -1,0 +1,111 @@
+// ========= Copyright Open Fortress Developers, CC-BY-NC-SA ============
+// Purpose: Implementation of ClassData
+// Author(s): KaydemonLP
+//
+
+#pragma once
+
+struct  TFPlayerClassData_t
+{
+	char			m_szName[128];
+	char			m_szModel[128];
+	char			m_szModelHWM[128];
+	char			m_szViewmodel[128];
+	char			m_szNameLocalized[128];
+	float			m_flMaxSpeed;
+	int				m_iMaxHealth;
+	int				m_iMaxArmor;
+	int				m_iWeaponIDs[6];
+
+	// RE NOTE: Grenades only have 2 confirmed array size
+	// The latter 4 bytes are only assumed to be part of it
+	// They might be something entirely different
+	int				m_iGrenades[6];
+	int				m_iMaxAmmo[6];
+	int				m_iBuildable[6];
+	bool			m_bDontDoAirwalk;
+	bool			m_bDontDoNewJump;
+	bool			m_bIsParsed;
+//	undefined		undefined
+	float			m_flCameraOffsetForward;
+	float			m_flCameraOffsetRight;
+	float			m_flCameraOffsetUp;
+	char			m_szDeathSounds[12][128];
+	
+	void	AddAdditionalPlayerDeathSounds( void );
+	char	*GetDeathSound( int iSoundIndex );
+	char	*GetModelName( void );
+	void	ParseData( KeyValues *kvData );
+};
+
+// RE: This class is kind of speculative
+// though it seems it's very basic middleman class
+// which saves the class data
+// so hopefully minor descrepancies won't break anything - Kay
+class CTFPlayerClassDataMgr : public CAutoGameSystem
+{
+public:
+	virtual bool Init( void );
+
+	TFPlayerClassData_t *Get( unsigned int iClassIndeex );
+	void	AddAdditionalPlayerDeathSounds( void );
+	
+private:
+
+	TFPlayerClassData_t m_ClassDatabase[11];
+};
+
+extern TFPlayerClassData_t* GetPlayerClassData( uint32 iClassIndex );
+
+// Need these to access in tf_player.cpp
+#ifdef CLIENT_DLL
+EXTERN_RECV_TABLE( DT_TFPlayerClassShared );
+#else
+EXTERN_SEND_TABLE( DT_TFPlayerClassShared );
+#endif
+
+class CTFPlayerClassShared
+{
+public:
+
+	CTFPlayerClassShared();
+
+	DECLARE_EMBEDDED_NETWORKVAR()
+	DECLARE_CLASS_NOBASE( CTFPlayerClassShared );
+
+	bool	Init( int iClassIndex );
+	void	Reset( void );
+	
+	bool	CanBuildObject( int iObjectIndex );
+
+// Assuming this is only needed on the server
+#ifdef GAME_DLL
+	void	SetCustomModel( const char *szModelName, bool bCustomModelClassAnim );
+#endif
+	bool	CustomModelHasChanged( void );
+
+	char	*GetModelName( void );
+	char	*GetHandModelName( bool bUseGunslinger );
+
+protected:
+
+	CNetworkVar( int, m_iClass );
+
+#ifdef CLIENT_DLL
+	char	m_szClassIcon[MAX_PATH];
+	char	m_szCustomModel[MAX_PATH];
+#else
+	CNetworkVar( string_t, m_szClassIcon );
+	CNetworkVar( string_t, m_szCustomModel );
+#endif
+
+	CNetworkVar( Vector, m_vecCustomModelOffset );
+	CNetworkVar( QAngle, m_angCustomModelRotation );
+	CNetworkVar( int, m_iCustomModelParity );
+	// Old Model Parity isnt networked so the client can update as well
+	int m_iOldCustomModelParity;
+	CNetworkVar( bool, m_bCustomModelRotates );
+	CNetworkVar( bool, m_bCustomRotationSet );
+	CNetworkVar( bool, m_bCustomModelVisibleToSelf );
+	CNetworkVar( bool, m_bCustomModelClassAnim );
+};
