@@ -7,10 +7,10 @@
 // (Many functions are copied from sdk_player.cpp. Please mark any that match tf2 server.dylib)
 
 #include "cbase.h"
+#include "of_shareddefs.h"
 #include "of_player.h"
 #include "of_player_shared.h"
 #include "of_playeranimstate.h"
-#include "of_shareddefs.h"
 #include "tier0/vprof.h"
 #include "entity_ofstart.h"
 #include "viewport_panel_names.h"
@@ -72,7 +72,8 @@ void TE_PlayerAnimEvent( CBasePlayer *pPlayer, PlayerAnimEvent_t event, int nDat
 
 LINK_ENTITY_TO_CLASS( player, COFPlayer );
 
-IMPLEMENT_SERVERCLASS_ST(COFPlayer, DT_OF_Player)
+IMPLEMENT_SERVERCLASS_ST( COFPlayer, DT_OF_Player )
+	SendPropDataTable( SENDINFO_DT( m_Class ), &REFERENCE_SEND_TABLE( DT_OFPlayerClassShared ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( COFPlayer )
@@ -84,7 +85,7 @@ COFPlayer::COFPlayer() : BaseClass()
 	m_bFlipViewModel = false;
 }
 
-bool COFPlayer::m_bOFPlayerNeedsPrecache { false };
+bool COFPlayer::m_bOFPlayerNeedsPrecache { true };
 
 COFPlayer* COFPlayer::CreatePlayer( const char * name, edict_t* pEdict)
 {
@@ -190,6 +191,11 @@ void COFPlayer::Spawn()
         StateEnterWELCOME();
     }
 
+	// Only init the class once we're active
+	if( m_iPlayerState == TF_STATE_ACTIVE )
+	{
+		InitClass();
+	}
 }
 
 //OFSTATUS: Incomplete, placeholder
@@ -199,6 +205,255 @@ void COFPlayer::ForceRespawn()
 	Spawn();
     //BaseClass::ForceRespawn();
 }
+
+//OFSTATUS: Complete
+void COFPlayer::InitClass()
+{
+	SetArmorValue( GetPlayerClassData(m_Class.m_iClass)->m_iMaxArmor );
+
+	m_PlayerAnimState->SetRunSpeed( GetPlayerClassData(m_Class.m_iClass)->m_flMaxSpeed );
+	m_PlayerAnimState->SetWalkSpeed( GetPlayerClassData(m_Class.m_iClass)->m_flMaxSpeed * 0.5 );
+
+	// GiveDefaultItems();
+
+	SetMaxHealth( GetMaxHealth() );
+	SetHealth( GetMaxHealth() );
+
+	// TeamFortress_SetSpeed();
+}
+
+int COFPlayer::GetMaxHealth()
+{
+	int iRet = GetMaxHealthForBuffing();
+	//iVar1 = CAttributeManager::AttribHookValue<int>
+    //                (iVar1,"add_maxhealth_nonbuffed",(CBaseEntity *)this,(CUtlVector *)0x0,true);
+	if( iRet < 1 ) 
+		iRet = 1;
+	return iRet;
+}
+
+int COFPlayer::GetMaxHealthForBuffing()
+{
+	OFPlayerClassData_t *pClassData = GetPlayerClassData( m_Class.m_iClass );
+	int iHealth = pClassData->m_iMaxHealth;
+
+	return iHealth;
+	// RE: Attribute stuff, ignore - Kay
+	// iHealth = CAttributeManager::AttribHookValue<int>
+	// 	(iHealth, "add_maxhealth", (CBaseEntity *)this, (CUtlVector *)0x0, true);
+
+	//COFWeaponBase *pOFWeapon = GetActiveOFWeapon();
+	// RE: These are just all overrides weapons do for max health
+	// None of the base weapons use it, ignore for now - Kay
+	//if( pOFWeapon )
+	//{
+	//	uVar2 = (*pTFWeapon->vtable->CTFWeaponBase::GetMaxHealthMod)();
+	//	iVar4 = iVar4 + CONCAT31(extraout_var, uVar2);
+	//}
+
+	// Re: OK SO this just checks if you're demo and have a sword or whatever
+	// We don't have that so i won't go into this
+	// if ((((this->m_Class).m_iClass == 4) && (iVar5 = Weapon_OwnsThisID(this, 0x40), iVar5 != 0)) &&
+	// 	(piVar6 = (CTFSword *)
+	// 	__symbol_stub::___dynamic_cast(iVar5, PTR_typeinfo_00e344b0, PTR_typeinfo_00e34724, 0),
+	// 	piVar6 != (CTFSword *)0x0)) {
+	// 	iVar5 = (**(code **)(*(int *)piVar6 + 0x794))();
+	// 	iVar4 = iVar4 + iVar5;
+	// }
+
+	// Re: Runes are the Mannpower powerups
+	// IGNOREEEE - Kay
+	// iHealth += GetRuneHealthBonus();
+
+
+	
+	//if( m_Shared.InCond( TF_COND_HALLOWEEN_GIANT ) )
+	//	return iHealth * tf_halloween_giant_health_scale.GetFloat();
+
+
+	// RE: This entire thing is for heavies health drain rate on the GRU
+	// I am so sorry for whoever needed to code this
+	//else{
+	//	fVar16 = CAttributeManager::AttribHookValue<float>
+	//		(0.0, "mod_maxhealth_drain_rate", (CBaseEntity *)piVar5, (CUtlVector *)0x0, true)
+	//		;
+	//	if (fVar16 <= 0.0) {
+	//		iVar4 = iVar6;
+	//		if (*(int *)&this->field_0x2444 < 1) {
+	//			if (*(double *)&this->field_0x2448 != -1.0) {
+	//				*(undefined4 *)&this->field_0x2444 = 0;
+	//				*(undefined4 *)&this->field_0x244c = 0xbff00000;
+	//				*(undefined4 *)&this->field_0x2448 = 0;
+	//				*(undefined *)&this->field_0x2450 = 1;
+	//				*(undefined4 *)&this->field_0x2458 = 0;
+	//				*(undefined4 *)&this->field_0x2454 = 0;
+	//				*(undefined4 *)&this->field_0x2460 = 0;
+	//				*(undefined4 *)&this->field_0x245c = 0;
+	//			}
+	//		}
+	//		else {
+	//			if (*(char *)&this->field_0x2450 == '\0') {
+	//				if (0.0 < *(double *)&this->field_0x2454) {
+	//					*(ulonglong *)&this->field_0x2454 =
+	//						(ulonglong)*(double *)&this->field_0x2454 ^ 0x8000000000000000;
+	//				}
+	//				if (0.0 < *(double *)&this->field_0x245c) {
+	//					*(ulonglong *)&this->field_0x245c =
+	//						(ulonglong)*(double *)&this->field_0x245c ^ 0x8000000000000000;
+	//				}
+	//			}
+	//			*(undefined *)&this->field_0x2450 = 1;
+	//			fVar16 = CAttributeManager::AttribHookValue<float>
+	//				(0.0, "mod_maxhealth_drain_rate", (CBaseEntity *)this, (CUtlVector *)0x0,
+	//				true);
+	//			ppCVar1 = PTR__gpGlobals_00e34080;
+	//			if (fVar16 == 0.0) {
+	//				*(undefined4 *)&this->field_0x2444 = 0;
+	//				*(undefined4 *)&this->field_0x244c = 0xbff00000;
+	//				*(undefined4 *)&this->field_0x2448 = 0;
+	//				*(undefined *)&this->field_0x2450 = 1;
+	//				*(undefined4 *)&this->field_0x2458 = 0;
+	//				*(undefined4 *)&this->field_0x2454 = 0;
+	//				*(undefined4 *)&this->field_0x2460 = 0;
+	//				*(undefined4 *)&this->field_0x245c = 0;
+	//			}
+	//			else {
+	//				iVar4 = *(int *)&this->field_0x2444;
+	//				fVar13 = (*PTR__gpGlobals_00e34080)->curtime;
+	//				dVar14 = (double)fVar16 * ((double)fVar13 - *(double *)&this->field_0x2448);
+	//				dVar15 = *(double *)&this->field_0x2454 + dVar14;
+	//				*(double *)&this->field_0x2454 = dVar15;
+	//				fVar12 = (float10)__symbol_stub::_floor(dVar15);
+	//				iVar9 = (int)fVar12;
+	//				iVar10 = iVar4;
+	//				if (0 < iVar9) {
+	//					*(double *)&this->field_0x2454 = dVar15 - (double)iVar9;
+	//					iVar10 = iVar4 - iVar9;
+	//					*(int *)&this->field_0x2444 = iVar10;
+	//				}
+	//				iVar9 = *(int *)&this->field_0x108;
+	//				if (iVar6 - iVar4 < 2) {
+	//					fVar16 = 1.0;
+	//				}
+	//				else {
+	//					fVar16 = (float)(iVar6 - iVar4);
+	//				}
+	//				dVar14 = (double)((float)iVar9 / fVar16) * dVar14 + *(double *)&this->field_0x245c;
+	//				*(double *)&this->field_0x245c = dVar14;
+	//				fVar12 = (float10)__symbol_stub::_floor();
+	//				iVar4 = (int)fVar12;
+	//				if (0 < iVar4) {
+	//					*(double *)&this->field_0x245c = dVar14 - (double)iVar4;
+	//					fVar12 = (float10)CTFPlayerShared::GetMaxOverhealMultiplier
+	//						((CTFPlayerShared *)&this->field_0x19b8);
+	//					iVar10 = CAttributeManager::AttribHookValue<int>
+	//						(iVar6, "add_maxhealth_nonbuffed", (CBaseEntity *)this,
+	//						(CUtlVector *)0x0, true);
+	//					if (iVar10 <= (int)((float)iVar6 * (float)fVar12)) {
+	//						iVar10 = (int)((float)iVar6 * (float)fVar12);
+	//					}
+	//					iVar4 = iVar4 + *(int *)&this->field_0x108;
+	//					if (iVar10 < iVar4) {
+	//						iVar4 = iVar10;
+	//					}
+	//					iVar9 = *(int *)&this->field_0x108;
+	//					if (*(int *)&this->field_0x108 != iVar4) {
+	//						(**(code **)(*(int *)this + 0x1ec))(this, (int *)&this->field_0x108);
+	//						*(int *)&this->field_0x108 = iVar4;
+	//						iVar9 = iVar4;
+	//					}
+	//					fVar13 = (*ppCVar1)->curtime;
+	//					iVar10 = *(int *)&this->field_0x2444;
+	//				}
+	//				*(double *)&this->field_0x2448 = (double)fVar13;
+	//				iVar4 = 1;
+	//				if (iVar6 - iVar10 != 0 && iVar10 <= iVar6) {
+	//					iVar4 = iVar6 - iVar10;
+	//				}
+	//				if (iVar4 == iVar6) {
+	//					if ((*(double *)&this->field_0x245c != 0.0) && (*(int *)&this->field_0x108 != iVar9 + 1)
+	//						) {
+	//						(**(code **)(*(int *)this + 0x1ec))(this, (int *)&this->field_0x108);
+	//						*(int *)&this->field_0x108 = iVar9 + 1;
+	//					}
+	//					*(undefined4 *)&this->field_0x2444 = 0;
+	//					*(undefined4 *)&this->field_0x244c = 0xbff00000;
+	//					*(undefined4 *)&this->field_0x2448 = 0;
+	//					*(undefined *)&this->field_0x2450 = 1;
+	//					*(undefined4 *)&this->field_0x2458 = 0;
+	//					*(undefined4 *)&this->field_0x2454 = 0;
+	//					*(undefined4 *)&this->field_0x2460 = 0;
+	//					*(undefined4 *)&this->field_0x245c = 0;
+	//					iVar4 = iVar6;
+	//				}
+	//			}
+	//		}
+	//	}
+	//	else {
+	//		iVar4 = 0;
+	//		if (*(char *)&this->field_0x2450 != '\0') {
+	//			iVar4 = *(int *)(DAT_0108fbc0 + 0x30);
+	//			*(undefined *)&this->field_0x2450 = 0;
+	//			if (*(double *)&this->field_0x2454 < 0.0) {
+	//				*(ulonglong *)&this->field_0x2454 =
+	//					(ulonglong)*(double *)&this->field_0x2454 & 0x7fffffffffffffff;
+	//			}
+	//			if (*(double *)&this->field_0x245c < 0.0) {
+	//				*(ulonglong *)&this->field_0x245c =
+	//					(ulonglong)*(double *)&this->field_0x245c & 0x7fffffffffffffff;
+	//			}
+	//		}
+	//		dVar14 = *(double *)&this->field_0x2448;
+	//		if (dVar14 == -1.0) {
+	//			dVar14 = (double)(*PTR__gpGlobals_00e34080)->curtime;
+	//			*(double *)&this->field_0x2448 = dVar14;
+	//		}
+	//		iVar10 = *(int *)(DAT_0108fb64 + 0x30);
+	//		iVar9 = *(int *)&this->field_0x2444;
+	//		iVar8 = iVar9;
+	//		if (iVar9 < iVar6 - iVar10) {
+	//			dVar15 = (double)iVar4 +
+	//				(double)fVar16 * ((double)(*PTR__gpGlobals_00e34080)->curtime - dVar14);
+	//			dVar14 = *(double *)&this->field_0x2454 + dVar15;
+	//			*(double *)&this->field_0x2454 = dVar14;
+	//			fVar12 = (float10)__symbol_stub::_floor(dVar14);
+	//			iVar4 = (int)fVar12;
+	//			if (0 < iVar4) {
+	//				*(double *)&this->field_0x2454 = dVar14 - (double)iVar4;
+	//				iVar8 = iVar4 + iVar9;
+	//				*(int *)&this->field_0x2444 = iVar8;
+	//			}
+	//			iVar4 = *(int *)&this->field_0x108;
+	//			iVar9 = iVar6 - iVar9;
+	//			if (iVar6 - iVar9 < iVar10) {
+	//				iVar9 = iVar10;
+	//			}
+	//			dVar14 = (double)((float)iVar4 / (float)iVar9) * dVar15 + *(double *)&this->field_0x245c;
+	//			*(double *)&this->field_0x245c = dVar14;
+	//			fVar12 = (float10)__symbol_stub::_floor(dVar14);
+	//			iVar9 = (int)fVar12;
+	//			if (0 < iVar9) {
+	//				*(double *)&this->field_0x245c = dVar14 - (double)iVar9;
+	//				iVar11 = 1;
+	//				if (iVar4 - iVar9 != 0 && iVar9 <= iVar4) {
+	//					iVar11 = iVar4 - iVar9;
+	//				}
+	//				if (*(int *)&this->field_0x108 != iVar11) {
+	//					(**(code **)(*(int *)this + 0x1ec))(this, &this->field_0x108);
+	//					*(int *)&this->field_0x108 = iVar11;
+	//					iVar8 = *(int *)&this->field_0x2444;
+	//				}
+	//			}
+	//		}
+	//		iVar4 = iVar6 - iVar8;
+	//		if (iVar6 - iVar8 < iVar10) {
+	//			iVar4 = iVar10;
+	//		}
+	//		*(double *)&this->field_0x2448 = (double)(*PTR__gpGlobals_00e34080)->curtime;
+	//	}
+	//}
+}
+
 
 void COFPlayer::DoAnimationEvent( PlayerAnimEvent_t event, int nData )
 {
@@ -481,16 +736,23 @@ void COFPlayer::PrecacheOFPlayer()
 void COFPlayer::PrecachePlayerModels()
 {
     //For testing
-    PrecacheModel("models/player/scout.mdl"); //TEMPORARY FOR TESTING ONLY
+	for( int i = OF_CLASS_SCOUT; i < OF_CLASS_COUNT; i++ )
+		PrecacheModel( GetPlayerClassData(i)->GetModelName() ); //TEMPORARY FOR TESTING ONLY
+
 }
 
 
 //OFSTATUS: Incomplete, only handles jointeam and in jointeam it only handles actual numbers.
 bool COFPlayer::ClientCommand( const CCommand& args )
 {
-	if ( FStrEq( args[0], "jointeam" ) && args.ArgC() >= 2 )
+	if( FStrEq( args[0], "jointeam" ) && args.ArgC() >= 2 )
 	{
         HandleCommand_JoinTeam(args[1]);
+		return true;
+	}
+	else if( FStrEq( args[0], "joinclass" ) && args.ArgC() >= 2 )
+	{
+		HandleCommand_JoinClass(args[1]);
 		return true;
 	}
 
@@ -505,6 +767,18 @@ void COFPlayer::HandleCommand_JoinTeam(const char* arg)
     if (iTeam != GetTeamNumber())
     {
         ChangeTeam(iTeam);
+        ForceRespawn();
+    }
+}
+
+//OFSTATUS: Incomplete, all placeholder
+void COFPlayer::HandleCommand_JoinClass(const char* arg)
+{
+    int iClass = UTIL_StringFieldToInt( arg, g_aRawPlayerClassNamesShort, OF_TEAM_COUNT );
+
+    if( m_Class.m_iClass != iClass )
+    {
+		m_Class.m_iClass = iClass;
         ForceRespawn();
     }
 }
@@ -555,8 +829,8 @@ CBaseEntity* COFPlayer::SelectSpawnSpotByType(char* type, CBaseEntity** param_2)
 void COFPlayer::UpdateModel()
 {
 	//BaseClass::SetModel((COFPlayerClassShared*)(this[1].data + 0x688)->GetModelName());
-	BaseClass::SetModel("models/player/scout.mdl"); //TEMPORARY FOR TESTING ONLY
-	SetCollisionBounds(BaseClass::GetPlayerMins(), BaseClass::GetPlayerMaxs());
+	BaseClass::SetModel( m_Class.GetModelName() ); //TEMPORARY FOR TESTING ONLY
+	SetCollisionBounds( BaseClass::GetPlayerMins(), BaseClass::GetPlayerMaxs() );
     //m_PlayerAnimState->OnNewModel(); //Crashes so disabled for now
 }
 

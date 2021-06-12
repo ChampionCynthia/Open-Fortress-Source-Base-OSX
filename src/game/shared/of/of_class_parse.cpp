@@ -4,13 +4,14 @@
 //
 
 #include "cbase.h"
-#include "of_class_parse.h"
 #include "filesystem.h"
 #include "of_shareddefs.h"
+#include "of_class_parse.h"
+#include "of_weapon_base.h"
 
 // RE: GetWeaponID, GetAmmoName and GetBuildableId aren't RE-d yet
 
-void TFPlayerClassData_t::ParseData( KeyValues *kvData )
+void OFPlayerClassData_t::ParseData( KeyValues *kvData )
 {
 /*
 	puVar1 = __nl_symbol_ptr::___stack_chk_guard;
@@ -30,29 +31,29 @@ void TFPlayerClassData_t::ParseData( KeyValues *kvData )
 	
 	m_iMaxHealth = kvData->GetInt( "health_max" );
 	m_iMaxArmor = kvData->GetInt( "armor_max" );
-	
+
 	for( int i = 0; i < sizeof(m_iWeaponIDs); i++ )
 	{
-		m_iWeaponIDs[i] = GetWeaponId( kvData->GetString( UTIL_VarArgs( "weapon%d", i ) ) );
+		m_iWeaponIDs[i] = AliasToWeaponID( kvData->GetString( Shared_VarArgs( "weapon%d", i ) ) );
 	}
 	
 	for( int i = 0; i < sizeof(m_iGrenades); i++ )
 	{
-		m_iGrenades[i] = GetWeaponId( kvData->GetString( UTIL_VarArgs( "grenade%d", i ) ) );
+		m_iGrenades[i] = AliasToWeaponID( kvData->GetString( Shared_VarArgs( "grenade%d", i ) ) );
 	}
 	
 	KeyValues *kvAmmoMax = kvData->FindKey( "AmmoMax" );
 	if( kvAmmoMax )
 	{
-		for( int i = 0; i < sizeof(m_iGrenades); i++ )
+		for( int i = 1; i < AMMONAME_LAST; i++ )
 		{
-			m_iMaxAmmo[i] = kvAmmoMax->GetInt(GetAmmoName(i),0);
+			m_iMaxAmmo[i] = kvAmmoMax->GetInt( GetAmmoName(i) );
 		}
 	}
 
 	for( int i = 0; i < sizeof(m_iBuildable); i++ )
 	{
-		m_iBuildable[i] = GetBuildableId( kvData->GetString( UTIL_VarArgs( "buildable%d", i ), "") );
+		m_iBuildable[i] = GetBuildableId( kvData->GetString( Shared_VarArgs( "buildable%d", i ), "") );
 	}
 
 	m_bDontDoAirwalk = kvData->GetBool( "DontDoAirwalk" );
@@ -82,7 +83,7 @@ void TFPlayerClassData_t::ParseData( KeyValues *kvData )
 	}*/
 }
 
-void TFPlayerClassData_t::AddAdditionalPlayerDeathSounds()
+void OFPlayerClassData_t::AddAdditionalPlayerDeathSounds()
 {
 	CopySoundNameWithModifierToken( m_szDeathSounds[4], m_szDeathSounds[0], sizeof(m_szDeathSounds[4]),"MVM_" );
 	CopySoundNameWithModifierToken( m_szDeathSounds[8], m_szDeathSounds[0], sizeof(m_szDeathSounds[8]),"M_MVM_" );
@@ -98,12 +99,12 @@ void TFPlayerClassData_t::AddAdditionalPlayerDeathSounds()
 	return;
 }
 
-char *TFPlayerClassData_t::GetDeathSound( int iSoundIndex )
+char *OFPlayerClassData_t::GetDeathSound( int iSoundIndex )
 {
 	return m_szDeathSounds[iSoundIndex];
 }
 
-char *TFPlayerClassData_t::GetModelName( void )
+char *OFPlayerClassData_t::GetModelName( void )
 {
 	return m_szModel;
 }
@@ -121,7 +122,7 @@ char *g_szClassFilepaths[] =
 	"scripts/playerclasses/soldier",
 	"scripts/playerclasses/demoman",
 	"scripts/playerclasses/medic",
-	"scripts/playerclasses/heavywepons",
+	"scripts/playerclasses/heavyweapons",
 	"scripts/playerclasses/pyro",
 	"scripts/playerclasses/spy",
 	"scripts/playerclasses/engineer",
@@ -130,16 +131,16 @@ char *g_szClassFilepaths[] =
 
 // RE: This seems like a weird way of managing this?
 // Valve I guess - Kay
-CTFPlayerClassDataMgr g_TFPlayerClassDataMgr;
-CTFPlayerClassDataMgr *g_pTFPlayerClassDataMgr = &g_TFPlayerClassDataMgr;
+COFPlayerClassDataMgr g_OFPlayerClassDataMgr;
+COFPlayerClassDataMgr *g_pOFPlayerClassDataMgr = &g_OFPlayerClassDataMgr;
 
-TFPlayerClassData_t *GetPlayerClassData( uint32 iClassIndex )
+OFPlayerClassData_t *GetPlayerClassData( uint32 iClassIndex )
 {
-  return g_pTFPlayerClassDataMgr->Get( iClassIndex );
+	return g_pOFPlayerClassDataMgr->Get( iClassIndex );
 }
 
 
-bool CTFPlayerClassDataMgr::Init( void )
+bool COFPlayerClassDataMgr::Init( void )
 {
 	V_strncpy( m_ClassDatabase[0].m_szName, "undefined", sizeof(m_ClassDatabase[0].m_szName) );
 	V_strncpy( m_ClassDatabase[0].m_szModel, "models/player/scout.mdl", sizeof(m_ClassDatabase[0].m_szName) );
@@ -161,13 +162,13 @@ bool CTFPlayerClassDataMgr::Init( void )
 	return true;
 }
 
-TFPlayerClassData_t *CTFPlayerClassDataMgr::Get( unsigned int iClassIndex )
+OFPlayerClassData_t *COFPlayerClassDataMgr::Get( unsigned int iClassIndex )
 {
 	return &m_ClassDatabase[iClassIndex];
 }
 
 // RE: Called somewhere in CSoundEmitterSystem::LevelInitPreEntity()
-void CTFPlayerClassDataMgr::AddAdditionalPlayerDeathSounds( void )
+void COFPlayerClassDataMgr::AddAdditionalPlayerDeathSounds( void )
 {
 	for( int i = 1; i < sizeof(m_ClassDatabase); i++ )
 	{
@@ -175,7 +176,44 @@ void CTFPlayerClassDataMgr::AddAdditionalPlayerDeathSounds( void )
 	}
 }
 
-CTFPlayerClassShared::CTFPlayerClassShared()
+
+// ----------------------------------------------------------------------------- //
+// COFWeaponBase tables.
+// ----------------------------------------------------------------------------- //
+
+BEGIN_NETWORK_TABLE_NOBASE( COFPlayerClassShared, DT_OFPlayerClassShared )
+#ifdef CLIENT_DLL
+	RecvPropInt( RECVINFO( m_iClass ) ),
+	RecvPropString( RECVINFO( m_szClassIcon ) ),
+	RecvPropString( RECVINFO( m_szCustomModel ) ),
+
+	RecvPropVector( RECVINFO( m_vecCustomModelOffset ) ),
+	RecvPropQAngles( RECVINFO( m_angCustomModelRotation ) ),
+	RecvPropInt( RECVINFO( m_iCustomModelParity ) ),
+
+	RecvPropBool( RECVINFO( m_bCustomModelRotates ) ),
+	RecvPropBool( RECVINFO( m_bCustomRotationSet ) ),
+	RecvPropBool( RECVINFO( m_bCustomModelVisibleToSelf ) ),
+	RecvPropBool( RECVINFO( m_bCustomModelClassAnim ) ),
+#else
+	SendPropInt( SENDINFO( m_iClass ) ),
+
+	SendPropStringT( SENDINFO( m_szClassIcon ) ),
+	SendPropStringT( SENDINFO( m_szCustomModel ) ),
+	SendPropInt( SENDINFO( m_iCustomModelParity ), 3, SPROP_UNSIGNED ),
+
+	SendPropVector( SENDINFO( m_vecCustomModelOffset ) ),
+	SendPropQAngles( SENDINFO( m_angCustomModelRotation ) ),
+
+	SendPropBool( SENDINFO( m_bCustomModelRotates ) ),
+	SendPropBool( SENDINFO( m_bCustomRotationSet ) ),
+	SendPropBool( SENDINFO( m_bCustomModelVisibleToSelf ) ),
+	SendPropBool( SENDINFO( m_bCustomModelClassAnim ) ),
+#endif
+END_NETWORK_TABLE()
+
+
+COFPlayerClassShared::COFPlayerClassShared()
 {
 	m_iClass = 0;
 #ifdef CLIENT_DLL
@@ -195,24 +233,32 @@ CTFPlayerClassShared::CTFPlayerClassShared()
 	Reset();
 }
 
-bool CTFPlayerClassShared::Init( int iClassIndex )
+bool COFPlayerClassShared::Init( int iClassIndex )
 {
 	Reset();
 
 	m_iClass = iClassIndex;
-
+#ifdef GAME_DLL
 	// RE: Not defined yet, probably sould do that in the shareddefs
 	m_szClassIcon.Set( AllocPooledString( g_aRawPlayerClassNamesShort[ m_iClass ] ) );
-	
+#else
+	V_strncpy( m_szClassIcon, g_aRawPlayerClassNamesShort[ m_iClass ], sizeof( m_szClassIcon ) );
+#endif
 	return true;
 }
 
-void CTFPlayerClassShared::Reset( void )
+void COFPlayerClassShared::Reset( void )
 {
 	m_iClass = 0;
-	m_szClassIcon = 0;
+#ifdef GAME_DLL
+	m_szClassIcon.Set( NULL_STRING );
 
-	m_szCustomModel = 0;
+	m_szCustomModel.Set( NULL_STRING );
+#else
+	m_szClassIcon[0] = '\0';
+
+	m_szCustomModel[0] = '\0';
+#endif
 	m_vecCustomModelOffset = vec3_origin;
 	m_angCustomModelRotation = vec3_angle;
 	m_bCustomModelRotates = true;
@@ -222,9 +268,9 @@ void CTFPlayerClassShared::Reset( void )
 	m_iCustomModelParity = 0;
 }
 
-bool CTFPlayerClassShared::CanBuildObject( int iObjectIndex )
+bool COFPlayerClassShared::CanBuildObject( int iObjectIndex )
 {
-	TFPlayerClassData_t *pClassData = GetPlayerClassData( m_iClass );
+	OFPlayerClassData_t *pClassData = GetPlayerClassData( m_iClass );
 	for( int i = 0; i < sizeof(pClassData->m_iBuildable); i++ )
 	{
 		if( pClassData->m_iBuildable[i] == iObjectIndex )
@@ -234,12 +280,35 @@ bool CTFPlayerClassShared::CanBuildObject( int iObjectIndex )
 	return false;
 }
 
+// RE: Originally string_t
+// Changed to char * so its the same on both client and server - Kay
+const char *COFPlayerClassShared::GetModelName()
+{
+	string_t szReturnName = m_szCustomModel;
+	if( szReturnName == NULL_STRING ) 
+		return GetPlayerClassData( m_iClass )->GetModelName();
+
+	return STRING( szReturnName );
+}
+
+// RE: Why is this a variable?
+// Couldn't it just be hardcoded? - Kay
+char *g_HACK_GunslingerEngineerArmsOverride = "models\\weapons\\c_models\\c_engineer_gunslinger.mdl";
+
+const char *COFPlayerClassShared::GetHandModelName( bool bUseGunslinger )
+{
+	if( !bUseGunslinger ) 
+		return GetPlayerClassData( m_iClass )->m_szViewmodel;
+
+	return g_HACK_GunslingerEngineerArmsOverride;
+}
+
 #ifdef GAME_DLL
-void CTFPlayerClassShared::SetCustomModel( const char *szModelName, bool bCustomModelClassAnim )
+void COFPlayerClassShared::SetCustomModel( const char *szModelName, bool bCustomModelClassAnim )
 {
 	if( !(szModelName && szModelName[0]) ) 
 	{
-		m_szCustomModel = 0;
+		m_szCustomModel.Set( NULL_STRING );
 		m_vecCustomModelOffset = vec3_origin;
 		m_angCustomModelRotation = vec3_angle;
 	}
@@ -249,7 +318,7 @@ void CTFPlayerClassShared::SetCustomModel( const char *szModelName, bool bCustom
 		CBaseEntity::PrecacheModel( szModelName, true );
 		CBaseEntity::SetAllowPrecache( CBaseEntity::IsPrecacheAllowed() );
 		
-		m_szCustomModel = AllocPooledString(szModelName);
+		m_szCustomModel = AllocPooledString( szModelName );
 
 		m_bCustomModelClassAnim = bCustomModelClassAnim;
 	}
@@ -258,7 +327,7 @@ void CTFPlayerClassShared::SetCustomModel( const char *szModelName, bool bCustom
 }
 #endif
 
-bool CTFPlayerClassShared::CustomModelHasChanged( void )
+bool COFPlayerClassShared::CustomModelHasChanged( void )
 {
 	if( m_iCustomModelParity != m_iOldCustomModelParity )
 	{

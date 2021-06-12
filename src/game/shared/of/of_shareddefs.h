@@ -322,6 +322,11 @@ const char *GetGameTypeName(ETFGameType GameType);
 const char *GetEnumGameTypeName(ETFGameType GameType);
 ETFGameType GetGameTypeFromName(const char *GameName);
 
+extern int GetBuildableId( const char *szBuildableName );
+
+extern const char *GetAmmoName( int iAmmoIndex );
+
+// Weapon Defines
 extern const char *g_aWeaponModePrefix[OF_WEAPON_MODE_COUNT];
 extern uint g_aWeaponDamageTypes[];
 extern const char *g_aProjectileTypeNames[OF_PROJECTILE_TYPE_COUNT];
@@ -335,8 +340,15 @@ extern const char *g_aProjectileTypeNames[OF_PROJECTILE_TYPE_COUNT];
 
 // No longer the case, did it properly and moved it to of_shareddefs.cpp now - Kay
 extern const char *g_aAmmoNames[AMMONAME_LAST];
+
+// Team Defines
 extern const char *g_aTeamNames[OF_TEAM_COUNT];
 extern color32 g_aTeamColors[];
+
+// Class Defines
+extern const char *g_aRawPlayerClassNamesShort[];
+
+// Map Defines
 extern const char* s_ValveMaps[][3];
 extern const char* s_CommunityMaps[][3];
 

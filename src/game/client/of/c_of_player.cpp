@@ -4,6 +4,7 @@
 //
 
 #include "cbase.h"
+#include "of_shareddefs.h"
 #include "c_of_player.h"
 #include "c_basetempentity.h"
 #include "effect_dispatch_data.h"
@@ -98,7 +99,8 @@ END_RECV_TABLE()
 
 LINK_ENTITY_TO_CLASS( player, C_OFPlayer );
 
-IMPLEMENT_CLIENTCLASS_DT(C_OFPlayer, DT_OF_Player, COFPlayer)
+IMPLEMENT_CLIENTCLASS_DT( C_OFPlayer, DT_OF_Player, COFPlayer )
+	RecvPropDataTable( RECVINFO_DT( m_Class ), 0, &REFERENCE_RECV_TABLE( DT_OFPlayerClassShared ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_OFPlayer )

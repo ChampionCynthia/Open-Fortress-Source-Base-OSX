@@ -5,7 +5,7 @@
 
 #pragma once
 
-struct  TFPlayerClassData_t
+struct  OFPlayerClassData_t
 {
 	char			m_szName[128];
 	char			m_szModel[128];
@@ -21,7 +21,7 @@ struct  TFPlayerClassData_t
 	// The latter 4 bytes are only assumed to be part of it
 	// They might be something entirely different
 	int				m_iGrenades[6];
-	int				m_iMaxAmmo[6];
+	int				m_iMaxAmmo[AMMONAME_LAST];
 	int				m_iBuildable[6];
 	bool			m_bDontDoAirwalk;
 	bool			m_bDontDoNewJump;
@@ -35,43 +35,43 @@ struct  TFPlayerClassData_t
 	void	AddAdditionalPlayerDeathSounds( void );
 	char	*GetDeathSound( int iSoundIndex );
 	char	*GetModelName( void );
-	void	ParseData( KeyValues *kvData );
+	virtual void	ParseData( KeyValues *kvData );
 };
 
 // RE: This class is kind of speculative
 // though it seems it's very basic middleman class
 // which saves the class data
 // so hopefully minor descrepancies won't break anything - Kay
-class CTFPlayerClassDataMgr : public CAutoGameSystem
+class COFPlayerClassDataMgr : public CAutoGameSystem
 {
 public:
 	virtual bool Init( void );
 
-	TFPlayerClassData_t *Get( unsigned int iClassIndeex );
+	OFPlayerClassData_t *Get( unsigned int iClassIndeex );
 	void	AddAdditionalPlayerDeathSounds( void );
 	
 private:
 
-	TFPlayerClassData_t m_ClassDatabase[11];
+	OFPlayerClassData_t m_ClassDatabase[OF_CLASS_COUNT];
 };
 
-extern TFPlayerClassData_t* GetPlayerClassData( uint32 iClassIndex );
+extern OFPlayerClassData_t* GetPlayerClassData( uint32 iClassIndex );
 
 // Need these to access in tf_player.cpp
 #ifdef CLIENT_DLL
-EXTERN_RECV_TABLE( DT_TFPlayerClassShared );
+EXTERN_RECV_TABLE( DT_OFPlayerClassShared );
 #else
-EXTERN_SEND_TABLE( DT_TFPlayerClassShared );
+EXTERN_SEND_TABLE( DT_OFPlayerClassShared );
 #endif
 
-class CTFPlayerClassShared
+class COFPlayerClassShared
 {
 public:
 
-	CTFPlayerClassShared();
+	COFPlayerClassShared();
 
 	DECLARE_EMBEDDED_NETWORKVAR()
-	DECLARE_CLASS_NOBASE( CTFPlayerClassShared );
+	DECLARE_CLASS_NOBASE( COFPlayerClassShared );
 
 	bool	Init( int iClassIndex );
 	void	Reset( void );
@@ -84,8 +84,8 @@ public:
 #endif
 	bool	CustomModelHasChanged( void );
 
-	char	*GetModelName( void );
-	char	*GetHandModelName( bool bUseGunslinger );
+	const char	*GetModelName( void );
+	const char	*GetHandModelName( bool bUseGunslinger );
 
 protected:
 
@@ -108,4 +108,7 @@ protected:
 	CNetworkVar( bool, m_bCustomRotationSet );
 	CNetworkVar( bool, m_bCustomModelVisibleToSelf );
 	CNetworkVar( bool, m_bCustomModelClassAnim );
+
+	friend class COFPlayer;
+	friend class C_OFPlayer;
 };

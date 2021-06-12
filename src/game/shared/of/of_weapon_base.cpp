@@ -4,6 +4,7 @@
 //
 #include "cbase.h"
 #include "eventlist.h"
+#include "of_shareddefs.h"
 #ifdef CLIENT_DLL
 #include "c_of_player.h"
 #include "c_baseviewmodel.h"
@@ -15,7 +16,7 @@
 #include "of_gamerules.h"
 #include "of_weapon_base.h"
 #include "in_buttons.h"
-#include "of_shareddefs.h"
+
 #include "activitylist.h"
 #include "baseviewmodel_shared.h"
 

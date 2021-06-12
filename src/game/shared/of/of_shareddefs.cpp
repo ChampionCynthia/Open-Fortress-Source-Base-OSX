@@ -5,6 +5,7 @@
 
 #include "cbase.h"
 #include "of_shareddefs.h"
+#include "of_building_info.h"
 
 const char *g_aWeaponModePrefix[] =
 {
@@ -116,7 +117,7 @@ const char *g_aProjectileTypeNames[] =
 	"projectile_jar_gas",
 };
 
-const char *g_aAmmoNames[] =
+const char *g_aAmmoNames[AMMONAME_LAST] =
 {
 	"DUMMY AMMO", // This ammo is skipped
 	"TF_AMMO_PRIMARY",
@@ -141,6 +142,23 @@ color32 g_aTeamColors[] =
 	{ 0, 0, 0, 0 },
 	{ 255, 0, 0, 0 },
 	{ 0, 0, 255, 0 },
+};
+
+const char* g_aRawPlayerClassNamesShort[] =
+{
+	"undefined",
+	"scout",
+	"sniper",
+	"soldier",
+	"demo",
+	"medic",
+	"heavy",
+	"pyro",
+	"spy",
+	"engineer",
+	"civilian",
+	"",
+	"random"
 };
 
 const char* s_ValveMaps[][3] =
@@ -201,4 +219,35 @@ ETFGameType GetGameTypeFromName(const char *GameName)
 		}
 	}
 	return TF_GAMETYPE_UNDEFINDED;
+}
+
+// RE: Probably a good idea to enum buildables, but from everything that i can tell
+// Its not in tf2, so for now this will say just 4
+int GetBuildableId( const char *szBuildableName )
+{
+	for( int i = 0; i < 4; i++ )
+	{
+		if( V_stricmp(szBuildableName, g_ObjectInfos[i].m_szObjectName) == 0 )
+			return i;
+	}
+
+	return 4;
+}
+
+int InternalCalculateObjectCost( int iBuildableIndex )
+{
+/*	
+	RE: What is this? 
+	It makes every object cost nothing 
+	Maybe pre round mvm stuff? - Kay
+	if ( (DAT_0105e820 + 0x30) ) 
+	{
+		return 0;	
+	}*/
+	return g_ObjectInfos[iBuildableIndex].m_iCost;
+}
+
+const char *GetAmmoName( int iAmmoIndex )
+{
+	return g_aAmmoNames[iAmmoIndex];
 }

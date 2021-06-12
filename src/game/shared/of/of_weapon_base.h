@@ -94,7 +94,8 @@ typedef enum
     WEAPON_MAX,
 } OFWeaponID;
 
-const char *WeaponIDToAlias( int id );
+extern int AliasToWeaponID( const char *alias );
+extern const char *WeaponIDToAlias( int id );
 
 #if defined( CLIENT_DLL )
     #define COFWeaponBase C_OFWeaponBase

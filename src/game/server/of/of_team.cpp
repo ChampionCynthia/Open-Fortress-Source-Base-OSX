@@ -3,9 +3,9 @@
 // Author(s): Nopey, Ms, Cherry!
 //
 #include "cbase.h"
+#include "of_shareddefs.h"
 #include "of_team.h"
 #include "of_gamerules.h"
-#include "of_shareddefs.h"
 #include "dbg.h"
 
 void SendProxy_TeamObjectList( const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID )
