@@ -272,7 +272,7 @@ void COFGameRules::Think( void )
 // there's stuff commented out as we havent implemented it yet - cherry
 void COFGameRules::Activate()
 {
-	m_nGameType = TF_GAMETYPE_UNDEFINDED;
+	m_nGameType = OF_GAMETYPE_UNDEFINDED;
 
 	m_bPlayingKoth = false; // field_0x960
 	m_bPlayingMedieval = false; // field_0x963
@@ -293,9 +293,9 @@ void COFGameRules::Activate()
 	*/
 
 	// Control Points
-	if (g_hControlPointMasters.Count() && m_nGameType != TF_GAMETYPE_ARENA)
+	if (g_hControlPointMasters.Count() && m_nGameType != OF_GAMETYPE_ARENA)
 	{
-		m_nGameType = TF_GAMETYPE_CP;
+		m_nGameType = OF_GAMETYPE_CP;
 	}
 
 	// Special Delivery
@@ -308,14 +308,14 @@ void COFGameRules::Activate()
 	// Capture the Flag
 	else if (bFlags)
 	{
-		m_nGameType = TF_GAMETYPE_CTF;
+		m_nGameType = OF_GAMETYPE_CTF;
 	}
 
 	// Payload
 	CTeamTrainWatcher *pTrainWatcher = dynamic_cast<CTeamTrainWatcher*>(gEntList.FindEntityByClassname(NULL, "team_train_watcher"));
 	if (pTrainWatcher)
 	{
-		m_nGameType = TF_GAMETYPE_ESCORT;
+		m_nGameType = OF_GAMETYPE_ESCORT;
 	}
 
 	/*
@@ -568,7 +568,7 @@ bool COFGameRules::CanChangelevelBecauseOfTimeLimit()
 // OFSTATUS: COMPLETE
 bool COFGameRules::CanGoToStalemate()
 {
-	if (m_nGameType == TF_GAMETYPE_CTF)
+	if (m_nGameType == OF_GAMETYPE_CTF)
 	{
 		for (int i = 0; i < ICaptureFlagAutoList::AutoList().Count(); i++)
 		{
@@ -645,6 +645,67 @@ void COFGameRules::CleanUpMap()
 
 	//*(undefined *)&this->field_0xc8c = 0;
 	//this->field_0xcb0 = 0;
+}
+
+
+Vector DropToGround(CBaseEntity *pEntity, const Vector &vecPos, const Vector &vecMin, const Vector &vecMax)
+{
+	trace_t trace;
+	UTIL_TraceHull(vecPos, vecPos + Vector(0.0, 0.0, -500.0), vecMin, vecMax, MASK_SOLID, pEntity, COLLISION_GROUP_NONE, &trace);
+	return trace.endpos;
+}
+
+// OFSTATUS: COMPLETE
+// removed training mode stuff
+CBaseEntity *COFGameRules::GetPlayerSpawnSpot(CBasePlayer *pPlayer)
+{
+	CBaseEntity *pSpawnPoint = pPlayer->EntSelectSpawnPoint();
+
+	Vector vecPoint = DropToGround(pPlayer, pSpawnPoint->GetAbsOrigin(), VEC_HULL_MIN_SCALED(pPlayer), VEC_HULL_MAX_SCALED(pPlayer));
+
+	pPlayer->SetAbsOrigin(vecPoint + Vector(0.0, 0.0, 1.0));
+	pPlayer->SetAbsVelocity(vec3_origin);
+	pPlayer->SetLocalAngles(pSpawnPoint->GetAbsAngles());
+	pPlayer->m_Local.m_vecPunchAngle = vec3_angle; // thank you gamerules.cpp
+	pPlayer->m_Local.m_vecPunchAngleVel = vec3_angle;
+	pPlayer->SnapEyeAngles(pSpawnPoint->GetAbsAngles());
+
+	return pSpawnPoint;
+}
+
+// OFSTATUS: COMPLETE
+// cut matchsummary stuff
+// OFTODO: skipping the SpawnMode thing for now as i dont wanna go down another rabbit hole right now
+// bDontIncludePlayers - when false it'll take in account if there is already a player in the area of the spawnpoint
+bool COFGameRules::IsSpawnPointValid(CBaseEntity *pSpawnPoint,CBasePlayer *pPlayer, bool bDontIncludePlayers)
+{
+	if (pSpawnPoint->GetTeamNumber() != pPlayer->GetTeamNumber()) return false;
+
+	if (!pSpawnPoint->IsTriggered(pPlayer)) return false;
+
+	// spawnmode stuff happens around here
+	COFTeamSpawn *pTeamSpawn = dynamic_cast<COFTeamSpawn*>(pSpawnPoint);
+	if (pTeamSpawn && pTeamSpawn->IsDisabled()) return false;
+
+	if (!bDontIncludePlayers)
+	{
+		return UTIL_IsSpaceEmpty(pPlayer, VEC_HULL_MIN_SCALED(pPlayer) + pSpawnPoint->GetAbsOrigin(), VEC_HULL_MAX_SCALED(pPlayer) + pSpawnPoint->GetAbsOrigin());
+	}
+
+	/*
+	local_6c = *(float *)(param_1 + 0x2a4) + fVar13;
+    local_68 = *(float *)(param_1 + 0x2a8) + fVar14;
+    local_64 = *(float *)(param_1 + 0x2ac) + fVar11;
+    local_4c = (uint)fVar13 ^ 0x80000000;
+    local_48 = (uint)fVar14 ^ 0x80000000;
+    local_44 = (uint)fVar11 ^ 0x80000000;
+	*/
+
+	// 0x1 + 0x4000 + 0x10000 + 0x2 + 0x2000000 + 0x8 = 0x201400B = MASK_PLAYERSOLID
+
+	trace_t trace;
+	UTIL_TraceHull(pSpawnPoint->GetAbsOrigin(), pSpawnPoint->GetAbsOrigin(), VEC_HULL_MIN_SCALED(pPlayer), VEC_HULL_MAX_SCALED(pPlayer), MASK_PLAYERSOLID, pPlayer, COLLISION_GROUP_NONE, &trace);
+	return (!trace.startsolid && !trace.allsolid && trace.fraction);
 }
 
 // OFSTATUS: COMPLETE
@@ -1390,7 +1451,7 @@ void Bot_f()
 
 	// what is TEAM_COMBINE? we're not playing hl2 here..
 	// oh well. OFTODO: What team should this be?
-	int iTeam = 0; // TEAM_COMBINE;
+	int iTeam = OF_TEAM_RED; // TEAM_COMBINE;
 
 	// Look at -frozen.
 	bool bFrozen = false;

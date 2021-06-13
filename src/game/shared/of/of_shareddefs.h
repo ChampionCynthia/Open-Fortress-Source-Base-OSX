@@ -37,6 +37,15 @@ enum OF_Collision_Group_t
 #define Shared_VarArgs UTIL_VarArgs
 #endif
 
+enum OFPlayerState
+{
+	TF_STATE_ACTIVE,
+	TF_STATE_WELCOME,
+	TF_STATE_OBSERVER,
+	TF_STATE_DYING,
+	TF_STATE_LAST
+};
+
 enum
 {
 	OF_TEAM_RED = FIRST_GAME_TEAM,
@@ -275,18 +284,18 @@ enum EOFFlagType
 
 enum ETFGameType
 {
-	TF_GAMETYPE_UNDEFINDED = 0,
-	TF_GAMETYPE_CTF,
-	TF_GAMETYPE_CP,
-	TF_GAMETYPE_ESCORT,
-	TF_GAMETYPE_ARENA,
+	OF_GAMETYPE_UNDEFINDED = 0,
+	OF_GAMETYPE_CTF,
+	OF_GAMETYPE_CP,
+	OF_GAMETYPE_ESCORT,
+	OF_GAMETYPE_ARENA,
 
 	//TF_GAMETYPE_MVM,
 	//TF_GAMETYPE_ROBOTDESTRUCTION,
 	//TF_GAMETYPE_PASSTIME,
 	//TF_GAMETYPE_PLAYERDESTRUCTION,
 
-	TF_GAMETYPE_COUNT
+	OF_GAMETYPE_COUNT
 };
 
 enum
@@ -303,6 +312,8 @@ enum
 const char *GetGameTypeName(ETFGameType GameType);
 const char *GetEnumGameTypeName(ETFGameType GameType);
 ETFGameType GetGameTypeFromName(const char *GameName);
+
+extern const char* sz_OFPlayerState[TF_STATE_LAST];
 
 extern const char *g_aWeaponModePrefix[OF_WEAPON_MODE_COUNT];
 extern uint g_aWeaponDamageTypes[];

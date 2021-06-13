@@ -89,6 +89,8 @@ public:
 	virtual bool RoundCleanupShouldIgnore(CBaseEntity *pEnt);
 	virtual bool ShouldCreateEntity(const char *pszClassName);
 	virtual void CleanUpMap();
+	virtual CBaseEntity *GetPlayerSpawnSpot(CBasePlayer *pPlayer);
+	virtual bool IsSpawnPointValid(CBaseEntity *pSpawnPoint, CBasePlayer *pPlayer, bool bDontIncludePlayers);
 	virtual void RecalculateControlPointState();
 	virtual void SetupOnRoundStart();
 	virtual void SetupOnRoundRunning();

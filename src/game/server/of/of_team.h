@@ -28,6 +28,7 @@ public:
 	virtual int GetFlagCaptures() { return m_nFlagCaptures; };
 	virtual void IncrementFlagCaptures() { m_nFlagCaptures++; };
 	virtual void SetFlagCaptures(int iFlags) { m_nFlagCaptures = iFlags; };
+	virtual int GetRole() { return m_iRole; }
 
 private:
 	CNetworkVar( int, m_nFlagCaptures );

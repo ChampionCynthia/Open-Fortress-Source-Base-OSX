@@ -103,7 +103,7 @@ CBasePlayer *BotPutInServer( bool bFrozen, int iTeam, int iClass )
 	if ( bFrozen )
 		pPlayer->AddEFlags( EFL_BOT_FROZEN );
 
-	pPlayer->ChangeTeam( TEAM_UNASSIGNED );
+	pPlayer->ChangeTeam( iTeam );
 	pPlayer->RemoveAllItems( true );
 	pPlayer->Spawn();
 

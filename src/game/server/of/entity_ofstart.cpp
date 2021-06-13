@@ -7,6 +7,9 @@
 #include "entity_ofstart.h"
 #include "team_control_point_master.h"
 
+// DEBUGGING
+#include "debugoverlay_shared.h"
+
 IMPLEMENT_AUTO_LIST(IOFTeamSpawnAutoList);
 
 LINK_ENTITY_TO_CLASS(info_player_teamspawn, COFTeamSpawn);
@@ -28,6 +31,10 @@ END_DATADESC()
 COFTeamSpawn::COFTeamSpawn()
 {
 	m_bDisabled = false;
+
+	// DEBUGGING
+	SetThink(&COFTeamSpawn::Think);
+	SetNextThink(gpGlobals->curtime);
 }
 
 void COFTeamSpawn::InputEnable(inputdata_t &inputdata)
@@ -173,4 +180,22 @@ void COFTeamSpawn::Activate()
     return;
     }
     ___stack_chk_fail(); */
+}
+
+// DEBUGGING
+void COFTeamSpawn::Think()
+{
+
+	if (!m_bDisabled)
+	{
+		NDebugOverlay::Line(GetAbsOrigin(), GetAbsOrigin() + Vector(0,0,20), 0, 255, 0, true, 0.3);
+		NDebugOverlay::Text(GetAbsOrigin(), UTIL_VarArgs("ENABLED , TEAM: %i",GetTeamNumber()), false, 0.3);
+	}
+	else
+	{
+		NDebugOverlay::Line(GetAbsOrigin(), GetAbsOrigin() + Vector(0,0,20), 255, 0, 0, true, 0.3);
+		NDebugOverlay::Text(GetAbsOrigin(), UTIL_VarArgs("DISABLED , TEAM: %i", GetTeamNumber()), false, 0.3);
+	}
+
+	SetNextThink(gpGlobals->curtime + 0.2);
 }

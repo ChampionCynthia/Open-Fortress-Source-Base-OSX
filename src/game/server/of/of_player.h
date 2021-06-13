@@ -19,17 +19,6 @@ class COFItem;
 class COFWeaponBase;
 class COFTeam;
 
-enum OFPlayerState
-{
-	TF_STATE_ACTIVE,
-	TF_STATE_WELCOME,
-	TF_STATE_OBSERVER,
-	TF_STATE_DYING,
-	TF_STATE_LAST
-};
-
-extern const char* sz_OFPlayerState[TF_STATE_LAST];
-
 class COFPlayer : public CBaseMultiplayerPlayer {
 public:
 	DECLARE_CLASS( COFPlayer, CBaseMultiplayerPlayer );
@@ -44,7 +33,7 @@ public:
 
 	virtual void InitialSpawn() override;
 
-	void StateEnter( OFPlayerState state );
+	virtual void StateEnter(int state);
 
 	virtual void StateEnterWELCOME();
 
@@ -66,7 +55,7 @@ public:
 	void ChangeTeam(int iTeam);
 	void UpdateModel();
 	CBaseEntity *EntSelectSpawnPoint();
-	CBaseEntity* SelectSpawnSpotByType(char * type, CBaseEntity **param_2);
+	bool SelectSpawnSpotByType(char * type, CBaseEntity* &param_2);
 	
 	COFWeaponBase 	*GetActiveOFWeapon( void ) const;
 	bool			ShouldAutoReload(){ return false; };
@@ -99,10 +88,13 @@ public:
 	virtual bool HasItem() const;
 	virtual COFItem *GetItem() const;
 	COFTeam *GetOFTeam() { return (COFTeam*)(GetTeam()); };
+	int GetAutoTeam();
+	void CommitSuicide(bool bExplode, bool bForce);
 
 private:
+
 	COFPlayerAnimState *m_PlayerAnimState;
-	OFPlayerState	m_iPlayerState;
+	//OFPlayerState	m_iPlayerState;
 	CNetworkHandle(COFItem, m_hItem);
 
 public:

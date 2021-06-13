@@ -16,12 +16,12 @@
 	#include "of_player.h"
 #endif
 
-
 //OFSTATUS: INCOMPLETE
 COFPlayerShared::COFPlayerShared()
 {
 	field_0x324 = 0.0;
 	m_bAllowedToPickUpFlag = true;
+	m_nPlayerState = TF_STATE_ACTIVE;
 }
 
 //OFSTATUS: INCOMPLETE

@@ -193,12 +193,20 @@ const char *GetEnumGameTypeName(ETFGameType GameType)
 
 ETFGameType GetGameTypeFromName(const char *GameName)
 {
-	for (int i = 0; i < TF_GAMETYPE_COUNT; i++)
+	for (int i = 0; i < OF_GAMETYPE_COUNT; i++)
 	{
 		if (FStrEq(GameName, s_aEnumGameTypeName[i]))
 		{
 			return ETFGameType(i);
 		}
 	}
-	return TF_GAMETYPE_UNDEFINDED;
+	return OF_GAMETYPE_UNDEFINDED;
 }
+
+const char* sz_OFPlayerState[TF_STATE_LAST] =
+{
+	"TF_STATE_ACTIVE",
+	"TF_STATE_WELCOME",
+	"TF_STATE_OBSERVER",
+	"TF_STATE_DYING"
+};

@@ -43,6 +43,8 @@ public:
 	virtual bool CanAttack(int iFlags);
 	//virtual bool InCond(ETFCond eCond) const;
 	virtual bool IsAllowedToPickUpFlag() const;
+	virtual void SetPlayerState(int iState) { m_nPlayerState = iState; }
+	virtual int GetPlayerState() { return m_nPlayerState; }
 
 private:
 
@@ -50,6 +52,7 @@ private:
 
 	float field_0x324;
 	bool m_bAllowedToPickUpFlag;
+	CNetworkVar(int, m_nPlayerState); // offset 200 = 0xC8
 };
 
 #endif // !OF_PLAYER_SHARED_H

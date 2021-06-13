@@ -19,6 +19,7 @@ public:
 	COFTeamSpawn();
 
 	void Activate();
+	bool IsDisabled() { return m_bDisabled; }
 	void SetDisable(bool bDisable) { m_bDisabled = bDisable; }
 	void InputEnable(inputdata_t &inputdata);
 	void InputDisable(inputdata_t &inputdata);
@@ -26,6 +27,8 @@ public:
 	CHandle<CTeamControlPoint> GetControlPoint() { return m_hControlPoint; }
 	CHandle<CTeamControlPointRound> GetBlueControlPoint() { return m_hControlPointBlue; }
 	CHandle<CTeamControlPointRound> GetRedControlPoint() { return m_hControlPointRed; }
+	bool GetSpawnMode() { return m_nSpawnMode; }
+	void Think();
 
 private:
 

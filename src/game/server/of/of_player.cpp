@@ -7,10 +7,10 @@
 // (Many functions are copied from sdk_player.cpp. Please mark any that match tf2 server.dylib)
 
 #include "cbase.h"
+#include "of_shareddefs.h"
 #include "of_player.h"
 #include "of_player_shared.h"
 #include "of_playeranimstate.h"
-#include "of_shareddefs.h"
 #include "tier0/vprof.h"
 #include "entity_ofstart.h"
 #include "viewport_panel_names.h"
@@ -18,18 +18,13 @@
 #include "te_effect_dispatch.h"
 #include "engine/ivdebugoverlay.h"
 #include "of_weapon_base.h"
+#include "of_gamerules.h"
+#include "of_team.h"
 
+EHANDLE g_pLastSpawnPoints[OF_TEAM_COUNT];
 
 ConVar sv_motd_unload_on_dismissal( "sv_motd_unload_on_dismissal", "0", 0, "If enabled, the MOTD contents will be unloaded when the player closes the MOTD." );
 ConVar tf_playerstatetransitions( "tf_playerstatetransitions", "-2", FCVAR_DEVELOPMENTONLY, "tf_playerstatetransitions <ent index or -1 for all>. Show player state transitions." );
-
-const char* sz_OFPlayerState[TF_STATE_LAST] =
-{
-    "TF_STATE_ACTIVE",
-	"TF_STATE_WELCOME",
-	"TF_STATE_OBSERVER",
-    "TF_STATE_DYING"
-};
 
 // -------------------------------------------------------------------------------- //
 // Player animation event. Sent to the client when a player fires, jumps, reloads, etc..
@@ -106,10 +101,10 @@ void COFPlayer::InitialSpawn()
 }
 
 //OFSTATUS: Incomplete, must implement all states
-void COFPlayer::StateEnter( OFPlayerState state )
+void COFPlayer::StateEnter(int state)
 {
-	if ( m_iPlayerState != state )
-		m_iPlayerState = state;
+	if ( m_Shared.GetPlayerState() != state )
+		m_Shared.SetPlayerState(state);
 
 	if ( tf_playerstatetransitions.GetInt() != -2 )
 	{
@@ -185,11 +180,38 @@ void COFPlayer::Spawn()
     RemoveSolidFlags( FSOLID_NOT_SOLID );
     m_hRagdoll = NULL;
 
-    if ( m_iPlayerState == TF_STATE_WELCOME )
+    if (m_Shared.GetPlayerState() == TF_STATE_WELCOME)
     {
         StateEnterWELCOME();
     }
 
+	if (m_Shared.GetPlayerState() == TF_STATE_DYING)
+	{
+		StateEnter(TF_STATE_ACTIVE);
+	}
+
+	if (m_Shared.GetPlayerState() == TF_STATE_ACTIVE)
+	{
+		//if (m_Shared.InCond(TF_COND_DISGUISED))
+		//{
+		//	m_Shared.RemoveDisguise();
+		//}
+
+		EmitSound("Player.Spawn");
+
+		//field_0x20c0
+		//InitClass();
+
+		//m_Shared.RemoveAllCond();
+
+		//m_Shared.AddCond(TF_COND_TEAM_GLOWS)
+
+		m_nSkin.Set(GetTeamNumber() - 2);
+
+		SetNextAttack(gpGlobals->curtime + 1.0);
+
+		DoAnimationEvent(PLAYERANIMEVENT_SPAWN);
+	}
 }
 
 //OFSTATUS: Incomplete, placeholder
@@ -488,18 +510,148 @@ void COFPlayer::PrecachePlayerModels()
 //OFSTATUS: Incomplete, only handles jointeam and in jointeam it only handles actual numbers.
 bool COFPlayer::ClientCommand( const CCommand& args )
 {
-	if ( FStrEq( args[0], "jointeam" ) && args.ArgC() >= 2 )
+	if ( FStrEq( args[0], "jointeam" ))
 	{
-        HandleCommand_JoinTeam(args[1]);
+		if (args.ArgC() >= 2)
+		{
+			HandleCommand_JoinTeam(args[1]);
+		}
 		return true;
 	}
 
 	return BaseClass::ClientCommand( args );
 }
 
-//OFSTATUS: Incomplete, all placeholder
+// OFSTATUS: COMPLETE
+// removed a bunch of mvm and bot bloat, also the param as i dont think its ever NOT 5
+int COFPlayer::GetAutoTeam()
+{
+	COFTeam *pTeamRed = OFTeamMgr()->GetTeam(OF_TEAM_RED); // piVar7
+	COFTeam *pTeamBlue = OFTeamMgr()->GetTeam(OF_TEAM_BLUE); // piVar6
+
+	if (!pTeamRed || !pTeamBlue)
+	{
+		int iRedTeamCount = pTeamRed->GetNumPlayers();
+		int iBlueTeamCount = pTeamBlue->GetNumPlayers();
+
+		if (iRedTeamCount < iBlueTeamCount)
+		{
+			return OF_TEAM_RED;
+		}
+
+		if (iBlueTeamCount < iRedTeamCount)
+		{
+			return OF_TEAM_BLUE;
+		}
+
+		if (OFGameRules()->GetGameType() == OF_GAMETYPE_ESCORT || pTeamRed->GetRole() != 1)
+		{
+			return OF_TEAM_BLUE;
+		}
+
+		//pTeamRed->GetRole() != 1
+		//if (param_1 == 5)
+		//{
+		int iRandom = RandomInt(0, 1);
+		return iRandom ? OF_TEAM_RED : OF_TEAM_BLUE;
+		//}
+		/*
+		else
+		{
+			// wont this crash the game..?
+			return param_1;
+		}
+		*/
+	}
+
+	return TEAM_SPECTATOR;
+}
+
+// OFSTATUS: INCOMPLETE
 void COFPlayer::HandleCommand_JoinTeam(const char* arg)
 {
+	if (OFGameRules()->State_Get() == GR_STATE_GAME_OVER) return;
+
+	int iTeam = OF_TEAM_RED; // uVar17
+	if (!stricmp(arg, "auto"))
+	{
+		iTeam = GetAutoTeam();
+	}
+	else if (!stricmp(arg, "spectate"))
+	{
+		iTeam = TEAM_SPECTATOR;
+	}
+	else if (!stricmp(arg, "spectatorarena"))
+	{
+		iTeam = TEAM_SPECTATOR;
+	}
+	else //if
+	{
+		for (int i = 0; i < ARRAYSIZE(g_aTeamNames); i++)
+		{
+			if (!stricmp(arg, g_aTeamNames[i]))
+			{
+				iTeam = i;
+				break;
+			}
+		}
+	}
+
+	// uVar17 get replaced with iVar8 and gets run through a function filled with matchmaking stuff i presume so ignore that
+
+	// OFTODO: there's some arena stuff going on here too, look into it later
+	if (iTeam == TEAM_SPECTATOR) // || tf_arena_use_queue
+	{
+		if (!mp_allowspectators.GetBool() && !IsHLTV() && !IsReplay() && !OFGameRules()->IsInArenaMode())
+		{
+			// this is supposed to appear in the middle of the screen but thats looks ugly >:T
+			ClientPrint(this, HUD_PRINTTALK, "#Cannot_Be_Spectator");
+			return;
+		}
+
+		if (GetTeamNumber() != TEAM_UNASSIGNED && !IsDead())
+		{
+			CommitSuicide(false, true);
+		}
+
+		//m_bArenaSpectator = bVar18; // field_0x226c = 8812
+		//DuelMiniGame_NotifyPlayerChangedTeam - ignore
+
+		ChangeTeam(TEAM_SPECTATOR);
+
+		//if (m_bArenaSpectator)
+		//{
+		//}
+
+		if (mp_fadetoblack.GetBool())
+		{
+			color32_s color = { 0, 0, 0, 255 };
+			UTIL_ScreenFade(this, color, 0.0, 0.0, FFADE_IN | FFADE_PURGE);
+		}
+
+		//if (OFGameRules()->IsInArenaMode() && m_bArenaSpectator)
+		//{
+		//	ShowViewPortPanel("class_blue");
+		//}
+	}
+	else
+	{
+		if (iTeam == GetTeamNumber()) return;
+
+		if (OFGameRules()->WouldChangeUnbalanceTeams(iTeam, GetTeamNumber()))
+		{
+			ShowViewPortPanel("team");
+			return;
+		}
+
+		ChangeTeam(iTeam);
+
+		// tf_arena_force_class.GetBool()
+
+		ShowViewPortPanel((iTeam == OF_TEAM_RED) ? "class_red" : "class_blue");
+	}
+
+	/*
     int iTeam = atoi(arg);
 
     if (iTeam != GetTeamNumber())
@@ -507,11 +659,82 @@ void COFPlayer::HandleCommand_JoinTeam(const char* arg)
         ChangeTeam(iTeam);
         ForceRespawn();
     }
+	*/
 }
 
-//OFSTATUS: Incomplete, all placeholder
+//OFSTATUS: INCOMPLETE
 void COFPlayer::ChangeTeam(int iTeam)
 {
+	if (!GetGlobalOFTeam(iTeam))
+	{
+		Warning("COFPlayer::ChangeTeam(%d) - invalid team index.\n", iTeam);
+		return;
+	}
+
+	// OFGameRules()->CanChangeTeam - just a check for more halloween stuff, ignore
+	//if (OFGameRules() && OFGameRules()->CanChangeTeam(GetTeamNumber()))
+
+	// incond 0x4d or 0x52
+	// more halloween checks
+
+	// ignore getteamassignmentoverride - just matchmaking stuff
+
+	//RemoveAllOwnedEntitiesFromWorld(true);
+	
+	//CTFGameStats::Event_TeamChange
+
+	//if (OFGameRules() && OFGameRules()->IsDefaultGameMode())
+
+	int iPrevTeam = GetTeamNumber();
+
+	BaseClass::ChangeTeam(iTeam);
+
+	//if (OFGameRules() && OFGameRules()->IsInHighlanderMode())
+
+	//RemoveNemesisRelationships();
+
+	if (iTeam == TEAM_SPECTATOR)
+	{
+		StateEnter(TF_STATE_OBSERVER);
+		RemoveAllWeapons();
+		DestroyViewModels();
+	}
+	else if (iTeam == TEAM_UNASSIGNED)
+	{
+		StateEnter(TF_STATE_OBSERVER);
+	}
+	else
+	{
+		if ((iPrevTeam == OF_TEAM_RED || iPrevTeam == OF_TEAM_BLUE) && !IsDead())
+		{
+			CommitSuicide(false, true);
+		}
+		else if (iPrevTeam < FIRST_GAME_TEAM && IsDead() && mp_fadetoblack.GetBool())
+		{
+			color32_s color = { 0, 0, 0, 255 };
+			UTIL_ScreenFade(this, color, 0.75, 0.0, FFADE_PURGE);
+		}
+
+		// OFTODO: gotta work on spy functions + figure out what field_0x1ac8 is
+		/*
+		for (int i = 1; i < gpGlobals->maxClients; i++)
+		{
+			COFPlayer *pPlayer = ToOFPlayer(UTIL_PlayerByIndex(i));
+
+			if (pPlayer && pPlayer != this)
+			{
+				if (pPlayer->m_Shared.field_0x1ac8 == this || !pPlayer->m_Shared.field_0x1ac8 && pPlayer->m_Shared.GetDisguiseTeam() == iTeam)
+				{
+					pPlayer->m_Shared.FindDisguiseTarget();
+				}
+			}
+		}
+		*/
+	}
+
+	//m_Shared.RemoveAllCond();
+
+	/*
     switch (iTeam)
     {
         case OF_TEAM_RED: m_nSkin = 0; break;
@@ -520,19 +743,104 @@ void COFPlayer::ChangeTeam(int iTeam)
     }
     UpdateModel();
     BaseClass::ChangeTeam(iTeam);
+	*/
 }
 
-//OFSTATUS: Incomplete, all placeholder
+// OFSTATUS: INCOMPLETE
+// removed cond checks if your in hell
+void COFPlayer::CommitSuicide(bool bExplode, bool bForce)
+{
+	// my guess is these lead to something in CTFPlayerShared judging by how high the hex values are
+	//if ((*(int *)(this + 0x2114) == 0) || (*(int *)(this + 0x1a80) != 0)) return;
+
+	if (!bForce && OFGameRules()->State_Get() == GR_STATE_TEAM_WIN)
+	{
+		if (GetTeamNumber() != OFGameRules()->GetWinningTeam()) return;
+	}
+
+	// 0xa9c = 2716 = m_bShowMatchSummary
+	//if (OFGameRules()->m_bShowMatchSummary)
+
+	//this->field_0x1fc5 = param_1;
+	//this->field_0xb94 = 6;
+
+	BaseClass::CommitSuicide(bExplode, bForce);
+}
+
+//OFSTATUS: INCOMPLETE
 CBaseEntity *COFPlayer::EntSelectSpawnPoint()
 {
-    return SelectSpawnSpotByType("info_player_teamspawn", nullptr);
+	CBaseEntity *pLastPoint = g_pLastSpawnPoints[GetTeamNumber()]; // local_14
+
+	// ignoring some matchsummary check here
+
+	switch (GetTeamNumber())
+	{
+	case OF_TEAM_RED:
+	case OF_TEAM_BLUE:
+
+		if (SelectSpawnSpotByType("info_player_teamspawn", pLastPoint))
+		{
+			g_pLastSpawnPoints[GetTeamNumber()] = pLastPoint;
+		}
+
+		//field_0x2100 = pLastPoint; // unused
+
+		break;
+	default:
+		return CBaseEntity::Instance(INDEXENT(0));
+		break;
+	}
+
+	if (!pLastPoint)
+	{
+		Warning("COFPlayer::EntSelectSpawnPoint: no info_player_teamspawn on level!\n");
+		return CBaseEntity::Instance(INDEXENT(0));
+	}
+
+	return pLastPoint;
+
+    //return SelectSpawnSpotByType("info_player_teamspawn", nullptr);
 
     //return BaseClass::EntSelectSpawnPoint();
 }
 
-//OFSTATUS: Incomplete, all placeholder
-CBaseEntity* COFPlayer::SelectSpawnSpotByType(char* type, CBaseEntity** param_2)
+//OFSTATUS: INCOMPLETE
+bool COFPlayer::SelectSpawnSpotByType(char* type, CBaseEntity* &pEntity)
 {
+	pEntity = gEntList.FindEntityByClassname(pEntity, type);
+
+	if (!pEntity)
+	{
+		pEntity = gEntList.FindEntityByClassname(NULL, type);
+	}
+
+	//bool bCheck = !V_strcmp(type, "info_player_teamspawn");
+	bool bDontIncludePlayers = false; //bVar4
+
+	CBaseEntity *pFirstSpawn = pEntity;
+	do
+	{
+		// 0x124 = 292 = m_spawnflags 
+		if (pEntity && OFGameRules()->IsSpawnPointValid(pEntity, this, bDontIncludePlayers))
+		{
+			// there's a check here if the player's class can spawn at this point
+
+			if (!V_strcmp(type, "info_player_teamspawn")) return true;
+		}
+
+		pEntity = gEntList.FindEntityByClassname(pEntity, type);
+
+		if (pFirstSpawn == pEntity && !bDontIncludePlayers)
+		{
+			pEntity = gEntList.FindEntityByClassname(pEntity, type);
+			bDontIncludePlayers = true;
+		}
+	} while (pFirstSpawn != pEntity);
+
+	return false;
+
+	/*
     CBaseEntity* pSpawn = gEntList.FindEntityByClassname(nullptr, type);
 
     while (pSpawn && pSpawn->GetTeamNumber() != GetTeamNumber())
@@ -549,6 +857,7 @@ CBaseEntity* COFPlayer::SelectSpawnSpotByType(char* type, CBaseEntity** param_2)
     }
 
     return pSpawn;
+	*/
 }
 
 //OFSTATUS: Incomplete, needs CTFPlayerClassShared to get the model names
