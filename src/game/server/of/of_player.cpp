@@ -923,7 +923,7 @@ void COFPlayer::HandleCommand_JoinTeam(const char* arg)
 //OFSTATUS: Incomplete, all placeholder
 void COFPlayer::HandleCommand_JoinClass(const char* arg)
 {
-    int iClass = UTIL_StringFieldToInt( arg, g_aRawPlayerClassNamesShort, OF_TEAM_COUNT );
+	int iClass = UTIL_StringFieldToInt(arg, g_aRawPlayerClassNamesShort, OF_CLASS_COUNT);
 
     if( m_Class.m_iClass != iClass )
     {

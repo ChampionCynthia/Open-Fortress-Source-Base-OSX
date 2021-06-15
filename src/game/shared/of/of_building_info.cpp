@@ -81,16 +81,16 @@ void LoadObjectInfos( IBaseFileSystem *pFileSystem )
 
 			// RE: OH MY GOD - Kay
 			if( g_ObjectInfos[i].m_flBuildTime == -999.0 
-				&& g_ObjectInfos[i].m_flBuildTime == -999.0
-				&& g_ObjectInfos[i].m_iMaxObjects == -999
-				&& g_ObjectInfos[i].m_iCost == -999
-				&& g_ObjectInfos[i].m_flCostMultiplier == -999.0
-				&& g_ObjectInfos[i].m_flUpgradeDuration == -999.0
-				&& g_ObjectInfos[i].m_iUpgradeCost == -999
-				&& g_ObjectInfos[i].m_iMaxUpgradeLevel == -999
-				&& g_ObjectInfos[i].m_iSlot == -999
-				&& g_ObjectInfos[i].m_iBuildCount == -999
-				&& g_ObjectInfos[i].m_iPosition == -999 )
+				|| g_ObjectInfos[i].m_flBuildTime == -999.0
+				|| g_ObjectInfos[i].m_iMaxObjects == -999
+				|| g_ObjectInfos[i].m_iCost == -999
+				|| g_ObjectInfos[i].m_flCostMultiplier == -999.0
+				|| g_ObjectInfos[i].m_flUpgradeDuration == -999.0
+				|| g_ObjectInfos[i].m_iUpgradeCost == -999
+				|| g_ObjectInfos[i].m_iMaxUpgradeLevel == -999
+				|| g_ObjectInfos[i].m_iSlot == -999
+				|| g_ObjectInfos[i].m_iBuildCount == -999
+				|| g_ObjectInfos[i].m_iPosition == -999 )
 			{
 				// SpewFileInfo((IBaseFileSystem *)pIVar5,(char *)this,(char *)param_1,pKVar7);
 				Error( "Missing data for object '%s' in %s.", g_ObjectInfos[i].m_szObjectName, szFilepath );

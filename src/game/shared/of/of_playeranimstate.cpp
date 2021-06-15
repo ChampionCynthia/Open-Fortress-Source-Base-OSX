@@ -4,6 +4,7 @@
 //
 
 #include "cbase.h"
+#include "of_shareddefs.h"
 #include "of_playeranimstate.h"
 #include "tier0/vprof.h"
 #include "datacache/imdlcache.h"
