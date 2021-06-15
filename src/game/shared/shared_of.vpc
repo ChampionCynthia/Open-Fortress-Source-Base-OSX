@@ -13,6 +13,11 @@ $Project
 		{
 			$File	"$SHARED/teamplay_round_timer.cpp"
 			$File	"$SHARED/teamplay_round_timer.h"
+			
+			$File	"$SHARED/of/of_building_info.cpp"
+			$File	"$SHARED/of/of_building_info.h"			
+			$File	"$SHARED/of/of_class_parse.cpp"
+			$File	"$SHARED/of/of_class_parse.h"
 			$File	"$SHARED/of/of_fx_shared.cpp"
 			$File	"$SHARED/of/of_fx_shared.h"
 			$File	"$SHARED/of/of_gamemovement.cpp"

@@ -8,6 +8,7 @@
 #include "c_baseplayer.h"
 #include "of_playeranimstate.h"
 #include "of_player_shared.h"
+#include "of_class_parse.h"
 #include "of_item.h"
 
 class C_OFWeaponBase;
@@ -52,6 +53,8 @@ public:
 	virtual bool HasItem() const;
 	virtual COFItem *GetItem() const;
 
+public:
+	CNetworkVarEmbedded( COFPlayerClassShared, m_Class );
 private:
 	CNetworkHandle(COFItem, m_hItem);
 	int m_iPreDataChangeTeam;

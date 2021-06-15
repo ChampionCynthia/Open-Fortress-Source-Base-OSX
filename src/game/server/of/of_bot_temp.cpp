@@ -6,6 +6,7 @@
 //OFTODO: This is mainly a copy of sdk_bot_temp.cpp.  We gotta RE this!
 
 #include "cbase.h"
+#include "of_shareddefs.h"
 #include "of_bot_temp.h"
 #include "player.h"
 #include "of_player.h"

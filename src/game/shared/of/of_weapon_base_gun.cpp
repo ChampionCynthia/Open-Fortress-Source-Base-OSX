@@ -3,12 +3,12 @@
 // Author(s): Nopey, Fenteale
 //
 #include "cbase.h"
+#include "of_shareddefs.h"
 #ifdef CLIENT_DLL
 #include "c_of_player.h"
 #else
 #include "of_player.h"
 #endif
-#include "of_shareddefs.h"
 #include "of_weapon_base_gun.h"
 #include "of_fx_shared.h"
 

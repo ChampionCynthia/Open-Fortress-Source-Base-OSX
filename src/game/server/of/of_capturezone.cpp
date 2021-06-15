@@ -5,9 +5,9 @@
 
 #include "cbase.h"
 #include "of_capturezone.h"
-#include "of_gamerules.h"
 #include "of_flag.h"
 #include "of_team.h"
+#include "of_gamerules.h"
 
 IMPLEMENT_AUTO_LIST(ICaptureZoneAutoList);
 

@@ -8,12 +8,8 @@
 #include "basemultiplayerplayer.h"
 #include "dbg.h"
 #include "of_playeranimstate.h"
-#pragma once
-
-#include "basemultiplayerplayer.h"
-#include "dbg.h"
-#include "of_playeranimstate.h"
 #include "of_player_shared.h"
+#include "of_class_parse.h"
 
 class COFItem;
 class COFWeaponBase;
@@ -40,6 +36,11 @@ public:
 	virtual void Spawn() override;
 	virtual void ForceRespawn() override;
 
+	virtual void InitClass();
+
+	virtual int GetMaxHealth( void );
+	virtual int GetMaxHealthForBuffing( void );
+
 	virtual bool IsValidObserverTarget( CBaseEntity* target ) override { return true; }
 
 	// Called from of_gamerules
@@ -52,6 +53,7 @@ public:
 	void PrecachePlayerModels();
 	bool ClientCommand( const CCommand& args );
 	void HandleCommand_JoinTeam(const char* arg);
+	void HandleCommand_JoinClass(const char* arg);
 	void ChangeTeam(int iTeam);
 	void UpdateModel();
 	CBaseEntity *EntSelectSpawnPoint();
@@ -80,8 +82,10 @@ public:
 	// Tracks our ragdoll entity.
 	CNetworkHandle( CBaseEntity, m_hRagdoll );	// networked entity handle 	
 	
-	CNetworkVarEmbedded(COFPlayerShared, m_Shared);
+	CNetworkVarEmbedded( COFPlayerShared, m_Shared );
+	CNetworkVarEmbedded( COFPlayerClassShared, m_Class );
 	friend class COFPlayerShared;
+	friend class COFPlayerClassShared;
 
 	virtual float GetCritMult() { return m_Shared.GetCritMult(); };
 	virtual void SetItem(COFItem *pItem);

@@ -6,6 +6,7 @@
 
 #include "cbase.h"
 #include "of_fx_shared.h"
+#include "of_shareddefs.h"
 #include "c_of_player.h"
 #include "c_basetempentity.h"
 #include "of_weapon_base_gun.h"

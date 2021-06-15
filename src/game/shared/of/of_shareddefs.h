@@ -121,6 +121,24 @@ enum
 	OF_RELOAD_STAGE_END
 };
 
+enum
+{
+	OF_CLASS_UNDEFINED = 0,
+
+	OF_CLASS_SCOUT,
+	OF_CLASS_SNIPER,
+	OF_CLASS_SOLDIER,
+	OF_CLASS_DEMO,
+	OF_CLASS_MEDIC,
+	OF_CLASS_HEAVY,
+	OF_CLASS_PYRO,
+	OF_CLASS_SPY,
+	OF_CLASS_ENGINEER,
+
+	OF_CLASS_CIVILIAN,
+	OF_CLASS_COUNT
+};
+
 // not all of these exist, compatibility only
 // https://csrd.science/misc/datadump/current/tf_conds.txt
 enum ETFCond
@@ -315,6 +333,11 @@ ETFGameType GetGameTypeFromName(const char *GameName);
 
 extern const char* sz_OFPlayerState[TF_STATE_LAST];
 
+extern int GetBuildableId( const char *szBuildableName );
+
+extern const char *GetAmmoName( int iAmmoIndex );
+
+// Weapon Defines
 extern const char *g_aWeaponModePrefix[OF_WEAPON_MODE_COUNT];
 extern uint g_aWeaponDamageTypes[];
 extern const char *g_aProjectileTypeNames[OF_PROJECTILE_TYPE_COUNT];
@@ -328,8 +351,15 @@ extern const char *g_aProjectileTypeNames[OF_PROJECTILE_TYPE_COUNT];
 
 // No longer the case, did it properly and moved it to of_shareddefs.cpp now - Kay
 extern const char *g_aAmmoNames[AMMONAME_LAST];
+
+// Team Defines
 extern const char *g_aTeamNames[OF_TEAM_COUNT];
 extern color32 g_aTeamColors[];
+
+// Class Defines
+extern const char *g_aRawPlayerClassNamesShort[];
+
+// Map Defines
 extern const char* s_ValveMaps[][3];
 extern const char* s_CommunityMaps[][3];
 
