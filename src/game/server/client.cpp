@@ -47,6 +47,7 @@
 #endif
 
 #ifdef OF_DLL
+#include "of_shareddefs.h"
 #include "of_player.h"
 #include "of_gamerules.h"
 #include "Multiplayer/multiplayer_animstate.h"

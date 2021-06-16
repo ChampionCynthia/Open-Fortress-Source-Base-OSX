@@ -1,10 +1,84 @@
+// ========= Copyright Open Fortress Developers, CC-BY-NC-SA ============
+// Purpose: Implementation of CTFTeamSpawn
+// Author(s): MaartenS11, Cherry!
+//
+
 #include "cbase.h"
 #include "entity_ofstart.h"
+#include "team_control_point_master.h"
+
+// DEBUGGING
+#include "debugoverlay_shared.h"
+
+IMPLEMENT_AUTO_LIST(IOFTeamSpawnAutoList);
 
 LINK_ENTITY_TO_CLASS(info_player_teamspawn, COFTeamSpawn);
 
 BEGIN_DATADESC(COFTeamSpawn)
+
+	DEFINE_KEYFIELD(m_bDisabled, FIELD_BOOLEAN, "IsDisabled"),
+	DEFINE_KEYFIELD(m_nSpawnMode, FIELD_BOOLEAN, "SpawnMode"),
+	DEFINE_KEYFIELD(m_iszControlPointName, FIELD_STRING, "controlpoint"),
+	DEFINE_KEYFIELD(m_iszRoundBlueSpawn, FIELD_STRING, "round_bluespawn"),
+	DEFINE_KEYFIELD(m_iszRoundRedSpawn, FIELD_STRING, "round_redspawn"),
+
+	DEFINE_INPUTFUNC(FIELD_VOID, "Enable", InputEnable),
+	DEFINE_INPUTFUNC(FIELD_VOID, "Disable", InputDisable),
+	DEFINE_INPUTFUNC(FIELD_VOID, "RoundSpawn", InputRoundSpawn),
+
 END_DATADESC()
+
+COFTeamSpawn::COFTeamSpawn()
+{
+	m_bDisabled = false;
+
+	// DEBUGGING
+	SetThink(&COFTeamSpawn::Think);
+	SetNextThink(gpGlobals->curtime);
+}
+
+void COFTeamSpawn::InputEnable(inputdata_t &inputdata)
+{
+	m_bDisabled = false;
+}
+
+void COFTeamSpawn::InputDisable(inputdata_t &inputdata)
+{
+	m_bDisabled = true;
+}
+
+void COFTeamSpawn::InputRoundSpawn(inputdata_t &inputdata)
+{
+	if (m_iszControlPointName != NULL_STRING)
+	{
+		// field_0x384
+		m_hControlPoint = dynamic_cast<CTeamControlPoint*>(gEntList.FindEntityByName(NULL, m_iszControlPointName));
+		if (!m_hControlPoint)
+		{
+			Warning("%s failed to find control point named \'%s\'\n", GetClassname(), m_iszControlPointName);
+		}
+	}
+
+	if (m_iszRoundBlueSpawn != NULL_STRING)
+	{
+		// field_0x388
+		m_hControlPointBlue = dynamic_cast<CTeamControlPointRound*>(gEntList.FindEntityByName(NULL, m_iszRoundBlueSpawn));
+		if (!m_hControlPointBlue)
+		{
+			Warning("%s failed to find control point round named \'%s\'\n", GetClassname(), m_iszRoundBlueSpawn);
+		}
+	}
+
+	if (m_iszRoundRedSpawn != NULL_STRING)
+	{
+		// field_0x38c
+		m_hControlPointRed = dynamic_cast<CTeamControlPointRound*>(gEntList.FindEntityByName(NULL, m_iszRoundRedSpawn));
+		if (!m_hControlPointRed)
+		{
+			Warning("%s failed to find control point round named \'%s\'\n", GetClassname(), m_iszRoundRedSpawn);
+		}
+	}
+}
 
 void COFTeamSpawn::Activate()
 {
@@ -106,4 +180,22 @@ void COFTeamSpawn::Activate()
     return;
     }
     ___stack_chk_fail(); */
+}
+
+// DEBUGGING
+void COFTeamSpawn::Think()
+{
+
+	if (!m_bDisabled)
+	{
+		NDebugOverlay::Line(GetAbsOrigin(), GetAbsOrigin() + Vector(0,0,20), 0, 255, 0, true, 0.3);
+		NDebugOverlay::Text(GetAbsOrigin(), UTIL_VarArgs("ENABLED , TEAM: %i",GetTeamNumber()), false, 0.3);
+	}
+	else
+	{
+		NDebugOverlay::Line(GetAbsOrigin(), GetAbsOrigin() + Vector(0,0,20), 255, 0, 0, true, 0.3);
+		NDebugOverlay::Text(GetAbsOrigin(), UTIL_VarArgs("DISABLED , TEAM: %i", GetTeamNumber()), false, 0.3);
+	}
+
+	SetNextThink(gpGlobals->curtime + 0.2);
 }

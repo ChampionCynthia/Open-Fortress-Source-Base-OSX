@@ -4,6 +4,7 @@
 //
 
 #include "cbase.h"
+#include "of_shareddefs.h"
 #include "of_player.h"
 #include "of_gamerules.h"
 #include "gamerules.h"

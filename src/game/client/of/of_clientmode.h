@@ -11,15 +11,33 @@
 
 #include "clientmode_shared.h"
 #include "vgui/of_viewport.h"
+#include "GameUI/IGameUI.h"
 
 class ClientModeOFNormal : public ClientModeShared 
 {
 	DECLARE_CLASS( ClientModeOFNormal, ClientModeShared );
-	
 public:
-					ClientModeOFNormal();
-	virtual			~ClientModeOFNormal();
-	virtual void	InitViewport();
+
+	ClientModeOFNormal();
+	virtual ~ClientModeOFNormal();
+
+	virtual void Init();
+	virtual void InitViewport();
+	virtual void Shutdown();
+	virtual void LevelInit(const char *newmap);
+	virtual float GetViewModelFOV();
+	virtual bool ShouldDrawViewModel();
+	virtual bool ShouldDrawCrosshair();
+
+private:
+
+	//CHudMenuEngyBuild *m_pEngyBuildMenu;
+	//CHudMenuEngyDestroy *m_pEngyDestroyMenu;
+	//CHudMenuSpyDisguise *m_pSpyDisguiseMenu;
+	//CTFFreezePanel *m_pFreezePanel;
+	//CIteamQuickSwitchPanel *m_pQuickSwitchPanel;
+	IGameUI *m_pGameUI;
+
 };
 
 
