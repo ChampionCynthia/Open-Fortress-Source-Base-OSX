@@ -53,6 +53,12 @@ $Project "Server (Open Fortress)"
 		$File	"of/te_firebullets.cpp"
 		$File	"of/te_firebullets.h"
 		
+		$File	"of/of_capturezone.cpp"
+		$File	"of/of_capturezone.h"
+		
+		$File	"of/of_objectiveresource.cpp"
+		$File	"of/of_objectiveresource.h"
+		
 		// NOPEY: They're located in shared, but aren't in our client. dunno why
 		$File	"$SRCDIR/game/shared/teamplayroundbased_gamerules.cpp"
 	}

@@ -4,6 +4,7 @@
 //
 
 #include "cbase.h"
+#include "of_shareddefs.h"
 #include "c_of_player.h"
 #include "c_basetempentity.h"
 #include "effect_dispatch_data.h"
@@ -11,6 +12,7 @@
 #include "engine/ivdebugoverlay.h"
 #include "of_weapon_base.h"
 #include "functionproxy.h"
+#include "voice_status.h"
 
 // Don't alias here
 // Why not? -Nopey
@@ -18,6 +20,13 @@
 #undef COFPlayer
 #endif
 
+IMaterial *g_pHeadLabelMaterial[2] = { NULL, NULL };
+
+const char *pszHeadLabelNames[] =
+{
+	"effects/speech_voice_red",
+	"effects/speech_voice_blue",
+};
 
 //-----------------------------------------------------------------------------
 // Purpose: dummy to stop live tf2 materials from going black
@@ -90,13 +99,15 @@ END_RECV_TABLE()
 
 LINK_ENTITY_TO_CLASS( player, C_OFPlayer );
 
-IMPLEMENT_CLIENTCLASS_DT(C_OFPlayer, DT_OF_Player, COFPlayer)
+IMPLEMENT_CLIENTCLASS_DT( C_OFPlayer, DT_OF_Player, COFPlayer )
+	RecvPropDataTable( RECVINFO_DT( m_Class ), 0, &REFERENCE_RECV_TABLE( DT_OFPlayerClassShared ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_OFPlayer )
 END_PREDICTION_DATA()
 
-C_OFPlayer::C_OFPlayer() : BaseClass() {
+C_OFPlayer::C_OFPlayer() : BaseClass()
+{
 	m_PlayerAnimState = CreatePlayerAnimState( this );
 	return;
 }
@@ -109,6 +120,11 @@ void C_OFPlayer::DoAnimationEvent( PlayerAnimEvent_t event, int nData )
 C_OFWeaponBase 	*C_OFPlayer::GetActiveOFWeapon(void) const
 {
 	return dynamic_cast<C_OFWeaponBase*> (GetActiveWeapon());
+}
+
+C_OFPlayer* C_OFPlayer::GetLocalOFPlayer()
+{
+	return ToOFPlayer(BaseClass::GetLocalPlayer());
 }
 
 extern ConVar friendlyfire;
@@ -237,4 +253,55 @@ void C_OFPlayer::FireBullet(
 
 		ApplyMultiDamage();
 #endif
+}
+
+void SetupHeadLabelMaterials()
+{
+	for (int i = 0; i < ARRAYSIZE(g_pHeadLabelMaterial); i++)
+	{
+		if (g_pHeadLabelMaterial[i])
+		{
+			g_pHeadLabelMaterial[i]->DecrementReferenceCount(); // 0x32
+			g_pHeadLabelMaterial[i] = NULL;
+		}
+
+		g_pHeadLabelMaterial[i] = materials->FindMaterial(pszHeadLabelNames[i], TEXTURE_GROUP_VGUI); // 0x124
+		g_pHeadLabelMaterial[i]->IncrementReferenceCount(); // 0x30
+	}
+}
+
+// OFSTATUS: INCOMPLETE
+void C_OFPlayer::OnPreDataChanged(DataUpdateType_t updateType)
+{
+	BaseClass::OnPreDataChanged(updateType);
+
+	int iTeam = GetTeamNumber();
+	m_iPreDataChangeTeam = iTeam; // 0x2068
+}
+
+// OFSTATUS: VERY INCOMPLETE
+void C_OFPlayer::OnDataChanged(DataUpdateType_t updateType)
+{
+	SetNetworkAngles(GetLocalAngles());
+	BaseClass::OnDataChanged(updateType);
+
+	// line 340
+	if (IsLocalPlayer())
+	{
+		if (updateType == DATA_UPDATE_CREATED)
+		{
+			SetupHeadLabelMaterials();
+			GetClientVoiceMgr()->SetHeadLabelOffset(50.0);
+		}
+
+		// there's some vr stuff in here but.. i dont think anyone wants to play tf2 in vr
+		if (m_iPreDataChangeTeam != GetTeamNumber())
+		{
+			IGameEvent *pEvent = gameeventmanager->CreateEvent("localplayer_changeteam");
+			if (pEvent)
+			{
+				gameeventmanager->FireEventClientSide(pEvent);
+			}
+		}
+	}
 }

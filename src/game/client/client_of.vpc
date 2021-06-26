@@ -40,8 +40,21 @@ $Project "Client (Open Fortress)"
 		$File	"of/c_of_player.h"
 		$File	"of/c_of_team.cpp"
 		$File	"of/c_of_team.h"
+		$File	"of/c_of_objectiveresource.cpp"
+		$File	"of/c_of_objectiveresource.h"
+		$File	"of/of_hud_objectivestatus.cpp"
+		$File	"of/of_hud_objectivestatus.h"
+		$File	"of/of_hud_timestatus.cpp"
+		$File	"of/of_hud_timestatus.h"
+		$File	"of/of_hud_progressbar.cpp"
+		$File	"of/of_hud_progressbar.h"
+		$File	"of/of_hud_weaponammo.cpp"
+		$File	"of/of_hud_weaponammo.h"
 		
 		$File	"of/c_te_firebullets.cpp"
+
+		$File	"hud_controlpointicons.cpp"
+		$File	"hud_controlpointicons.h"
 
 		// NOPEY: They're located in shared, but aren't in our server. dunno why
 		$File	"$SRCDIR\game\shared\predicted_viewmodel.cpp"
@@ -49,6 +62,7 @@ $Project "Client (Open Fortress)"
 		
 		$Folder "VGUI"
 		{
+			$File	"of/vgui/of_controls.h"
 			$File	"of/vgui/of_rootpanel.cpp"
 			$File	"of/vgui/of_rootpanel.h"
 			$File	"of/vgui/of_viewport.cpp"
@@ -57,10 +71,12 @@ $Project "Client (Open Fortress)"
 			$File	"of/vgui/of_textwindow.h"			
 			$File	"of/vgui/of_mapinfomenu.cpp"
 			$File	"of/vgui/of_mapinfomenu.h"
-			$File	"of/vgui/of_exbutton.cpp"
-			$File	"of/vgui/of_exbutton.h"
-			$File	"of/vgui/of_exlabel.cpp"
-			$File	"of/vgui/of_exlabel.h"
+			$File	"of/vgui/of_button.cpp"
+			$File	"of/vgui/of_button.h"
+			$File	"of/vgui/of_label.cpp"
+			$File	"of/vgui/of_label.h"
+			$File	"of/vgui/of_imagepanel.cpp"
+			$File	"of/vgui/of_imagepanel.h"
 		}
 	}
 }

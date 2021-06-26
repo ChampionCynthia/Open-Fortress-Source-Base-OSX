@@ -4,6 +4,7 @@
 //
 
 #include "shareddefs.h"
+#include "mp_shareddefs.h"
 
 // OFSTATUS: INCOMPLETE  ( labeling )
 enum OF_Collision_Group_t
@@ -36,11 +37,19 @@ enum OF_Collision_Group_t
 #define Shared_VarArgs UTIL_VarArgs
 #endif
 
+enum OFPlayerState
+{
+	TF_STATE_ACTIVE,
+	TF_STATE_WELCOME,
+	TF_STATE_OBSERVER,
+	TF_STATE_DYING,
+	TF_STATE_LAST
+};
+
 enum
 {
 	OF_TEAM_RED = FIRST_GAME_TEAM,
 	OF_TEAM_BLUE,
-	OF_TEAM_MERCENARY,
 
 	OF_TEAM_COUNT
 };
@@ -112,9 +121,27 @@ enum
 	OF_RELOAD_STAGE_END
 };
 
+enum
+{
+	OF_CLASS_UNDEFINED = 0,
+
+	OF_CLASS_SCOUT,
+	OF_CLASS_SNIPER,
+	OF_CLASS_SOLDIER,
+	OF_CLASS_DEMO,
+	OF_CLASS_MEDIC,
+	OF_CLASS_HEAVY,
+	OF_CLASS_PYRO,
+	OF_CLASS_SPY,
+	OF_CLASS_ENGINEER,
+
+	OF_CLASS_CIVILIAN,
+	OF_CLASS_COUNT
+};
+
 // not all of these exist, compatibility only
 // https://csrd.science/misc/datadump/current/tf_conds.txt
-enum
+enum ETFCond
 {
 	TF_COND_AIMING = 0,		// Sniper aiming, Heavy minigun.
 	TF_COND_ZOOMED,
@@ -248,7 +275,71 @@ enum
 	TF_COND_LAST
 };
 
+enum
+{
+	OF_FLAGSTATUS_NONE = 0,
+	OF_FLAGSTATUS_TAKEN,
+	OF_FLAGSTATUS_DROPPED
+};
+
+enum
+{
+	OF_ITEM_UNDEFINDED = 0,
+	OF_ITEM_FLAG
+};
+
+// gotta continue re'ing CCaptureFlag to figure out what's what
+enum EOFFlagType
+{
+	TF_FLAGTYPE_CTF = 0,
+	TF_FLAGTYPE_UNKNOWN1, // attackdefend.. mvm?
+	TF_FLAGTYPE_UNKNOWN2,
+	TF_FLAGTYPE_UNKNOWN3, // invade
+	TF_FLAGTYPE_UNKNOWN4, // special delivery
+	TF_FLAGTYPE_ROBOTDESTRUCTION,
+	TF_FLAGTYPE_PLAYERDESTRUCTION
+};
+
+enum ETFGameType
+{
+	OF_GAMETYPE_UNDEFINDED = 0,
+	OF_GAMETYPE_CTF,
+	OF_GAMETYPE_CP,
+	OF_GAMETYPE_ESCORT,
+	OF_GAMETYPE_ARENA,
+
+	//TF_GAMETYPE_MVM,
+	//TF_GAMETYPE_ROBOTDESTRUCTION,
+	//TF_GAMETYPE_PASSTIME,
+	//TF_GAMETYPE_PLAYERDESTRUCTION,
+
+	OF_GAMETYPE_COUNT
+};
+
+enum
+{
+	OF_HUDTYPE_UNDEFINDED = 0,
+	OF_HUDTYPE_CTF,
+	OF_HUDTYPE_CP,
+	OF_HUDTYPE_PAYLOAD,
+	OF_HUDTYPE_UNKNOWN4,
+	OF_HUDTYPE_UNKNOWN5,
+	OF_HUDTYPE_UNKNOWN6,
+};
+
+const char *GetGameTypeName(ETFGameType GameType);
+const char *GetEnumGameTypeName(ETFGameType GameType);
+ETFGameType GetGameTypeFromName(const char *GameName);
+
+extern const char* sz_OFPlayerState[TF_STATE_LAST];
+
+extern int GetBuildableId( const char *szBuildableName );
+
+extern const char *GetAmmoName( int iAmmoIndex );
+
+// Weapon Defines
 extern const char *g_aWeaponModePrefix[OF_WEAPON_MODE_COUNT];
+extern uint g_aWeaponDamageTypes[];
 extern const char *g_aProjectileTypeNames[OF_PROJECTILE_TYPE_COUNT];
 
 // Needs to match the array below
@@ -260,9 +351,24 @@ extern const char *g_aProjectileTypeNames[OF_PROJECTILE_TYPE_COUNT];
 
 // No longer the case, did it properly and moved it to of_shareddefs.cpp now - Kay
 extern const char *g_aAmmoNames[AMMONAME_LAST];
+
+// Team Defines
 extern const char *g_aTeamNames[OF_TEAM_COUNT];
+extern color32 g_aTeamColors[];
+
+// Class Defines
+extern const char *g_aRawPlayerClassNamesShort[];
+
+// Map Defines
 extern const char* s_ValveMaps[][3];
 extern const char* s_CommunityMaps[][3];
 
+// maybe rename to OF_ ? - cherry
+// nevermind! compatibility
+
 #define TF_DAMAGE_CRIT_MULTIPLIER	3
-#define TF_GAMETYPE_ESCORT			3
+
+#define TF_WEAPON_RANDOM_RANGE				1000.0f
+#define TF_WEAPON_CRIT_CHANCE_NORMAL		0.02f
+#define TF_WEAPON_CRIT_CHANCE_RAPID			0.02f
+#define TF_WEAPON_CRIT_DURATION				2.0f

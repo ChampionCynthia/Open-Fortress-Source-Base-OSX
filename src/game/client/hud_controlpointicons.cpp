@@ -4,6 +4,14 @@
 //
 //=============================================================================
 
+// Open Fortress Modifications (CC-BY-NC-CA)
+// * temporarily disabled freezepanel related functions
+// * replaced tf_hud_objectivestatus functions with OF equivalents
+// * removed stray "L" in ApplySchemeSettings
+// * replaced C_TFPlayer with OF equivalent
+// * replaced TF_TEAM_* with OF equivalent
+// * replaced CExLabel with COFLabel
+
 #include "cbase.h"
 #include "hud_controlpointicons.h"
 #include "teamplayroundbased_gamerules.h"
@@ -15,8 +23,8 @@
 #include "hud_macros.h"
 #include "spectatorgui.h"
 #include "c_team.h"
-#include "tf_hud_freezepanel.h"
-#include "tf_hud_objectivestatus.h"
+//#include "tf_hud_freezepanel.h"
+#include "of_hud_objectivestatus.h"
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -189,7 +197,7 @@ void CControlPointIcon::ApplySchemeSettings( IScheme *pScheme )
 
 	if ( !m_pCPTimerLabel )
 	{
-		m_pCPTimerLabel = new CExLabel( this, "CPTimerLabel", L"" );
+		m_pCPTimerLabel = new COFLabel(this, "CPTimerLabel", "");
 		m_pCPTimerLabel->SetZPos( 0 );
 	}
 
@@ -1189,7 +1197,7 @@ void CHudControlPointIcons::UpdateProgressBarFor( int iIndex )
 		return;
 
 	// This can happen at level load
-	CTFHudObjectiveStatus *pStatus = GET_HUDELEMENT( CTFHudObjectiveStatus );
+	COFHudObjectiveStatus *pStatus = GET_HUDELEMENT( COFHudObjectiveStatus );
 	if ( pStatus && pStatus->GetControlPointProgressBar() )
 	{
 		CControlPointProgressBar *pProgressBar = pStatus->GetControlPointProgressBar();
@@ -1218,7 +1226,7 @@ void CHudControlPointIcons::InitIcons( void )
 {
 	ShutdownIcons();
 
-	CTFHudObjectiveStatus *pStatus = GET_HUDELEMENT( CTFHudObjectiveStatus );
+	COFHudObjectiveStatus *pStatus = GET_HUDELEMENT( COFHudObjectiveStatus );
 	if ( pStatus )
 	{
 		CControlPointProgressBar *pProgressBar = pStatus->GetControlPointProgressBar();
@@ -1256,7 +1264,7 @@ void CHudControlPointIcons::ShutdownIcons( void )
 	m_Icons.RemoveAll();
 
 	// if we remove all the icons, we need to make sure the progress bar isn't holding onto one
-	CTFHudObjectiveStatus *pStatus = GET_HUDELEMENT( CTFHudObjectiveStatus );
+	COFHudObjectiveStatus *pStatus = GET_HUDELEMENT( COFHudObjectiveStatus );
 	if ( pStatus )
 	{
 		CControlPointProgressBar *pProgressBar = pStatus->GetControlPointProgressBar();
@@ -1580,7 +1588,7 @@ void CControlPointProgressBar::UpdateBarText( void )
 		// If the opponents can never recapture this point back, we use a different string
 		if ( iPlayerTeam != TEAM_UNASSIGNED )
 		{
-			int iEnemyTeam = ( iPlayerTeam == TF_TEAM_RED ) ? TF_TEAM_BLUE : TF_TEAM_RED;
+			int iEnemyTeam = ( iPlayerTeam == OF_TEAM_RED ) ? OF_TEAM_BLUE : OF_TEAM_RED;
 			if ( !ObjectiveResource()->TeamCanCapPoint( iCP, iEnemyTeam ) )
 			{
 				m_pBarText->SetText( "#Team_Capture_Owned" );
@@ -1794,7 +1802,7 @@ void CControlPointCountdown::ApplySchemeSettings( IScheme *pScheme )
 //-----------------------------------------------------------------------------
 void CControlPointCountdown::PerformLayout()
 {
-	CExLabel *pLabel = dynamic_cast<CExLabel *>( FindChildByName( "CapCountdownLabel" ) );
+	COFLabel *pLabel = dynamic_cast<COFLabel *>(FindChildByName("CapCountdownLabel"));
 	if ( pLabel )
 	{
 		pLabel->SetBounds( 0, 0, GetWide(), GetTall() );
@@ -1823,7 +1831,7 @@ void CControlPointCountdown::OnTick( void )
 {
 	BaseClass::OnTick();
 
-	C_TFPlayer *pLocalPlayer = C_TFPlayer::GetLocalTFPlayer();
+	C_OFPlayer *pLocalPlayer = C_OFPlayer::GetLocalOFPlayer();
 	if ( !pLocalPlayer || ( m_flUnlockTime <= 0.0f ) )
 	{
 		if ( IsVisible() )

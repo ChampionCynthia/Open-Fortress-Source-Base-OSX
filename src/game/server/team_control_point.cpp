@@ -7,6 +7,7 @@
 // Open Fortress Modifications (CC-BY-NC-CA)
 // * added check for OF_DLL define
 // * added OF includes
+// * changed TF_GAMETYPE_ESCORT to OF_GAMETYPE_ESCORT
 
 #include "cbase.h"
 #include "team_control_point.h"
@@ -318,7 +319,7 @@ void CTeamControlPoint::HandleScoring( int iTeam )
 		if ( pMaster && !pMaster->WouldNewCPOwnerWinGame( this, iTeam ) )
 		{
 #if defined( TF_DLL ) || defined( OF_DLL )
-			if ( TeamplayRoundBasedRules()->GetGameType() == TF_GAMETYPE_ESCORT )
+			if ( TeamplayRoundBasedRules()->GetGameType() == OF_GAMETYPE_ESCORT )
 			{
 				CBroadcastRecipientFilter filter;
 				EmitSound( filter, entindex(), "Hud.EndRoundScored" );
