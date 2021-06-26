@@ -308,7 +308,7 @@ Activity COFPlayerAnimState::TranslateActivity(Activity actDesired)
 
 	if (pWeapon)
 	{
-		activity = pWeapon->ActivityOverride(activity, false);
+		activity = pWeapon->ActivityOverride(activity, nullptr);
 	}
 
 	return activity;

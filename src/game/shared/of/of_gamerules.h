@@ -119,7 +119,7 @@ public:
 	virtual void TeamPlayerCountChanged(COFTeam *pTeam);
 #endif
 	// overrides & chains to CTeamplayRoundBasedRules's impl of CGameEventListener::FireGameEvent
-	virtual void FireGameEvent (IGameEvent *) override;
+	// virtual void FireGameEvent (IGameEvent *) override;
 
 	virtual bool IsPlayingSpecialDeliveryMode( void );
 	virtual int GetTimeLeft();

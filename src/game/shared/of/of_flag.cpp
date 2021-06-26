@@ -179,7 +179,7 @@ int CCaptureFlag::GetItemID() const
 void CCaptureFlag::GetHudIcon(int iTeam, char *pHudIconName, int pHudIconNameSize )
 {
 	const char *pHudIcon;
-	if (m_szHudIcon == '\0')
+	if ( !strncmp( m_szHudIcon, "\0", 1 ) )
 	{
 		pHudIcon = OF_FLAG_HUDICON;
 	}
@@ -196,7 +196,7 @@ void CCaptureFlag::GetHudIcon(int iTeam, char *pHudIconName, int pHudIconNameSiz
 
 const char *CCaptureFlag::GetModel()
 {
-	if (m_szModel.Get() != '\0')
+	if ( strncmp( m_szModel.Get(), "\0", 1 ) )
 	{
 		if (g_pFullFileSystem->FileExists(m_szModel.Get(), "GAME"))
 		{
@@ -209,7 +209,7 @@ const char *CCaptureFlag::GetModel()
 
 const char *CCaptureFlag::GetPaperEffect()
 {
-	if (m_szPaperEffect.Get() != '\0')
+	if ( strncmp( m_szPaperEffect.Get(), "\0", 1 ) )
 	{
 		return m_szPaperEffect.Get();
 	}
@@ -219,7 +219,7 @@ const char *CCaptureFlag::GetPaperEffect()
 void CCaptureFlag::GetTrailEffect(int iTeam, char *szTrailEffectName, int iTrailEffectNameSize)
 {
 	const char *pFlagTrail = "flagtrail";
-	if (m_szTrailEffect.Get() != '\0')
+	if ( strncmp( m_szTrailEffect.Get(), "\0", 1) )
 	{
 		pFlagTrail = m_szTrailEffect.Get();
 	}
